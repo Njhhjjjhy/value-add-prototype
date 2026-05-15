@@ -6,35 +6,21 @@ import { usePropertyMapHost } from '../../shared/PropertyMapHost';
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
+  onBack?: () => void;
 }
 
 const C = {
   bg: '#F9F9F9',
-  amber: '#FBB931',
   n950: '#25272C',
   n800: '#40444C',
   n600: '#5B616E',
-  n400: '#8B8F98',
-  n100: '#EDEEF1',
 };
 
-const NAV_BOTTOM_PAD = 100;
-
-const GAPS = [
-  'Medical navigation',
-  'Mental health support',
-  'Education integration',
-  'Spouse career support',
-  'Operational friction',
-];
+const FONT_HEADING = '"REM", system-ui, sans-serif';
+const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
 const TILT_DURATION_MS = 2200;
-const TILT_BREATH_MS = 200;
-// With the iframe held in chromeless mode by step 11 (sheet display:none),
-// the slide-up reveal is owned by step 12's setChromeless(false). Step 11
-// only needs the iframe's camera to have framed itself before handing
-// off — it does NOT wait for the sheet to settle, because the sheet
-// shouldn't have moved yet.
+const TILT_BREATH_MS = 350;
 const SHEET_SETTLE_MS = 0;
 
 const animate = (
@@ -72,24 +58,24 @@ const waitForMapReady = (host: Host, isCancelled: () => boolean) =>
   });
 
 const tiltKeyframes: Keyframe[] = [
-  { transform: 'perspective(600px) rotateX(0deg) translateY(0px)', opacity: 1, offset: 0 },
-  { transform: 'perspective(600px) rotateX(1.5deg) translateY(2px)', opacity: 1, offset: 0.06 },
-  { transform: 'perspective(600px) rotateX(3deg) translateY(5px)', opacity: 1, offset: 0.12 },
-  { transform: 'perspective(600px) rotateX(5.5deg) translateY(10px)', opacity: 1, offset: 0.18 },
-  { transform: 'perspective(600px) rotateX(8deg) translateY(17px)', opacity: 1, offset: 0.24 },
-  { transform: 'perspective(600px) rotateX(11.5deg) translateY(28px)', opacity: 1, offset: 0.30 },
-  { transform: 'perspective(600px) rotateX(15deg) translateY(42px)', opacity: 0.98, offset: 0.36 },
-  { transform: 'perspective(600px) rotateX(20deg) translateY(62px)', opacity: 0.95, offset: 0.42 },
-  { transform: 'perspective(600px) rotateX(26deg) translateY(90px)', opacity: 0.90, offset: 0.48 },
-  { transform: 'perspective(600px) rotateX(33deg) translateY(130px)', opacity: 0.82, offset: 0.54 },
-  { transform: 'perspective(600px) rotateX(40deg) translateY(180px)', opacity: 0.72, offset: 0.60 },
-  { transform: 'perspective(600px) rotateX(47deg) translateY(240px)', opacity: 0.58, offset: 0.66 },
-  { transform: 'perspective(600px) rotateX(54deg) translateY(310px)', opacity: 0.42, offset: 0.72 },
-  { transform: 'perspective(600px) rotateX(60deg) translateY(380px)', opacity: 0.28, offset: 0.78 },
-  { transform: 'perspective(600px) rotateX(65deg) translateY(450px)', opacity: 0.16, offset: 0.84 },
-  { transform: 'perspective(600px) rotateX(70deg) translateY(520px)', opacity: 0.08, offset: 0.90 },
-  { transform: 'perspective(600px) rotateX(73deg) translateY(560px)', opacity: 0.03, offset: 0.95 },
-  { transform: 'perspective(600px) rotateX(75deg) translateY(600px)', opacity: 0, offset: 1 },
+  { transform: 'perspective(1200px) rotateX(0deg) translateY(0px)', opacity: 1, offset: 0 },
+  { transform: 'perspective(1200px) rotateX(1.5deg) translateY(4px)', opacity: 1, offset: 0.06 },
+  { transform: 'perspective(1200px) rotateX(3deg) translateY(10px)', opacity: 1, offset: 0.12 },
+  { transform: 'perspective(1200px) rotateX(5.5deg) translateY(20px)', opacity: 1, offset: 0.18 },
+  { transform: 'perspective(1200px) rotateX(8deg) translateY(34px)', opacity: 1, offset: 0.24 },
+  { transform: 'perspective(1200px) rotateX(11.5deg) translateY(56px)', opacity: 1, offset: 0.30 },
+  { transform: 'perspective(1200px) rotateX(15deg) translateY(84px)', opacity: 0.98, offset: 0.36 },
+  { transform: 'perspective(1200px) rotateX(20deg) translateY(124px)', opacity: 0.95, offset: 0.42 },
+  { transform: 'perspective(1200px) rotateX(26deg) translateY(180px)', opacity: 0.90, offset: 0.48 },
+  { transform: 'perspective(1200px) rotateX(33deg) translateY(260px)', opacity: 0.82, offset: 0.54 },
+  { transform: 'perspective(1200px) rotateX(40deg) translateY(360px)', opacity: 0.72, offset: 0.60 },
+  { transform: 'perspective(1200px) rotateX(47deg) translateY(480px)', opacity: 0.58, offset: 0.66 },
+  { transform: 'perspective(1200px) rotateX(54deg) translateY(620px)', opacity: 0.42, offset: 0.72 },
+  { transform: 'perspective(1200px) rotateX(60deg) translateY(760px)', opacity: 0.28, offset: 0.78 },
+  { transform: 'perspective(1200px) rotateX(65deg) translateY(900px)', opacity: 0.16, offset: 0.84 },
+  { transform: 'perspective(1200px) rotateX(70deg) translateY(1040px)', opacity: 0.08, offset: 0.90 },
+  { transform: 'perspective(1200px) rotateX(73deg) translateY(1120px)', opacity: 0.03, offset: 0.95 },
+  { transform: 'perspective(1200px) rotateX(75deg) translateY(1200px)', opacity: 0, offset: 1 },
 ];
 
 export default function Step11Section6Transition({ isActive, onComplete }: StepProps) {
@@ -101,11 +87,6 @@ export default function Step11Section6Transition({ isActive, onComplete }: StepP
   useEffect(() => {
     if (!isActive) return;
 
-    // Force the iframe into chromeless (sheet hidden) for the duration
-    // of step 11. If the user is looping back from step 12 the sheet
-    // would already be presented in the persistent iframe, so this
-    // also slides it back down under the bridge cover before the next
-    // step-12 reveal. Idempotent on first entry.
     propertyMapHost?.setChromeless(true);
 
     const reduced =
@@ -125,11 +106,6 @@ export default function Step11Section6Transition({ isActive, onComplete }: StepP
       if (cancelled) return;
       await wait(TILT_BREATH_MS);
       if (cancelled) return;
-      // Hold the opaque white wrapper until the property map iframe
-      // has fully framed itself AND its sheet has slid up. Then snap
-      // straight to step-12 (no exit fade) so the user never sees
-      // the iframe through a partial reveal — same hand-off pattern
-      // as step-5 → step-6.
       await waitForMapReady(propertyMapHost, () => cancelled);
       if (cancelled) return;
       await wait(SHEET_SETTLE_MS);
@@ -157,8 +133,6 @@ export default function Step11Section6Transition({ isActive, onComplete }: StepP
         overflow: 'hidden',
       }}
     >
-      {/* Tilting bridge content. Recap of the investment + jobs figures
-          peeling away from camera as we hand off to the property map. */}
       <div
         ref={tiltRef}
         style={{
@@ -168,112 +142,124 @@ export default function Step11Section6Transition({ isActive, onComplete }: StepP
           willChange: 'transform, opacity',
         }}
       >
-        <BridgeContent />
+        <GhostBridge />
       </div>
     </div>
   );
 }
 
-/* Mirrors the final on-screen state of step 10 (beat 3, solved=true):
-   the "MoreHarvest residence" image, the "MoreHarvest solves all five."
-   subhead, and the five gap rows with amber dots. This is what the
-   user sees the moment they tap forward out of step 10, and it is
-   what tilts away here on step 11. */
-function BridgeContent() {
+function GhostBridge() {
   return (
     <div
       style={{
         position: 'absolute',
         inset: 0,
-        padding: `calc(56px + env(safe-area-inset-top, 0px)) 24px calc(${NAV_BOTTOM_PAD}px + env(safe-area-inset-bottom, 0px))`,
         display: 'flex',
         flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding:
+          'calc(96px + var(--safe-top)) var(--content-margin) calc(96px + var(--safe-bottom))',
       }}
     >
-      <div style={{ marginBottom: 14 }}>
-        <ResidenceImage />
-      </div>
-
-      <div style={{ marginBottom: 16, minHeight: 28 }}>
-        <p
+      <div style={{ width: '100%', maxWidth: 880 }}>
+        <div
           style={{
-            margin: 0,
-            fontFamily: 'var(--font-heading)',
-            fontSize: 22,
-            fontWeight: 600,
-            color: C.n950,
-            lineHeight: 1.25,
-            letterSpacing: '-0.01em',
+            fontFamily: FONT_BODY,
+            fontSize: 13,
+            fontWeight: 500,
+            color: C.n600,
+            letterSpacing: '0.18em',
+            marginBottom: 28,
+            textAlign: 'left',
           }}
         >
-          MoreHarvest solves all five.
-        </p>
-      </div>
-
-      <div style={{ flex: 1 }}>
-        {GAPS.map((g, i) => (
+          THE INVESTMENT
+        </div>
+        <div
+          style={{
+            borderRadius: 20,
+            background: C.bg,
+            border: '1px solid rgba(0,0,0,0.08)',
+            boxShadow:
+              '0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)',
+            padding: '40px 44px',
+            marginBottom: 20,
+          }}
+        >
           <div
-            key={i}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              padding: '9px 0',
-              borderBottom: i < GAPS.length - 1 ? `1px solid ${C.n100}` : 'none',
-            }}
+            role="group"
+            aria-label="10 trillion yen. Total semiconductor investment committed to Kumamoto prefecture."
           >
             <div
               style={{
-                width: 10,
-                height: 10,
-                borderRadius: 9999,
-                background: C.amber,
-                flexShrink: 0,
-                marginLeft: 5,
-              }}
-            />
-            <span
-              style={{
-                fontFamily: 'var(--font-heading)',
-                fontSize: 16,
+                fontFamily: FONT_HEADING,
                 fontWeight: 600,
+                fontSize: 72,
                 color: C.n950,
-                marginLeft: 17,
+                letterSpacing: '-0.03em',
+                lineHeight: 1.05,
+                textAlign: 'left',
               }}
             >
-              {g}
-            </span>
+              10 trillion yen
+            </div>
+            <div
+              style={{
+                fontFamily: FONT_BODY,
+                fontSize: 18,
+                color: C.n800,
+                lineHeight: 1.6,
+                marginTop: 16,
+                textAlign: 'left',
+              }}
+            >
+              Total semiconductor investment committed to Kumamoto prefecture
+            </div>
           </div>
-        ))}
+        </div>
+        <div
+          style={{
+            borderRadius: 20,
+            background: C.bg,
+            border: '1px solid rgba(0,0,0,0.06)',
+            boxShadow:
+              '0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)',
+            padding: '28px 44px',
+          }}
+        >
+          <div
+            role="group"
+            aria-label="47,000 jobs. New positions projected by 2030."
+          >
+            <div
+              style={{
+                fontFamily: FONT_HEADING,
+                fontWeight: 600,
+                fontSize: 48,
+                color: C.n950,
+                letterSpacing: '-0.025em',
+                lineHeight: 1.1,
+                textAlign: 'left',
+              }}
+            >
+              47,000 jobs
+            </div>
+            <div
+              style={{
+                fontFamily: FONT_BODY,
+                fontSize: 17,
+                color: C.n800,
+                lineHeight: 1.6,
+                marginTop: 12,
+                textAlign: 'left',
+              }}
+            >
+              New positions projected by 2030
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  );
-}
-
-function ResidenceImage() {
-  return (
-    <div
-      style={{
-        width: '100%',
-        height: 120,
-        borderRadius: 12,
-        background: C.n100,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <span
-        style={{
-          fontFamily: 'var(--font-body)',
-          fontSize: 13,
-          fontWeight: 500,
-          color: C.n400,
-          letterSpacing: '0.01em',
-        }}
-      >
-        MoreHarvest residence
-      </span>
     </div>
   );
 }

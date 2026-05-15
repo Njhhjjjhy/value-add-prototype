@@ -65,7 +65,7 @@ function buildMapUrl(): string {
   });
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   if (typeof window !== 'undefined' && token) {
-    (window as any).__GKTK_MAPBOX_ACCESS_TOKEN = token;
+    (window as Window & { __GKTK_MAPBOX_ACCESS_TOKEN?: string }).__GKTK_MAPBOX_ACCESS_TOKEN = token;
   }
   // Persist last step for step-7 to read; the bundle itself starts
   // at step 1 (government-support) by default.

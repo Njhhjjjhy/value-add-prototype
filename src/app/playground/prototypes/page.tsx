@@ -52,17 +52,21 @@ export default function PrototypePlayground() {
     setFileName(next.prototypes[0]?.filename ?? null);
   }
 
-  const previewUrl = activeFile
-    ? `/playground/prototypes/preview/${encodeURIComponent(
-        step.id
-      )}/${encodeURIComponent(activeFile.filename)}${
-        variantId ? `?variant=${encodeURIComponent(variantId)}` : ""
-      }`
-    : null;
+  // iPad Pro 13 M4 logical viewport + thin bezel.
+  // Landscape: 1366×1024 content + 44px shell on each axis.
+  // Portrait:  1024×1366 content + 44px shell on each axis.
+  const [orientation, setOrientation] = useState<'landscape' | 'portrait'>('landscape');
+  const FRAME_W = orientation === 'landscape' ? 1410 : 1068;
+  const FRAME_H = orientation === 'landscape' ? 1068 : 1410;
 
-  // iPhone 17 Pro logical viewport + breathing room for the frame bezel.
-  const FRAME_W = 440;
-  const FRAME_H = 900;
+  const previewUrl = activeFile
+    ? (() => {
+        const p = new URLSearchParams();
+        if (variantId) p.set('variant', variantId);
+        p.set('orientation', orientation);
+        return `/playground/prototypes/preview/${encodeURIComponent(step.id)}/${encodeURIComponent(activeFile.filename)}?${p.toString()}`;
+      })()
+    : null;
 
   const viewerRef = useRef<HTMLDivElement | null>(null);
   const [fitScale, setFitScale] = useState(1);
@@ -72,9 +76,14 @@ export default function PrototypePlayground() {
     const el = viewerRef.current;
     if (!el) return;
     const measure = () => {
-      const w = el.clientWidth;
-      const h = el.clientHeight;
-      if (w === 0 || h === 0) return;
+      // Subtract the viewer's 16px padding on each axis. clientWidth/Height
+      // include padding (we use box-sizing: border-box globally), so without
+      // this the iframe slightly overflows the visible area and the iPad
+      // bezel gets clipped at the edges.
+      const VIEWER_PADDING = 16;
+      const w = el.clientWidth - VIEWER_PADDING * 2;
+      const h = el.clientHeight - VIEWER_PADDING * 2;
+      if (w <= 0 || h <= 0) return;
       const s = Math.min(w / FRAME_W, h / FRAME_H, 1);
       setFitScale(s);
     };
@@ -82,7 +91,7 @@ export default function PrototypePlayground() {
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [FRAME_W, FRAME_H]);
 
   return (
     <div
@@ -137,7 +146,7 @@ export default function PrototypePlayground() {
             Prototypes
           </h1>
           <p style={{ fontSize: 12, color: "#5B616E", margin: "6px 0 0", lineHeight: 1.45 }}>
-            20 steps. Testing only. Nothing here ships to the main experience.
+            iPad Pro 13 · 20 steps · Testing only
           </p>
         </div>
 
@@ -296,6 +305,34 @@ export default function PrototypePlayground() {
           >
             {step.id}
           </code>
+
+          {/* Orientation toggle — pushed to the right */}
+          <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
+            {(["landscape", "portrait"] as const).map((o) => {
+              const active = orientation === o;
+              return (
+                <button
+                  key={o}
+                  onClick={() => setOrientation(o)}
+                  style={{
+                    padding: "4px 10px",
+                    borderRadius: 9999,
+                    border: "none",
+                    background: active ? "#FBB931" : "rgba(0,0,0,0.06)",
+                    color: active ? "#1A1A1E" : "#5B616E",
+                    fontSize: 11,
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    transition: "background 120ms ease, color 120ms ease",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {o === "landscape" ? "Landscape" : "Portrait"}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Viewer area — maximum vertical space for the phone */}

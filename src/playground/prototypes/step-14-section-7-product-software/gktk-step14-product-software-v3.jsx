@@ -1,16 +1,44 @@
 import { useState, useEffect, useRef } from "react";
 
-// ─── constants ──────────────────────────────────────────────────────
+/* ───────────────────────────────────────────────────────
+   step-14 section 7 product software — iPad Pro 13 M4
+   Two variants:
+   A "the lock screen" — Moha Intel notifications shown
+                         on a dark device-screen card
+                         (the metaphor for what the
+                         operator/resident sees on phone).
+   B "the thread"      — Property secretary chat thread
+                         rendered the same way, on a dark
+                         device-screen card.
+
+   iPad adaptation:
+   - iPhone 17 Pro bezel/Dynamic Island stripped.
+   - Page split into two columns (landscape) or stacked
+     (portrait): left/top is the editorial intro copy +
+     CTA, right/bottom is the dark device-screen card
+     that hosts the running demo.
+   - The dark card uses #1A1A1E / #1C1C1E per CLAUDE.md's
+     allowance for device-shell representations.
+   - Type bumped to iPad HIG floors (body 17, caption 13).
+   ─────────────────────────────────────────────────────── */
+
 const AMBER = "#FBB931";
 const BG = "#F9F9F9";
 const N950 = "#25272C";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const N900 = "#383A42";
 const N800 = "#40444C";
 const N600 = "#5B616E";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const N200 = "#D8DBDF";
 const N100 = "#EDEEF1";
+
+// Dark device-screen card colors
+const CARD_BG = "#1A1A1E";
+const CARD_PANEL = "#26262B";
+const CARD_BORDER = "rgba(255,255,255,0.08)";
+const CARD_TEXT_PRIMARY = "#F2F2F4";
+const CARD_TEXT_SECONDARY = "#A8AAB0";
+const CARD_TEXT_MUTED = "#7B7E86";
+
+const FONT_HEADING = "'REM', system-ui, sans-serif";
+const FONT_BODY = "'Noto Sans JP', system-ui, sans-serif";
 
 const variants = [
   { id: "A", label: "The lock screen" },
@@ -44,48 +72,7 @@ const YEAR_3 = {
 };
 const ALL_YEARS = [YEAR_1, YEAR_2, YEAR_3];
 
-// ─── shared components ──────────────────────────────────────────────
-const GlassPanel = ({ children, style = {}, level = 1 }) => {
-  const bg = "#F9F9F9";
-  const bdr = "1px solid rgba(0,0,0,0.06)";
-  const shd = level === 2
-    ? "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)"
-    : "0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)";
-  return (
-    <div style={{ borderRadius: 20, overflow: "hidden", position: "relative", background: bg, border: bdr, boxShadow: shd, ...style }}>
-      <div style={{ position: "relative", zIndex: 4 }}>{children}</div>
-    </div>
-  );
-};
-
-const MeshGradient = () => (
-  <div style={{ position: "absolute", inset: 0, zIndex: 0, background: BG }} />
-);
-
-const StatusBar = () => (
-  <div style={{ position: "absolute", top: 14, left: 24, right: 24, display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 30, color: N800, fontSize: 13, fontWeight: 600, fontFamily: "'Noto Sans JP', sans-serif" }}>
-    <span>9:41</span>
-    <span style={{ display: "flex", gap: 4, alignItems: "center" }}>
-      <span style={{ fontSize: 11 }}>5G</span>
-      <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="4" width="3" height="8" rx="0.5" fill="currentColor" /><rect x="4.5" y="2.5" width="3" height="9.5" rx="0.5" fill="currentColor" /><rect x="9" y="0.5" width="3" height="11.5" rx="0.5" fill="currentColor" /><rect x="13" y="0" width="3" height="12" rx="0.5" fill="currentColor" /></svg>
-    </span>
-  </div>
-);
-
-const IPhoneFrame = ({ children }) => (
-  <div style={{ width: 393, height: 852, borderRadius: 55, position: "relative", overflow: "hidden", background: "#1A1A1E", boxShadow: "0 0 0 1px rgba(255,255,255,0.08) inset", flexShrink: 0 }}>
-    <div style={{ position: "absolute", left: -3, top: 160, width: 3, height: 32, background: "#2a2a2a", borderRadius: "2px 0 0 2px" }} />
-    <div style={{ position: "absolute", left: -3, top: 110, width: 3, height: 24, background: "#2a2a2a", borderRadius: "2px 0 0 2px" }} />
-    <div style={{ position: "absolute", right: -3, top: 140, width: 3, height: 50, background: "#2a2a2a", borderRadius: "0 2px 2px 0" }} />
-    <div style={{ position: "absolute", inset: 0, borderRadius: 55, border: "1px solid rgba(0,0,0,0.06)", pointerEvents: "none", zIndex: 50 }} />
-    <div style={{ position: "absolute", inset: 6, borderRadius: 49, overflow: "hidden", background: BG }}>
-      <div style={{ position: "absolute", top: 10, left: "50%", transform: "translateX(-50%)", width: 126, height: 37, background: "#000", borderRadius: 24, zIndex: 40 }} />
-      {children}
-    </div>
-  </div>
-);
-
-// ─── smooth notification entrance (Web Animations API) ──────────────
+// ─── entrance hooks (Web Animations API) ────────────────────────────
 const useNotifEntrance = (ref, visible) => {
   useEffect(() => {
     if (!ref.current || !visible) return;
@@ -99,7 +86,6 @@ const useNotifEntrance = (ref, visible) => {
   }, [visible]);
 };
 
-// ─── smooth message entrance (Web Animations API) ───────────────────
 const useMsgEntrance = (ref, visible, fromRight = false) => {
   useEffect(() => {
     if (!ref.current || !visible) return;
@@ -113,90 +99,234 @@ const useMsgEntrance = (ref, visible, fromRight = false) => {
   }, [visible]);
 };
 
-// ───────────────────────────────────────────────────────────────────
-// INTRO SCREEN
-// ───────────────────────────────────────────────────────────────────
-const IntroScreen = ({ onContinue }) => (
-  <div style={{ position: "absolute", inset: 0, zIndex: 10 }}>
-    <MeshGradient />
-    <StatusBar />
-    <div style={{ position: "absolute", top: 64, left: 24, right: 24, zIndex: 10 }}>
-      <h2 style={{ fontFamily: "'REM', sans-serif", fontWeight: 600, fontSize: 22, color: N950, margin: 0, lineHeight: 1.2 }}>Software-defined real estate</h2>
-      <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 13, color: N800, margin: "10px 0 0", lineHeight: 1.6 }}>
-        Taiwanese staff solve all problems, from daily logistics to language barriers. Nothing affects expected quality of life.
-      </p>
+// ─── dark device-screen card ────────────────────────────────────────
+const DeviceScreenCard = ({ children, orientation = "landscape" }) => {
+  const isLandscape = orientation === "landscape";
+  // Card is a tall rectangle representing a phone-style screen, not
+  // a literal phone bezel. Sized to feel like the operator's device
+  // sitting on the iPad canvas.
+  const cardW = isLandscape ? 480 : 520;
+  const cardH = isLandscape ? 820 : 880;
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: cardW,
+        height: cardH,
+        maxHeight: "100%",
+        borderRadius: 36,
+        background: CARD_BG,
+        border: `1px solid ${CARD_BORDER}`,
+        boxShadow:
+          "0 32px 80px rgba(0,0,0,0.35), 0 12px 32px rgba(0,0,0,0.20)",
+        overflow: "hidden",
+        flexShrink: 0,
+      }}
+    >
+      {children}
     </div>
-    <div style={{ position: "absolute", top: 185, left: 20, right: 20, zIndex: 10, display: "flex", flexDirection: "column", gap: 10 }}>
-      {[
-        { year: "Year 1", name: "Landing", tag: "Included", items: "Property secretary. Admin accompaniment. Maintenance." },
-        { year: "Year 2", name: "Family", tag: "Add-on", items: "Medical navigation. Education support. Community events." },
-        { year: "Year 3+", name: "Wellness", tag: "Premium", items: "Mental health. Health management. Golf, onsen, culture." },
-      ].map((tier, i) => (
-        <GlassPanel key={i} style={{ padding: "12px 14px", borderRadius: 12}}>
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 4 }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              <span style={{ fontFamily: "'REM', sans-serif", fontWeight: 600, fontSize: 15, color: N950 }}>{tier.year}</span>
-              <span style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: N600 }}>{tier.name}</span>
-            </div>
-            <span style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 10, fontWeight: 500, color: N800, background: N100, borderRadius: 6, padding: "2px 7px" }}>{tier.tag}</span>
-          </div>
-          <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: N800, margin: 0, lineHeight: 1.5 }}>{tier.items}</p>
-        </GlassPanel>
-      ))}
-      <div style={{ padding: "6px 4px 0" }}>
-        <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: N600, margin: 0, lineHeight: 1.5 }}>
-          The software layer keeps growing. New modules pushed without modifying buildings.
-        </p>
-      </div>
-    </div>
-    <div style={{ position: "absolute", bottom: 40, left: 24, right: 24, zIndex: 10 }}>
-      <button className="step-14-cta" onClick={onContinue} style={{ width: "100%", padding: "14px 0", borderRadius: 12, border: "none", background: AMBER, color: N950, fontFamily: "'REM', sans-serif", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
-        See it in action
-      </button>
-    </div>
+  );
+};
+
+// ─── status bar (inside the dark card) ──────────────────────────────
+const DarkStatusBar = () => (
+  <div
+    style={{
+      position: "absolute",
+      top: 18,
+      left: 32,
+      right: 32,
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      zIndex: 30,
+      color: CARD_TEXT_PRIMARY,
+      fontSize: 13,
+      fontWeight: 600,
+      fontFamily: FONT_BODY,
+    }}
+  >
+    <span>9:41</span>
+    <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
+      <span style={{ fontSize: 13 }}>5G</span>
+      <svg width="18" height="13" viewBox="0 0 16 12">
+        <rect x="0" y="4" width="3" height="8" rx="0.5" fill="currentColor" />
+        <rect x="4.5" y="2.5" width="3" height="9.5" rx="0.5" fill="currentColor" />
+        <rect x="9" y="0.5" width="3" height="11.5" rx="0.5" fill="currentColor" />
+        <rect x="13" y="0" width="3" height="12" rx="0.5" fill="currentColor" />
+      </svg>
+    </span>
   </div>
 );
 
-// ───────────────────────────────────────────────────────────────────
-// NOTIFICATION CARD (shared by variant A)
-// Uses Web Animations API for smooth entrance
-// ───────────────────────────────────────────────────────────────────
+// ─── editorial intro (left/top column) ──────────────────────────────
+const IntroColumn = ({ onContinue, orientation = "landscape" }) => {
+  const isLandscape = orientation === "landscape";
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 28,
+        maxWidth: isLandscape ? 540 : 760,
+        width: "100%",
+      }}
+    >
+      <div
+        style={{
+          fontFamily: FONT_BODY,
+          fontSize: 13,
+          fontWeight: 500,
+          color: N600,
+          letterSpacing: "0.18em",
+        }}
+      >
+        SECTION 7 — PRODUCT, SOFTWARE
+      </div>
+      <h2
+        style={{
+          fontFamily: FONT_HEADING,
+          fontWeight: 600,
+          fontSize: 48,
+          color: N950,
+          margin: 0,
+          lineHeight: 1.1,
+          letterSpacing: "-0.025em",
+        }}
+      >
+        Software-defined real estate
+      </h2>
+      <p
+        style={{
+          fontFamily: FONT_BODY,
+          fontSize: 18,
+          color: N800,
+          margin: 0,
+          lineHeight: 1.6,
+        }}
+      >
+        Taiwanese staff solve all problems, from daily logistics to language
+        barriers. Nothing affects expected quality of life.
+      </p>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 8 }}>
+        {[
+          { year: "Year 1", name: "Landing", tag: "Included", items: "Property secretary. Admin accompaniment. Maintenance." },
+          { year: "Year 2", name: "Family", tag: "Add-on", items: "Medical navigation. Education support. Community events." },
+          { year: "Year 3+", name: "Wellness", tag: "Premium", items: "Mental health. Health management. Golf, onsen, culture." },
+        ].map((tier, i) => (
+          <div
+            key={i}
+            style={{
+              padding: "16px 18px",
+              borderRadius: 12,
+              background: BG,
+              border: "1px solid rgba(0,0,0,0.06)",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 6 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                <span style={{ fontFamily: FONT_HEADING, fontWeight: 600, fontSize: 17, color: N950 }}>{tier.year}</span>
+                <span style={{ fontFamily: FONT_BODY, fontSize: 15, color: N600 }}>{tier.name}</span>
+              </div>
+              <span
+                style={{
+                  fontFamily: FONT_BODY,
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: N800,
+                  background: N100,
+                  borderRadius: 8,
+                  padding: "4px 10px",
+                }}
+              >
+                {tier.tag}
+              </span>
+            </div>
+            <p style={{ fontFamily: FONT_BODY, fontSize: 15, color: N800, margin: 0, lineHeight: 1.55 }}>{tier.items}</p>
+          </div>
+        ))}
+      </div>
+
+      <p style={{ fontFamily: FONT_BODY, fontSize: 15, color: N600, margin: 0, lineHeight: 1.55 }}>
+        The software layer keeps growing. New modules pushed without modifying buildings.
+      </p>
+
+      <button
+        className="step-14-cta"
+        onClick={onContinue}
+        style={{
+          alignSelf: "flex-start",
+          padding: "18px 32px",
+          minHeight: 56,
+          borderRadius: 12,
+          border: "none",
+          background: AMBER,
+          color: N950,
+          fontFamily: FONT_HEADING,
+          fontSize: 17,
+          fontWeight: 600,
+          marginTop: 8,
+        }}
+      >
+        See it in action
+      </button>
+    </div>
+  );
+};
+
+// ─── NOTIF CARD (variant A) ─────────────────────────────────────────
 const NotifCard = ({ from, msg, time }) => {
   const ref = useRef(null);
   useNotifEntrance(ref, true);
-
   return (
     <div ref={ref} style={{ opacity: 0 }}>
-      <GlassPanel style={{ padding: "10px 12px", borderRadius: 12}}>
+      <div
+        style={{
+          padding: "12px 14px",
+          borderRadius: 14,
+          background: CARD_PANEL,
+          border: `1px solid ${CARD_BORDER}`,
+        }}
+      >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
-          <span style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 600, fontSize: 13, color: N950 }}>{from}</span>
-          <span style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: N600 }}>{time}</span>
+          <span style={{ fontFamily: FONT_BODY, fontWeight: 600, fontSize: 15, color: CARD_TEXT_PRIMARY }}>{from}</span>
+          <span style={{ fontFamily: FONT_BODY, fontSize: 13, color: CARD_TEXT_MUTED }}>{time}</span>
         </div>
-        <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: N800, margin: 0, lineHeight: 1.5 }}>{msg}</p>
-      </GlassPanel>
+        <p style={{ fontFamily: FONT_BODY, fontSize: 13, color: CARD_TEXT_SECONDARY, margin: 0, lineHeight: 1.55 }}>{msg}</p>
+      </div>
     </div>
   );
 };
 
-// ───────────────────────────────────────────────────────────────────
-// YEAR HEADER (shared by variant A)
-// ───────────────────────────────────────────────────────────────────
+// ─── YEAR HEADER (variant A) ────────────────────────────────────────
 const YearHeader = ({ label, sub, tag }) => {
   const ref = useRef(null);
   useNotifEntrance(ref, true);
-
   return (
-    <div ref={ref} style={{ opacity: 0, display: "flex", alignItems: "center", gap: 8, padding: "10px 4px 2px" }}>
-      <span style={{ fontFamily: "'REM', sans-serif", fontWeight: 600, fontSize: 14, color: N950 }}>{label}</span>
-      <span style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: N600 }}>{sub}</span>
-      <span style={{ marginLeft: "auto", fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: N800, background: N100, borderRadius: 8, padding: "4px 8px", fontWeight: 500 }}>{tag}</span>
+    <div ref={ref} style={{ opacity: 0, display: "flex", alignItems: "center", gap: 10, padding: "12px 4px 4px" }}>
+      <span style={{ fontFamily: FONT_HEADING, fontWeight: 600, fontSize: 15, color: CARD_TEXT_PRIMARY }}>{label}</span>
+      <span style={{ fontFamily: FONT_BODY, fontSize: 13, color: CARD_TEXT_MUTED }}>{sub}</span>
+      <span
+        style={{
+          marginLeft: "auto",
+          fontFamily: FONT_BODY,
+          fontSize: 13,
+          color: CARD_TEXT_PRIMARY,
+          background: "rgba(255,255,255,0.10)",
+          borderRadius: 8,
+          padding: "4px 10px",
+          fontWeight: 500,
+        }}
+      >
+        {tag}
+      </span>
     </div>
   );
 };
 
-// ───────────────────────────────────────────────────────────────────
-// VARIANT A: THE LOCK SCREEN
-// ───────────────────────────────────────────────────────────────────
+// ─── VARIANT A: the lock screen ─────────────────────────────────────
 const VariantA = ({ active }) => {
   const [items, setItems] = useState([]);
   const timerRef = useRef(null);
@@ -217,7 +347,6 @@ const VariantA = ({ active }) => {
     return () => clearTimeout(timerRef.current);
   }, [active]);
 
-  // build grouped list
   const grouped = [];
   let lastYi = -1;
   items.forEach(n => {
@@ -229,16 +358,52 @@ const VariantA = ({ active }) => {
   });
 
   return (
-    <div style={{ position: "absolute", inset: 0, zIndex: 10, opacity: active ? 1 : 0, transition: "opacity 400ms" }}>
-      <MeshGradient />
-      <StatusBar />
-      <div style={{ position: "absolute", top: 64, left: 24, right: 24, zIndex: 10 }}>
-        <h2 style={{ fontFamily: "'REM', sans-serif", fontWeight: 600, fontSize: 18, color: N950, margin: 0 }}>Software-defined real estate</h2>
-        <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: N600, margin: "4px 0 0" }}>What your phone looks like as a MoreHarvest resident.</p>
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        opacity: active ? 1 : 0,
+        transition: "opacity 400ms",
+      }}
+    >
+      <DarkStatusBar />
+      <div style={{ position: "absolute", top: 64, left: 28, right: 28 }}>
+        <h3
+          style={{
+            fontFamily: FONT_HEADING,
+            fontWeight: 600,
+            fontSize: 22,
+            color: CARD_TEXT_PRIMARY,
+            margin: 0,
+            letterSpacing: "-0.01em",
+          }}
+        >
+          Software-defined real estate
+        </h3>
+        <p
+          style={{
+            fontFamily: FONT_BODY,
+            fontSize: 13,
+            color: CARD_TEXT_SECONDARY,
+            margin: "6px 0 0",
+            lineHeight: 1.45,
+          }}
+        >
+          What your phone looks like as a MoreHarvest resident.
+        </p>
       </div>
-      <div style={{ position: "absolute", top: 124, left: 12, right: 12, bottom: 20, zIndex: 10, overflow: "hidden" }}>
+      <div
+        style={{
+          position: "absolute",
+          top: 140,
+          left: 16,
+          right: 16,
+          bottom: 24,
+          overflow: "hidden",
+        }}
+      >
         {grouped.map((item) => (
-          <div key={item.key} style={{ marginBottom: item.type === "year" ? 4 : 8 }}>
+          <div key={item.key} style={{ marginBottom: item.type === "year" ? 4 : 10 }}>
             {item.type === "year" ? (
               <YearHeader label={item.label} sub={item.sub} tag={item.tag} />
             ) : (
@@ -251,17 +416,22 @@ const VariantA = ({ active }) => {
   );
 };
 
-// ───────────────────────────────────────────────────────────────────
-// CHAT BUBBLE (used by variant B)
-// ───────────────────────────────────────────────────────────────────
+// ─── CHAT BUBBLES (variant B) ───────────────────────────────────────
 const ChatBubbleSec = ({ text }) => {
   const ref = useRef(null);
   useMsgEntrance(ref, true, false);
   return (
     <div ref={ref} aria-live="polite" style={{ opacity: 0, maxWidth: "82%", marginRight: "auto" }}>
-      <GlassPanel style={{ padding: "12px", borderRadius: "12px 12px 12px 4px" }}>
-        <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 13, color: N800, margin: 0, lineHeight: 1.5 }}>{text}</p>
-      </GlassPanel>
+      <div
+        style={{
+          padding: "12px 14px",
+          borderRadius: "14px 14px 14px 4px",
+          background: CARD_PANEL,
+          border: `1px solid ${CARD_BORDER}`,
+        }}
+      >
+        <p style={{ fontFamily: FONT_BODY, fontSize: 15, color: CARD_TEXT_PRIMARY, margin: 0, lineHeight: 1.5 }}>{text}</p>
+      </div>
     </div>
   );
 };
@@ -271,8 +441,8 @@ const ChatBubbleTen = ({ text }) => {
   useMsgEntrance(ref, true, true);
   return (
     <div ref={ref} aria-live="polite" style={{ opacity: 0, maxWidth: "78%", marginLeft: "auto" }}>
-      <div style={{ padding: "12px", borderRadius: "12px 12px 4px 12px", background: AMBER }}>
-        <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 13, color: N950, margin: 0, lineHeight: 1.5 }}>{text}</p>
+      <div style={{ padding: "12px 14px", borderRadius: "14px 14px 4px 14px", background: AMBER }}>
+        <p style={{ fontFamily: FONT_BODY, fontSize: 15, color: N950, margin: 0, lineHeight: 1.5 }}>{text}</p>
       </div>
     </div>
   );
@@ -288,15 +458,24 @@ const ChatDate = ({ text }) => {
     ], { duration: 400, easing: "ease-out", fill: "forwards" });
   }, []);
   return (
-    <div ref={ref} style={{ opacity: 0, textAlign: "center", padding: "8px 0 3px" }}>
-      <span style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: N600, background:"#F9F9F9", borderRadius: 8, padding: "3px 10px" }}>{text}</span>
+    <div ref={ref} style={{ opacity: 0, textAlign: "center", padding: "10px 0 4px" }}>
+      <span
+        style={{
+          fontFamily: FONT_BODY,
+          fontSize: 13,
+          color: CARD_TEXT_MUTED,
+          background: "rgba(255,255,255,0.06)",
+          borderRadius: 8,
+          padding: "4px 12px",
+        }}
+      >
+        {text}
+      </span>
     </div>
   );
 };
 
-// ───────────────────────────────────────────────────────────────────
-// VARIANT B: THE THREAD
-// ───────────────────────────────────────────────────────────────────
+// ─── VARIANT B: the thread ──────────────────────────────────────────
 const VariantB = ({ active }) => {
   const [messages, setMessages] = useState([]);
   const timerRef = useRef(null);
@@ -331,19 +510,52 @@ const VariantB = ({ active }) => {
   }, [active]);
 
   return (
-    <div style={{ position: "absolute", inset: 0, zIndex: 10, opacity: active ? 1 : 0, transition: "opacity 400ms" }}>
-      <MeshGradient />
-      <StatusBar />
-      <div style={{ position: "absolute", top: 54, left: 0, right: 0, zIndex: 20, padding: "10px 16px", borderBottom: `1px solid ${N100}`, background: "rgba(249,249,249,0.85)", }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <img src="/logos-and-icons/favicon.svg" alt="MoreHarvest" style={{ display: "block", width: 36, height: 36, borderRadius: 18 }} />
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        opacity: active ? 1 : 0,
+        transition: "opacity 400ms",
+      }}
+    >
+      <DarkStatusBar />
+      <div
+        style={{
+          position: "absolute",
+          top: 56,
+          left: 0,
+          right: 0,
+          zIndex: 20,
+          padding: "12px 20px",
+          borderBottom: `1px solid ${CARD_BORDER}`,
+          background: CARD_BG,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <img
+            src="/logos-and-icons/favicon.svg"
+            alt="MoreHarvest"
+            style={{ display: "block", width: 40, height: 40, borderRadius: 20 }}
+          />
           <div>
-            <div style={{ fontFamily: "'REM', sans-serif", fontWeight: 600, fontSize: 15, color: N950, lineHeight: 1.2 }}>MoreHarvest</div>
-            <div style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: N600 }}>Property secretary</div>
+            <div style={{ fontFamily: FONT_HEADING, fontWeight: 600, fontSize: 17, color: CARD_TEXT_PRIMARY, lineHeight: 1.2 }}>MoreHarvest</div>
+            <div style={{ fontFamily: FONT_BODY, fontSize: 13, color: CARD_TEXT_MUTED }}>Property secretary</div>
           </div>
         </div>
       </div>
-      <div style={{ position: "absolute", top: 115, left: 12, right: 12, bottom: 16, zIndex: 10, overflow: "hidden", display: "flex", flexDirection: "column", gap: 7 }}>
+      <div
+        style={{
+          position: "absolute",
+          top: 132,
+          left: 16,
+          right: 16,
+          bottom: 20,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+        }}
+      >
         {messages.map((m, i) => (
           <div key={i}>
             {m.type === "date" ? (
@@ -368,7 +580,7 @@ const VARIANT_MAP = {
   B: VariantB,
 };
 
-export default function Step14ProductSoftware({ variant } = {}) {
+export default function Step14ProductSoftware({ variant = "A", orientation = "landscape" } = {}) {
   const resolved = variants.find(v => v.id === variant) ? variant : "A";
   const [screen, setScreen] = useState("intro");
 
@@ -377,9 +589,17 @@ export default function Step14ProductSoftware({ variant } = {}) {
   }, [resolved]);
 
   const Variant = VARIANT_MAP[resolved];
+  const isLandscape = orientation === "landscape";
 
   return (
-    <div data-proto="step-14" style={{ minHeight: "100vh", background: "#EDEEF1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px 16px", fontFamily: "'Noto Sans JP', sans-serif" }}>
+    <div
+      data-proto="step-14"
+      style={{
+        position: "absolute",
+        inset: 0,
+        background: BG,
+      }}
+    >
       <style>{`
         @media (prefers-reduced-motion: reduce) {
           [data-proto="step-14"] *,
@@ -395,11 +615,81 @@ export default function Step14ProductSoftware({ variant } = {}) {
         .step-14-cta { transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1); }
         .step-14-cta:active { transform: scale(0.97); }
       `}</style>
-      <link href="https://fonts.googleapis.com/css2?family=REM:wght@600&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-      <IPhoneFrame>
-        {screen === "intro" && <IntroScreen onContinue={() => setScreen("demo")} />}
-        {screen === "demo" && Variant && <Variant active={screen === "demo"} />}
-      </IPhoneFrame>
+
+      <div
+        style={{
+          position: "absolute",
+          top: "calc(96px + var(--safe-top))",
+          bottom: "calc(64px + var(--safe-bottom))",
+          left: "var(--content-margin)",
+          right: "var(--content-margin)",
+          display: "flex",
+          flexDirection: isLandscape ? "row" : "column",
+          alignItems: isLandscape ? "center" : "flex-start",
+          justifyContent: isLandscape ? "space-between" : "flex-start",
+          gap: isLandscape ? 64 : 40,
+        }}
+      >
+        {/* Left/top column: editorial intro + CTA (always visible) */}
+        <div
+          style={{
+            flex: isLandscape ? "1 1 0" : "0 0 auto",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            maxWidth: isLandscape ? 600 : 880,
+            width: "100%",
+          }}
+        >
+          <IntroColumn
+            onContinue={() => setScreen("demo")}
+            orientation={orientation}
+          />
+        </div>
+
+        {/* Right/bottom column: dark device-screen card */}
+        <div
+          style={{
+            flex: isLandscape ? "0 0 auto" : "1 1 0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            alignSelf: isLandscape ? "center" : "center",
+            width: isLandscape ? "auto" : "100%",
+          }}
+        >
+          <DeviceScreenCard orientation={orientation}>
+            {screen === "demo" && Variant && (
+              <Variant active={screen === "demo"} />
+            )}
+            {screen === "intro" && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 32,
+                }}
+              >
+                <DarkStatusBar />
+                <div
+                  style={{
+                    fontFamily: FONT_BODY,
+                    fontSize: 15,
+                    color: CARD_TEXT_MUTED,
+                    textAlign: "center",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  Tap &ldquo;See it in action&rdquo; to begin
+                </div>
+              </div>
+            )}
+          </DeviceScreenCard>
+        </div>
+      </div>
     </div>
   );
 }

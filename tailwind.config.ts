@@ -7,6 +7,15 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    // iPad-first breakpoints. `md` is the start of small iPad
+    // portrait, `lg` is the iPad Pro 13 portrait primary canvas,
+    // and `xl` is iPad Pro 13 landscape — the deck's primary
+    // orientation. Mirrors the table in CLAUDE.md Responsive.
+    screens: {
+      md: "768px",
+      lg: "1024px",
+      xl: "1366px",
+    },
     extend: {
       colors: {
         base: {
@@ -69,6 +78,8 @@ const config: Config = {
         spring: "cubic-bezier(0.34, 1.56, 0.64, 1)",
         smooth: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         sharp: "cubic-bezier(0.4, 0, 0.2, 1)",
+        arrive: "cubic-bezier(0.0, 0.0, 0.2, 1)",
+        depart: "cubic-bezier(0.4, 0, 1, 1)",
       },
     },
   },

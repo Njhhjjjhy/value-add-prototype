@@ -1,8 +1,10 @@
 # value-add-prototype
 
-A full-viewport, tap-driven investment pitch experience for MoreHarvest. 20 steps. iPhone 17 Pro is the primary device. Apple HIG is the interaction standard. The visual language is flat and neutral: a single base background (`#F9F9F9`), solid panels with thin borders and subtle shadows for hierarchy, and a restrained neutral type scale. No blurs. No frosted glass. No mesh-gradient surface tints. Amber is the only saturated color and appears only at the accent points defined below.
+A full-viewport, tap-driven investment pitch experience for MoreHarvest. 20 steps. **iPad Pro 13 M4 is the primary device.** Apple HIG (iPadOS) is the interaction standard. The visual language is flat and neutral: a single base background (`#F9F9F9`), solid panels with thin borders and subtle shadows for hierarchy, and a restrained neutral type scale. No blurs. No frosted glass. No mesh-gradient surface tints. Amber is the only saturated color and appears only at the accent points defined below.
 
-This is not a scrollable website. This is not a slide deck. This is not a marketing page. Every section occupies the entire viewport. Navigation is taps, swipes, and CTAs. There is no scroll anywhere in the experience.
+This is a **presentation tool**. The CEO holds the iPad and taps/swipes through the deck while pitching to investors in person. The CEO is the only operator — investors watch, they do not interact with the device. A keyboard may be attached but is not used for navigation during the pitch. Hover and pointer behaviors are therefore low priority (essentially irrelevant); the experience must look premium and respond instantly under tap and swipe.
+
+This is not a scrollable website. This is not a slide deck. This is not a marketing page. Every section occupies the entire viewport. Navigation is taps, swipes, and CTAs. **No scroll by default.** Scroll appears only in specific steps where it is explicitly directed for that step, never as the global navigation model.
 
 This file is the highest authority. If `docs/architecture.md` or `docs/visual-identity.md` contradict this file, this file wins.
 
@@ -12,7 +14,7 @@ This file is the highest authority. If `docs/architecture.md` or `docs/visual-id
 
 ## Repo
 
-`/Users/riaan/Documents/Design Files/Code Projects/gktk`
+`/Users/riaan/Documents/Design Files/Code Projects/value-add-prototype`
 
 ---
 
@@ -40,9 +42,9 @@ Read the relevant doc before working on any section. Do not load all of them at 
 
 ---
 
-## The 20 steps
+## The 22 steps
 
-Steps alternate strictly: transition, content, transition, content. No exceptions.
+Steps 1–20 alternate strictly transition → content. Steps 21 and 22 are a post-pitch handoff pair appended after the 10-section deck — they preserve the transition → content order but sit outside the alternating pitch flow. Step 22 is the terminal step: there is no step 23 transition because the deck ends with the PDF download action.
 
 ```
  1  step-1-opening-transition         transition
@@ -65,11 +67,13 @@ Steps alternate strictly: transition, content, transition, content. No exception
 18  step-18-section-9-risk-factors    content
 19  step-19-section-10-transition     transition
 20  step-20-section-10-exit-strategy  content
+21  step-21-pdf-transition            transition  (handoff)
+22  step-22-download-pdf              content     (terminal — opens /pdf in same tab)
 ```
 
-Naming: these canonical names are used for folders, files, and routes. PascalCase for components: `step-1-opening-transition` becomes `Step1OpeningTransition`.
+Naming: these canonical names are used for folders, routes, and the component identifier inside the file. PascalCase for the component: `step-1-opening-transition` becomes `Step1OpeningTransition`. The file itself is always `index.tsx`.
 
-Folder: `src/components/steps/step-1-opening-transition/Step1OpeningTransition.tsx`
+Folder: `src/components/steps/step-1-opening-transition/index.tsx`
 
 Adjacent steps are one experience. A transition step and its following content step are designed as a connected pair. Never build a content step without understanding the transition that precedes it.
 
@@ -81,7 +85,7 @@ Read `docs/prototype-workflow.md` for the full 9-step process. Summary:
 
 1. Product owner uploads an approved prototype (`.html` or `.jsx`) into the chat.
 2. Read the entire file before writing any code.
-3. Strip the iPhone device frame. Your output is a full-viewport component.
+3. Strip the device frame (iPhone or iPad) drawn by the prototype. Your output is a full-viewport component that fills the iPad Pro 13 canvas (1366×1024 landscape primary, 1024×1366 portrait secondary).
 4. Extract every value: hex codes, rgba, spacings, font sizes, radii, durations, easing curves, gradients, shadows, blurs, opacities, z-order, positions. Use these exact values. Do not round. Do not approximate. Do not substitute.
 5. Translate CSS keyframe animations to GSAP timelines or Framer Motion.
 6. Translate prototype CDN font loading to `next/font/google`.
@@ -105,7 +109,7 @@ Transition steps call `onComplete` after their animation completes. Content step
 
 ### Orchestrator
 
-Central component in `src/components/Orchestrator.tsx`:
+Central component in `src/components/orchestrator/index.tsx` (with sibling files `DevQaChrome.tsx`, `StepNav.tsx`, `useStepNavigation.ts` in the same folder):
 
 - Tracks current step index (0-19).
 - Renders only the active step. Optionally preloads next step offscreen.
@@ -165,6 +169,8 @@ Howler.js           audio (do not install until explicitly told)
 
 The full specification is in `docs/visual-identity.md`. Key values are inline here so you do not need to open that file for everyday work.
 
+> **Design system lock.** The color tokens (every row in the Colors table below) are **locked** — do not introduce new colors or retune existing ones. The type scale (every row in the Type scale table below) is also locked except for its **minimum floors**, which were raised to match iPadOS HIG at 3 ft viewing distance: body floor 17px, body-sm 15px, caption/label floor 13px. Heading sizes, the display ramp, and `data-hero` stay as authored. iPad-first work is otherwise **structural only** — margins, safe areas, breakpoints, content layout, orientation handling. Do not change a heading size to "make it look better on iPad", do not invent new tokens. If a number genuinely needs to change beyond the HIG floors above, stop and ask first.
+
 ### Background
 
 `#F9F9F9` always. No dark backgrounds. No reversed panels. No full-bleed dark sections. Light mode only.
@@ -180,7 +186,7 @@ Flat design. Every surface — base, panels, cards — uses `#F9F9F9` as its fil
 | 2 (elevated) | `#F9F9F9` | `1px solid rgba(0,0,0,0.08)` | `0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)` |
 | 3 (modal) | `#F9F9F9` | `1px solid rgba(0,0,0,0.10)` | `0 20px 60px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.08)` |
 
-**Banned everywhere:** `backdrop-filter`, `-webkit-backdrop-filter`, `backdropFilter`, `WebkitBackdropFilter`, noise-grain SVG overlays on surfaces, specular top-edge gradients, inner-top-glow radial gradients, `rgba(255,255,255,0.XX)` panel fills, `#FEFEFE` panel fills. The only exception is the dark phone shell itself (`#1A1A1E`), which is the physical device frame.
+**Banned everywhere:** `backdrop-filter`, `-webkit-backdrop-filter`, `backdropFilter`, `WebkitBackdropFilter`, noise-grain SVG overlays on surfaces, specular top-edge gradients, inner-top-glow radial gradients, `rgba(255,255,255,0.XX)` panel fills, `#FEFEFE` panel fills. The only exception is the dark device shell itself (`#1A1A1E` / `#1C1C1E`), which is the physical iPad frame drawn by the playground viewer and historical iPhone-frame prototypes.
 
 ### Colors
 
@@ -214,11 +220,13 @@ Font loading: `next/font/google` in `src/app/layout.tsx`. Fallback chain: `syste
 | heading-2 | 32px | 1.15 | -0.02em |
 | heading-3 | 22px | 1.25 | -0.01em |
 | body-lg | 18px | 1.6 | 0 |
-| body | 16px | 1.65 | 0 |
-| body-sm | 14px | 1.6 | 0 |
+| body | 17px | 1.65 | 0 |
+| body-sm | 15px | 1.6 | 0 |
 | label | 13px | 1.4 | 0.01em |
-| caption | 12px | 1.45 | 0.015em |
+| caption | 13px | 1.45 | 0.015em |
 | data-hero | 56px | 1.0 | -0.02em |
+
+> **iPad HIG floors.** Per Apple's iPadOS guidance at the deck's ~3 ft viewing distance, **body text must never go below 17px** and **no text anywhere may go below 13px** (the practical iPad caption floor). The absolute HIG minimum is 11px but that is too small to read from the audience seat — treat 13px as the floor for production. If a design value falls below either floor, raise it to the floor; do not invent a new size below it.
 
 ### Border radius
 
@@ -253,10 +261,14 @@ Font loading: `next/font/google` in `src/app/layout.tsx`. Fallback chain: `syste
 | ease-spring | `cubic-bezier(0.34, 1.56, 0.64, 1)` | Panel entrances, button hover, card reveals |
 | ease-smooth | `cubic-bezier(0.25, 0.46, 0.45, 0.94)` | Camera moves, fades, cinematic transitions |
 | ease-sharp | `cubic-bezier(0.4, 0, 0.2, 1)` | State changes, data updates, tab switches |
+| ease-arrive | `cubic-bezier(0.0, 0.0, 0.2, 1)` | iPadOS native deceleration — full-screen step *arrival* (the incoming step settles into place) |
+| ease-depart | `cubic-bezier(0.4, 0, 1, 1)` | iPadOS native acceleration — full-screen step *departure* (the outgoing step clears quickly) |
 
-No other curves.
+No other curves. `ease-arrive` and `ease-depart` are reserved for step-to-step transitions on iPad; inside a step, prefer the existing three.
 
 ### Duration
+
+In-step micro-animations (panel reveals, chip toggles, counter ticks) use the short tokens. Full-screen step-to-step transitions use the longer iPad-tuned `screen-*` tokens, where the *departure* runs 10–20% faster than the *arrival* — the outgoing step needs to clear, the incoming step needs to feel settled.
 
 | Token | Value |
 |-------|-------|
@@ -266,6 +278,8 @@ No other curves.
 | medium | 350ms |
 | slow | 500ms |
 | cinematic | 800ms |
+| screen-arrive | 600ms (use with `ease-arrive`) |
+| screen-depart | 500ms (use with `ease-depart`) |
 
 ### Panel entrance (universal)
 
@@ -285,21 +299,48 @@ Staggered panels: 100ms delay between items.
 
 ## Responsive
 
-Mobile-first. The prototype IS the mobile layout (393 x 852).
+**iPad-first.** The primary canvas is iPad Pro 13 M4 in landscape: 1366×1024 CSS px. Portrait (1024×1366) must also work but is secondary. Phone widths render a graceful fallback; desktop widths render a larger version of the same iPad layout with more breathing room — never a redesigned wide layout.
 
 | Breakpoint | Target | Grid | Gutters | Margins |
 |------------|--------|------|---------|---------|
-| < 768px | iPhone 17 Pro | 4-col | 16px | 20px |
-| 768-1199px | iPad | 8-col | 20px | 40px |
-| >= 1200px | Desktop | 12-col | 24px | 80px |
+| < 768px | Phone (fallback) | 4-col | 16px | 20px |
+| 768–1023px | iPad portrait (smaller models, secondary) | 8-col | 20px | 32px |
+| 1024–1365px | **iPad Pro 13 portrait — primary canvas** | 8-col | 20px | 32–48px |
+| ≥ 1366px | **iPad Pro 13 landscape — primary canvas** | 12-col | 24px | 48–64px |
 
 Max content width: 1280px, centered.
 
-Adapting up means: more whitespace, panels breathe, type scales slightly. Content stays left-aligned. Design language unchanged. Do not add columns. Do not rearrange. Do not redesign.
+Adapting between iPad portrait and landscape means: more horizontal breathing room in landscape, slightly larger type, panels expand within the same column. Content stays left-aligned. Design language unchanged. Do not add columns. Do not rearrange. Do not redesign.
 
 Map and 3D canvases always fill full viewport width.
 
-**Safe areas:** production components must use `env(safe-area-inset-top)` and `env(safe-area-inset-bottom)` for content that approaches screen edges on iPhone. This requires `viewport-fit=cover` in the viewport meta tag (set in `src/app/layout.tsx`). The prototype's device frame handles this visually; the production component must handle it with CSS.
+### Orientation
+
+The deck supports both landscape and portrait. **Landscape is the primary orientation** — the CEO presents with the iPad held horizontally so investors sitting opposite see a wider, more cinematic frame. Portrait is supported because the CEO may rotate the device naturally during a pitch. Every step must look correct in both. Use CSS orientation media queries (`@media (orientation: landscape)`) and the `--content-margin` custom property in `globals.css` instead of width breakpoints when the rule is genuinely about orientation.
+
+### Safe areas
+
+The status bar on iPad Pro 13 is 24pt; the bottom inset is ~20pt; left and right insets are 0 in both orientations. Production components must read the safe-area custom properties exposed in `globals.css`:
+
+- `var(--safe-top)` — `max(env(safe-area-inset-top), 24px)`
+- `var(--safe-bottom)` — `max(env(safe-area-inset-bottom), 20px)`
+- `var(--safe-left)` / `var(--safe-right)` — `env(safe-area-inset-...)` (usually 0)
+
+Use these tokens, not hardcoded pixel values. They already include a sensible fallback when `env()` returns 0 (desktop browser, playground iframe). `viewport-fit=cover` is set in `src/app/layout.tsx`.
+
+### Content margins
+
+Use the `--content-margin` custom property in `globals.css`. It resolves to 32px in portrait and 48px in landscape via a CSS orientation media query. Steps that need more breathing room may layer additional padding on top; steps that need less may not go below 32px on iPad. **Never hardcode 20–24px content margins** — those were iPhone values and are too tight for iPad.
+
+### Top breathing room
+
+Hardcoded vertical offsets on top of `var(--safe-top)` must follow iPadOS HIG. Important context: the iPad safe-top is **24pt** vs the iPhone's ~59pt (Dynamic Island), so a value tuned for iPhone now sits **35pt closer to the screen edge** on iPad. HIG also says iPad content should feel **less dense** than iPhone — roughly 40–60% more whitespace per content block at 3 ft viewing distance.
+
+The working rule: hardcoded top offsets on iPad sit in the **88–110px range** for standard content padding, **160px+** for deliberately-anchored heroes, **200px+** for theatrical down-offset moments. Anything below 80px on top of `var(--safe-top)` is too tight — investors will read the text as crammed against the bezel. When promoting a prototype, add **~40px** to whatever the iPhone-era value was, then tune visually if needed.
+
+### Browser support
+
+The deck runs in Safari (the CEO's default) and Chrome (used for screen sharing during virtual pitches). In Chrome landscape, the visible chrome (URL bar + tab bar) eats ~56pt, leaving roughly 968pt of usable height — content cannot rely on the full 1024pt being visible. Always use `100dvh` / `100svh` (dynamic / small viewport) instead of `100vh` for full-height containers, so the visible area shrinks correctly when the browser chrome appears.
 
 ---
 
@@ -338,9 +379,10 @@ Never apply `text-transform: uppercase` or `text-transform: lowercase` to any el
 
 ## Interaction rules
 
-- No scroll. Every section is full-viewport. No scroll indicators, no smooth scroll libraries.
+- **No scroll by default.** Every section is full-viewport and navigates via tap/swipe/CTA. Scrolling within a step is allowed only when explicitly directed for that specific step (e.g. a long financials table on step 16). Never introduce scroll as the global navigation model. Never add scroll indicators outside of a step that intentionally scrolls.
 - Never install or use ScrollTrigger or Lenis. These are permanently banned.
-- Minimum touch target is 44x44px (Apple HIG).
+- Minimum touch target is 44×44pt (Apple HIG iPadOS).
+- **Hover and pointer states are deprioritized.** The CEO drives the deck on a touch device; there is no mouse during a pitch. Do not design state machines around `:hover`. If a `:hover` style happens to apply (e.g. when previewed in desktop Chrome), it should mirror the active/tap state, not introduce a new visual mode. `cursor: pointer` is technically wrong for iPadOS and adds noise on desktop preview — avoid setting it on tappable elements unless a prototype explicitly requires it.
 
 ---
 
@@ -385,39 +427,59 @@ Do not commit until told. Do not squash. Do not force push.
 src/
   app/
     page.tsx                          -- mounts Orchestrator
-    layout.tsx                        -- font loading, viewport meta, global styles
-    globals.css                       -- CSS custom properties, design tokens
+    layout.tsx                        -- viewport meta, PWA meta, root layout
+    globals.css                       -- design tokens (colors, type, easing, iPad safe areas, content margins)
+    pdf/                              -- PDF render route
+    playground/
+      3d/                             -- 3D playground page
+      prototypes/                     -- playground prototype viewer
+        page.tsx                      -- main page (left rail + iframe + landscape/portrait toggle)
+        preview/[step]/[file]/page.tsx -- sandboxed single-prototype route (renders HtmlIpadFrame for .html)
   components/
-    Orchestrator.tsx                  -- step state machine
+    orchestrator/
+      index.tsx                       -- step state machine
+      DevQaChrome.tsx                 -- dev-only chrome
+      StepNav.tsx                     -- dev nav bar
+      useStepNavigation.ts            -- step-state hook
     shared/
-      NoiseGrain.tsx                  -- SVG noise texture component
-      GlassSurface.tsx               -- reusable Level 1/2 material
-      AmberAccent.tsx                 -- gradient line with glow
+      BackButton.tsx
+      NextButton.tsx
+      MapHost.tsx                     -- persistent map iframe for steps 5-7
+      MapStep.tsx
+      PropertyMapHost.tsx             -- persistent property-map iframe for steps 11-13
+    pdf/                              -- PDF page components (InvestmentMemo, brand, page-styles, etc.)
     steps/
-      step-1-opening-transition/
-        Step1OpeningTransition.tsx
-        index.ts
-      step-2-section-1-entry/
-        Step2Section1Entry.tsx
-        index.ts
-      ...
-  lib/
-    easings.ts                       -- named easing curves
-    durations.ts                     -- named duration constants
-    fonts.ts                         -- next/font configuration
+      step-1-opening-transition/index.tsx
+      step-2-section-1-entry/index.tsx
+      ... (one folder per step, each with a single index.tsx)
+  data/                               -- typed step content (financials.ts, painPoints.ts, riskPanels.ts, ...)
+  playground/
+    manifest.ts                       -- single source of truth: every step's status + prototype registrations
+    prototypes/<step-folder>/<filename>.jsx -- JSX prototypes (each carries its own device frame)
+    persona-2d-images/                -- persona reference imagery
+  types/
+    steps.ts                          -- shared step-prop types
+
 public/
-  fonts/                             -- fallback font files (if Google Fonts fails)
-  images/                            -- per-step subdirectories
-    step-8/
-    step-12/
-docs/                                -- read-only reference (never modify)
+  fonts/                              -- fallback font files (if Google Fonts fails)
+  logos-and-icons/                    -- favicon, logo marks
+  playground/prototypes/<step-folder>/<filename>.html -- HTML prototypes (wrapped by HtmlIpadFrame at preview time)
+
+docs/                                 -- read-only reference (never modify)
   architecture.md
   visual-identity.md
+  surface-spec.md
   prototype-workflow.md
   showcase-prompt.md
-reference/                           -- read-only content contract (never modify)
+  gktk-foundation-brief.md
+  value-add-prototype-flow-feedback.md -- passive reference: stakeholder's proposed 13-section flow + per-section copy
+  agents/                             -- agent skill docs (issue-tracker, triage-labels, domain)
+  ipad-research/                      -- iPad-first research dump (HIG + iPadOS platform spec, two parts each)
+
+reference/                            -- read-only content contract (never modify)
   content.md
-showcase/                            -- regenerated after every commit (never delete)
+
+showcase/                             -- regenerated after every commit (gitignored locally; never delete)
 ```
 
 ## File rules
@@ -444,11 +506,11 @@ The playground is a sealed-off testing room inside this repo where raw prototype
 1. **Isolation.** Real step components in `src/components/steps/` never import from `src/playground/`. The playground never imports from real step components.
 2. **Naming.** Step drawers always use the canonical step name (`step-1-opening-transition`, etc.). Prototype filenames are kept exactly as authored — never renamed.
 3. **Iterations coexist.** Multiple prototype files per drawer are allowed (v5, v6, v7, etc.). Never auto-delete an older prototype. Remove a prototype only when the user explicitly asks.
-4. **Frames.** Prototypes bring their own iPhone 17 Pro frame. The playground viewer adds no frame chrome — it just renders the prototype as-is inside an iframe.
+4. **Frames.** New prototypes are built with an iPad Pro 13 M4 frame at 1366×1024 (landscape) or 1024×1366 (portrait). Older prototypes that ship their own iPhone 17 Pro frame remain in the drawer as historical reference — they render iPhone-sized inside the larger iPad viewport, which makes their origin obvious. The playground viewer wraps `.html` prototypes in an `HtmlIpadFrame` and exposes a landscape/portrait toggle. `.jsx` prototypes draw their own frame; the viewer adds no chrome around them.
 5. **Variant chips.** Each prototype file carries its own internal variant selector. The playground's chips only switch between prototype *files*, never between variants inside a file.
 6. **Status.** Every step has one status: `locked`, `blocked`, `blocked-3d`, `available`, or `in-test`. Updated in `manifest.ts` when the user reports a change.
-7. **Promotion.** When the user says "promote step N", read the playground prototype, follow `docs/prototype-workflow.md` (strip the phone frame, translate animations to GSAP/Framer Motion, adapt per the Responsive breakpoints table using iOS + visionOS HIG via the `@apple` skill), write into `src/components/steps/step-N-…/`. **The playground file is never touched or deleted during promotion** — it stays as reference.
-8. **Visual language of the playground chrome itself** follows iOS + visionOS HIG (frosted glass, noise grain, left-aligned text, amber accents only).
+7. **Promotion.** When the user says "promote step N", read the playground prototype, follow `docs/prototype-workflow.md` (strip the device frame, translate animations to GSAP/Framer Motion, adapt per the iPad-first Responsive breakpoints table above using iPadOS HIG), write into `src/components/steps/step-N-…/`. **The playground file is never touched or deleted during promotion** — it stays as reference.
+8. **Visual language of the playground chrome itself** follows iPadOS HIG: flat surfaces on `#F9F9F9`, thin borders, subtle shadows, left-aligned text, amber accents only. No frosted glass on the chrome (that contradicts the visual identity above).
 
 ---
 
@@ -514,7 +576,9 @@ For each step:
 
 ### Users
 
-Prospective investors evaluating a real estate opportunity in Kumamoto, Japan. They are high-net-worth individuals or institutional decision-makers. They are busy, skeptical, and financially literate. They are viewing this on a personal device (iPhone 17 Pro primary) in a private setting, likely after an introduction from MoreHarvest. The job to be done: decide whether this investment merits a deeper conversation.
+**The operator** is the MoreHarvest CEO. He drives the deck on an iPad Pro 13 M4, primarily in landscape, during in-person pitch meetings. He taps, swipes, and uses CTAs to advance. He knows the content cold; the deck supports his narrative, it does not replace it.
+
+**The audience** is Singapore family offices and Taiwan capital (MediaTek-style investors). They are busy, skeptical, and financially literate. They watch the iPad over the CEO's shoulder or across a table — they do not touch it. The deck must read clearly from a viewing distance of roughly 0.5–1.5 meters and survive being held at an angle. The job to be done: convince the room that this opportunity merits a deeper conversation.
 
 ### Brand personality
 

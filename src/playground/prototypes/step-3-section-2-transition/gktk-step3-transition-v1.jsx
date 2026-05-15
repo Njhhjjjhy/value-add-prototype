@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
 /* ───────────────────────────────────────────────────────
-   Step 3 — Section 2 transition (playground draft v1)
+   Step 3 — Section 2 transition (iPad Pro 13 M4)
    Bridges the entry (step 2) to the bridge (step 4).
    Starts on a simplified entry frame (headline + subheading),
    runs one of four transition animations, lands on the
@@ -9,10 +9,22 @@ import { useState, useEffect, useRef, useCallback } from "react";
    Variants: sweep · scatter · dissolve · drop
    ─────────────────────────────────────────────────────── */
 
-const N = { 950: "#25272C", 900: "#383A42", 800: "#40444C", 600: "#5B616E", 200: "#D8DBDF", 100: "#EDEEF1", dis: "#8E8F8F" };
+const C = {
+  heading: "#25272C",
+  sub: "#383A42",
+  body: "#40444C",
+  caption: "#5B616E",
+  disabled: "#8E8F8F",
+  amber: "#FBB931",
+  bg: "#F9F9F9",
+  band: "#EDEEF1",
+};
+
+const FONT_HEADING = '"REM", system-ui, sans-serif';
+const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
 /* ── logo ── */
-function Logo({ id = "l3", size = 48 }) {
+function Logo({ id = "l3", size = 96 }) {
   const h = size * (24 / 56);
   return (
     <svg width={size} height={h} viewBox="0 0 56 24" fill="none">
@@ -26,21 +38,52 @@ function Logo({ id = "l3", size = 48 }) {
   );
 }
 
-/* ── flat bg (was MeshBG; radial gradients removed per flat-design mandate) ── */
-function MeshBG() {
-  return (
-    <div style={{ position: "absolute", inset: 0, zIndex: 0, background: "#F9F9F9" }} />
-  );
-}
-
 /* ── entry snapshot (simplified step-2 final state) ── */
 function EntrySnapshot() {
   return (
-    <div style={{ position: "absolute", inset: 0, padding: "0 24px" }}>
-      <div style={{ position: "absolute", top: 60, left: 24 }}><Logo /></div>
-      <div style={{ position: "absolute", bottom: 120, left: 24, right: 24 }}>
-        <h1 style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 36, lineHeight: 1.1, letterSpacing: "-0.025em", color: N[950], margin: "0 0 8px 0" }}>Why Kumamoto,<br />Why Now?</h1>
-        <p style={{ fontFamily: "var(--font-body)", fontSize: 15, color: N[900], margin: 0 }}>{"Japan's fastest-rising property market"}</p>
+    <div style={{ position: "absolute", inset: 0 }}>
+      <div
+        style={{
+          position: "absolute",
+          top: "calc(96px + var(--safe-top))",
+          left: "var(--content-margin)",
+        }}
+      >
+        <Logo />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "calc(200px + var(--safe-bottom))",
+          left: "var(--content-margin)",
+          right: "var(--content-margin)",
+          maxWidth: 1120,
+        }}
+      >
+        <h1
+          style={{
+            fontFamily: FONT_HEADING,
+            fontWeight: 600,
+            fontSize: 96,
+            lineHeight: 1.05,
+            letterSpacing: "-0.03em",
+            color: C.heading,
+            margin: "0 0 24px 0",
+          }}
+        >
+          Why Kumamoto,<br />Why Now?
+        </h1>
+        <p
+          style={{
+            fontFamily: FONT_BODY,
+            fontSize: 22,
+            lineHeight: 1.4,
+            color: C.sub,
+            margin: 0,
+          }}
+        >
+          {"Japan's fastest-rising property market"}
+        </p>
       </div>
     </div>
   );
@@ -49,27 +92,77 @@ function EntrySnapshot() {
 /* ── bridge snapshot (simplified step-4 opening fact) ── */
 function BridgeSnapshot({ visible }) {
   return (
-    <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 24px" }}>
-      <div style={{
-        position: "relative", padding: 24, borderRadius: 20, overflow: "hidden",
-        background:"#F9F9F9",
-        border: "1px solid rgba(0,0,0,0.06)",
-        boxShadow: "0 16px 48px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(8px)",
-        transition: "opacity 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 120ms, transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 120ms",
-      }}>
-        <div style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: "4.5rem", lineHeight: 1.05, letterSpacing: "-0.03em", color: N[950] }}>10</div>
-        <p style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", color: N[600], margin: "8px 0 0", lineHeight: 1.6 }}>trillion yen. Japan is rebuilding its chip industry.</p>
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "0 var(--content-margin)",
+      }}
+    >
+      <div
+        style={{
+          position: "relative",
+          padding: 48,
+          borderRadius: 28,
+          overflow: "hidden",
+          background: C.bg,
+          border: "1px solid rgba(0,0,0,0.06)",
+          boxShadow:
+            "0 16px 48px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
+          maxWidth: 880,
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(8px)",
+          transition:
+            "opacity 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 120ms, transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 120ms",
+        }}
+      >
+        <div
+          style={{
+            fontFamily: FONT_HEADING,
+            fontWeight: 600,
+            fontSize: 192,
+            lineHeight: 1.0,
+            letterSpacing: "-0.03em",
+            color: C.heading,
+          }}
+        >
+          10
+        </div>
+        <p
+          style={{
+            fontFamily: FONT_BODY,
+            fontSize: 22,
+            color: C.caption,
+            margin: "16px 0 0",
+            lineHeight: 1.5,
+          }}
+        >
+          trillion yen. Japan is rebuilding its chip industry.
+        </p>
       </div>
-      <p style={{ fontFamily: "var(--font-body)", fontSize: 12, color: N.dis, marginTop: 24, opacity: visible ? 1 : 0, transition: "opacity 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 700ms" }}>Tap to replay</p>
+      <p
+        style={{
+          fontFamily: FONT_BODY,
+          fontSize: 15,
+          color: C.disabled,
+          marginTop: 36,
+          opacity: visible ? 1 : 0,
+          transition:
+            "opacity 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 700ms",
+        }}
+      >
+        Tap to replay
+      </p>
     </div>
   );
 }
 
-/* ── scatter particles (from step-2) ── */
+/* ── scatter particles (iPad-scaled distances) ── */
 function ScatterDots() {
-  const dots = Array.from({ length: 12 }, (_, i) => ({
+  const dots = Array.from({ length: 18 }, (_, i) => ({
     o: (0.3 + Math.random() * 0.4).toFixed(2),
     l: `${(30 + Math.random() * 40).toFixed(1)}%`,
     t: `${(30 + Math.random() * 40).toFixed(1)}%`,
@@ -78,7 +171,19 @@ function ScatterDots() {
   return (
     <>
       {dots.map((d, i) => (
-        <div key={i} style={{ position: "absolute", width: 6, height: 6, borderRadius: "50%", background: `rgba(251,185,49,${d.o})`, left: d.l, top: d.t, animation: d.a }} />
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            width: 12,
+            height: 12,
+            borderRadius: "50%",
+            background: `rgba(251,185,49,${d.o})`,
+            left: d.l,
+            top: d.t,
+            animation: d.a,
+          }}
+        />
       ))}
     </>
   );
@@ -86,16 +191,18 @@ function ScatterDots() {
 
 /* ── transition specs ── */
 const TRANSITIONS = {
-  sweep:    { key: "sweep",    dur: 700, band: true },
-  scatter:  { key: "scatter",  dur: 800, band: false, particles: true },
+  sweep: { key: "sweep", dur: 700, band: true },
+  scatter: { key: "scatter", dur: 800, band: false, particles: true },
   dissolve: { key: "dissolve", dur: 900, band: false },
-  drop:     { key: "drop",     dur: 600, band: false },
+  drop: { key: "drop", dur: 600, band: false },
 };
 
-const TRANS_BY_VARIANT = { "1": "sweep", "2": "scatter", "3": "dissolve", "4": "drop" };
+const TRANS_BY_VARIANT = { 1: "sweep", 2: "scatter", 3: "dissolve", 4: "drop" };
 
 /* ── main ── */
-export default function Step3TransitionV1({ variant } = {}) {
+export default function Step3TransitionV1({
+  variant
+} = {}) {
   const key = TRANS_BY_VARIANT[variant] ?? "sweep";
   const spec = TRANSITIONS[key];
 
@@ -107,7 +214,7 @@ export default function Step3TransitionV1({ variant } = {}) {
     clearTimeout(timer.current);
     setPhase("entry");
     timer.current = setTimeout(() => {
-      if (spec.particles) setScatterNonce(n => n + 1);
+      if (spec.particles) setScatterNonce((n) => n + 1);
       setPhase("exiting");
       timer.current = setTimeout(() => setPhase("bridge"), spec.dur);
     }, 900);
@@ -123,7 +230,14 @@ export default function Step3TransitionV1({ variant } = {}) {
   };
 
   return (
-    <div data-proto="step-3" style={{ minHeight: "100vh", background: N[100], display: "flex", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: "var(--font-body)" }}>
+    <div
+      data-proto="step-3"
+      style={{
+        position: "absolute",
+        inset: 0,
+        background: C.bg,
+      }}
+    >
       <style>{`
         @media (prefers-reduced-motion: reduce) {
           [data-proto="step-3"] *,
@@ -142,62 +256,83 @@ export default function Step3TransitionV1({ variant } = {}) {
         @keyframes sweepBand   { 0% { clip-path: inset(0 100% 0 0); } 45% { clip-path: inset(0 0 0 0); } 55% { clip-path: inset(0 0 0 0); } 100% { clip-path: inset(0 0 0 100%); } }
         @keyframes scatterOut  { 0% { transform: scale(1); opacity: 1; } 60% { transform: scale(0.94); opacity: 0.6; } 100% { transform: scale(0.85); opacity: 0; } }
         @keyframes dissolveOut { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.98); } 100% { opacity: 0; transform: scale(0.96); } }
-        @keyframes dropOut     { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(60px); opacity: 0; } }
+        @keyframes dropOut     { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(120px); opacity: 0; } }
 
-        @keyframes particle0 { to { transform: translate(-80px,-120px) scale(0); opacity: 0; } }
-        @keyframes particle1 { to { transform: translate(100px,-90px) scale(0); opacity: 0; } }
-        @keyframes particle2 { to { transform: translate(-60px,110px) scale(0); opacity: 0; } }
-        @keyframes particle3 { to { transform: translate(90px,80px) scale(0); opacity: 0; } }
+        @keyframes particle0 { to { transform: translate(-220px,-300px) scale(0); opacity: 0; } }
+        @keyframes particle1 { to { transform: translate(280px,-240px) scale(0); opacity: 0; } }
+        @keyframes particle2 { to { transform: translate(-180px,280px) scale(0); opacity: 0; } }
+        @keyframes particle3 { to { transform: translate(240px,220px) scale(0); opacity: 0; } }
       `}</style>
 
-      {/* iPhone frame (standard playground) */}
-      <div style={{ position: "relative", width: 393, height: 852, borderRadius: 55, overflow: "hidden", background: "#1A1A1E", boxShadow: "0 0 0 1px rgba(255,255,255,0.08) inset" }}>
-        <div style={{ position: "absolute", inset: 0, borderRadius: 55, border: "2.5px solid transparent",
-          background: "linear-gradient(135deg,rgba(255,255,255,0.2) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.15) 100%) border-box",
-          WebkitMask: "linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0)", WebkitMaskComposite: "xor", maskComposite: "exclude",
-          zIndex: 50, pointerEvents: "none" }} />
-
-        {/* screen */}
+      {/* Tap surface fills the iPad screen */}
+      <div
+        onClick={onTap}
+        role="button"
+        tabIndex={0}
+        aria-label="Tap to continue"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onTap(e);
+          }
+        }}
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: C.bg,
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          touchAction: "manipulation",
+        }}
+      >
+        {/* entry layer — exits with the selected animation */}
         <div
-          onClick={onTap}
-          role="button"
-          tabIndex={0}
-          aria-label="Tap to continue"
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onTap(e); } }}
-          style={{ position: "absolute", top: 6, left: 6, right: 6, bottom: 6, borderRadius: 49, overflow: "hidden", background: "#F9F9F9", cursor: phase === "bridge" ? "pointer" : "default" }}
-        >
-          {/* dynamic island */}
-          <div style={{ position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)", width: 126, height: 37, borderRadius: 20, background: "#000", zIndex: 100 }} />
-
-          <MeshBG />
-
-          {/* entry layer — exits with the selected animation */}
-          <div style={{ position: "absolute", inset: 0, zIndex: 5,
-            animation: phase === "exiting" ? `${spec.key}Out ${spec.dur}ms ease-in-out forwards` : "none",
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 5,
+            animation:
+              phase === "exiting"
+                ? `${spec.key}Out ${spec.dur}ms ease-in-out forwards`
+                : "none",
             opacity: phase === "bridge" ? 0 : 1,
-          }}>
-            <EntrySnapshot />
+          }}
+        >
+          <EntrySnapshot />
+        </div>
+
+        {/* sweep band overlay */}
+        {phase === "exiting" && spec.band && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 6,
+              background: C.band,
+              animation: `sweepBand ${spec.dur}ms ease-in-out forwards`,
+            }}
+          />
+        )}
+
+        {/* scatter particles */}
+        {phase === "exiting" && spec.particles && (
+          <div
+            key={scatterNonce}
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 6,
+              pointerEvents: "none",
+              overflow: "hidden",
+            }}
+          >
+            <ScatterDots />
           </div>
+        )}
 
-          {/* sweep band overlay */}
-          {phase === "exiting" && spec.band && (
-            <div style={{ position: "absolute", inset: 0, zIndex: 6, background: "#EDEEF1", animation: `sweepBand ${spec.dur}ms ease-in-out forwards` }} />
-          )}
-
-          {/* scatter particles */}
-          {phase === "exiting" && spec.particles && (
-            <div key={scatterNonce} style={{ position: "absolute", inset: 0, zIndex: 6, pointerEvents: "none", overflow: "hidden" }}>
-              <ScatterDots />
-            </div>
-          )}
-
-          {/* bridge snapshot */}
-          <div style={{ position: "absolute", inset: 0, zIndex: 7 }}>
-            <BridgeSnapshot visible={phase === "bridge"} />
-          </div>
-
-          {/* home indicator */}
-          <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", width: 134, height: 5, borderRadius: 3, background: "rgba(0,0,0,0.2)", zIndex: 100 }} />
+        {/* bridge snapshot */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 7 }}>
+          <BridgeSnapshot visible={phase === "bridge"} />
         </div>
       </div>
     </div>

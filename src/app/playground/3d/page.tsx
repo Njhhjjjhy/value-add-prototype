@@ -302,6 +302,10 @@ function EmptyState() {
             minHeight: 260,
           }}
         >
+          {/* reason: raw <img> is intentional here. This is an internal playground
+              page that loads a local PNG for reference; next/image's full
+              optimization pipeline (width/height props, lazy load, blur
+              placeholder) is overkill for a dev-only tool. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={SOURCE_IMAGE}

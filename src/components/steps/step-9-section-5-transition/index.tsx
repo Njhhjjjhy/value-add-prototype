@@ -1,15 +1,22 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import NextButton from '@/components/shared/NextButton';
 
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
+  onBack?: () => void;
 }
 
-const N950 = '#25272C';
-const BG = '#F9F9F9';
+const C = {
+  heading: '#25272C',
+  disabled: '#8E8F8F',
+  amber: '#FBB931',
+  bg: '#F9F9F9',
+};
+
+const FONT_HEADING = '"REM", system-ui, sans-serif';
+const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
 const EXIT_DELAY_MS = 150;
 const EXIT_DURATION_MS = 350;
@@ -33,9 +40,10 @@ export default function Step9Section5Transition({ isActive, onComplete }: StepPr
 
   const advance = useCallback(() => {
     if (exiting) return;
+    if (beat < 3) return;
     if (exitTimer.current) clearTimeout(exitTimer.current);
     exitTimer.current = setTimeout(() => setExiting(true), EXIT_DELAY_MS);
-  }, [exiting]);
+  }, [exiting, beat]);
 
   useEffect(() => {
     if (!exiting) return;
@@ -49,10 +57,47 @@ export default function Step9Section5Transition({ isActive, onComplete }: StepPr
     };
   }, []);
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      advance();
+    }
+  };
+
   if (!isActive) return null;
 
   return (
-    <div className="relative w-full h-full" style={{ background: BG }}>
+    <div
+      data-step-9
+      role="button"
+      tabIndex={0}
+      aria-label="Tap to continue"
+      onClick={advance}
+      onKeyDown={handleKeyDown}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        background: C.bg,
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        touchAction: 'manipulation',
+        outline: 'none',
+      }}
+    >
+      <style>{`
+        @media (prefers-reduced-motion: reduce) {
+          [data-step-9] *,
+          [data-step-9] *::before,
+          [data-step-9] *::after {
+            animation-duration: 0.001ms !important;
+            animation-delay: 0ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.001ms !important;
+            transition-delay: 0ms !important;
+          }
+        }
+      `}</style>
+
       <div
         style={{
           position: 'absolute',
@@ -66,24 +111,26 @@ export default function Step9Section5Transition({ isActive, onComplete }: StepPr
         <div
           style={{
             position: 'absolute',
-            inset: 0,
+            top: 'calc(110px + var(--safe-top))',
+            bottom: 'calc(160px + var(--safe-bottom))',
+            left: 'var(--content-margin)',
+            right: 'var(--content-margin)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            padding: '0 32px',
           }}
         >
           <h1
             aria-live="polite"
             style={{
-              fontFamily: 'var(--font-heading)',
+              fontFamily: FONT_HEADING,
               fontWeight: 600,
-              fontSize: 32,
-              lineHeight: 1.15,
-              color: N950,
-              letterSpacing: '-0.02em',
+              fontSize: 72,
+              lineHeight: 1.05,
+              color: C.heading,
+              letterSpacing: '-0.03em',
               margin: 0,
-              maxWidth: 280,
+              maxWidth: 1080,
               opacity: beat >= 1 ? 1 : 0,
               transform: beat >= 1 ? 'translateY(0)' : 'translateY(24px)',
               transition:
@@ -94,7 +141,40 @@ export default function Step9Section5Transition({ isActive, onComplete }: StepPr
           </h1>
         </div>
 
-        <NextButton onClick={advance} visible={beat >= 3} />
+        <div
+          aria-live="polite"
+          style={{
+            position: 'absolute',
+            bottom: 'calc(72px + var(--safe-bottom))',
+            left: 'var(--content-margin)',
+            right: 'var(--content-margin)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            opacity: beat >= 3 ? 1 : 0,
+            transition: 'opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          }}
+        >
+          <div
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              background: C.amber,
+            }}
+          />
+          <span
+            style={{
+              fontFamily: FONT_BODY,
+              fontWeight: 500,
+              fontSize: 13,
+              letterSpacing: '0.015em',
+              color: C.disabled,
+            }}
+          >
+            Tap to continue
+          </span>
+        </div>
       </div>
     </div>
   );

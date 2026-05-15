@@ -13,6 +13,7 @@ import NextButton from '@/components/shared/NextButton';
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
+  onBack?: () => void;
 }
 
 const C = {
@@ -22,7 +23,6 @@ const C = {
   n800: '#40444C',
   n600: '#5B616E',
   n200: '#D8DBDF',
-  n100: '#EDEEF1',
 };
 
 const PANEL_LEVEL_1 = {
@@ -33,7 +33,7 @@ const PANEL_LEVEL_1 = {
 
 const PANEL_LEVEL_2 = {
   background: C.bg,
-  border: '1px solid rgba(0,0,0,0.06)',
+  border: '1px solid rgba(0,0,0,0.08)',
   boxShadow: '0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)',
 } as const;
 
@@ -133,6 +133,19 @@ const animate = (
   });
 };
 
+function useLandscape() {
+  const [landscape, setLandscape] = useState(true);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(orientation: landscape)');
+    const update = () => setLandscape(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+  return landscape;
+}
+
 function BeatShell({
   refEl,
   visible,
@@ -164,10 +177,10 @@ function BeatLabel({ children }: { children: ReactNode }) {
       style={{
         fontFamily: 'var(--font-body)',
         fontWeight: 500,
-        fontSize: 12,
+        fontSize: 15,
         color: C.n600,
-        letterSpacing: '0.01em',
-        marginBottom: 14,
+        letterSpacing: '0.04em',
+        marginBottom: 28,
       }}
     >
       {children}
@@ -175,7 +188,7 @@ function BeatLabel({ children }: { children: ReactNode }) {
   );
 }
 
-function Beat1Thesis() {
+function Beat1Thesis({ landscape }: { landscape: boolean }) {
   return (
     <div
       style={{
@@ -183,19 +196,32 @@ function Beat1Thesis() {
         inset: 0,
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'center',
         padding:
-          'calc(68px + env(safe-area-inset-top, 0px)) 24px calc(60px + env(safe-area-inset-bottom, 0px))',
+          'calc(120px + var(--safe-top)) var(--content-margin) calc(120px + var(--safe-bottom))',
       }}
     >
-      <BeatLabel>Kumamoto semiconductor corridor, 2024 to 2035</BeatLabel>
+      <div
+        style={{
+          fontFamily: 'var(--font-body)',
+          fontWeight: 500,
+          fontSize: 15,
+          color: C.n600,
+          letterSpacing: '0.04em',
+          marginBottom: 32,
+        }}
+      >
+        Kumamoto semiconductor corridor, 2024 to 2035
+      </div>
       <h2
         style={{
           fontFamily: 'var(--font-heading)',
           fontWeight: 600,
-          fontSize: 26,
-          lineHeight: 1.12,
+          fontSize: landscape ? 64 : 56,
+          lineHeight: 1.1,
           color: C.n950,
           letterSpacing: '-0.025em',
+          maxWidth: landscape ? 1100 : 880,
           margin: 0,
         }}
       >
@@ -207,24 +233,30 @@ function Beat1Thesis() {
 
 function Beat2Stats({
   tileRefs,
+  landscape,
 }: {
   tileRefs: React.MutableRefObject<Array<HTMLDivElement | null>>;
+  landscape: boolean;
 }) {
   return (
     <div
       style={{
         position: 'absolute',
         inset: 0,
+        display: 'flex',
+        flexDirection: 'column',
         padding:
-          'calc(68px + env(safe-area-inset-top, 0px)) 20px calc(60px + env(safe-area-inset-bottom, 0px))',
+          'calc(96px + var(--safe-top)) var(--content-margin) calc(96px + var(--safe-bottom))',
       }}
     >
       <BeatLabel>Key data points</BeatLabel>
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 10,
+          gridTemplateColumns: landscape ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)',
+          gap: landscape ? 24 : 20,
+          flex: 1,
+          alignContent: 'center',
         }}
       >
         {STATS.map((s, i) => (
@@ -236,7 +268,7 @@ function Beat2Stats({
             style={{
               ...PANEL_LEVEL_1,
               borderRadius: 20,
-              padding: '16px 14px',
+              padding: landscape ? '32px 28px' : '28px 24px',
               opacity: 0,
             }}
           >
@@ -244,7 +276,7 @@ function Beat2Stats({
               style={{
                 fontFamily: 'var(--font-heading)',
                 fontWeight: 600,
-                fontSize: 28,
+                fontSize: landscape ? 56 : 48,
                 lineHeight: 1,
                 color: C.n950,
                 fontVariantNumeric: 'tabular-nums',
@@ -256,10 +288,11 @@ function Beat2Stats({
             <div
               style={{
                 fontFamily: 'var(--font-body)',
-                fontSize: 12,
-                color: C.n800,
-                marginTop: 8,
+                fontSize: 17,
                 lineHeight: 1.4,
+                color: C.n800,
+                marginTop: 16,
+                fontWeight: 500,
               }}
             >
               {s.label}
@@ -267,10 +300,10 @@ function Beat2Stats({
             <div
               style={{
                 fontFamily: 'var(--font-body)',
-                fontSize: 12,
+                fontSize: 15,
+                lineHeight: 1.5,
                 color: C.n600,
-                marginTop: 2,
-                lineHeight: 1.4,
+                marginTop: 6,
               }}
             >
               {s.sub}
@@ -290,8 +323,10 @@ type TlRow = {
 
 function Beat3Timeline({
   rowRefs,
+  landscape,
 }: {
   rowRefs: React.MutableRefObject<TlRow[]>;
+  landscape: boolean;
 }) {
   return (
     <div
@@ -301,7 +336,7 @@ function Beat3Timeline({
         display: 'flex',
         flexDirection: 'column',
         padding:
-          'calc(68px + env(safe-area-inset-top, 0px)) 20px calc(60px + env(safe-area-inset-bottom, 0px))',
+          'calc(96px + var(--safe-top)) var(--content-margin) calc(96px + var(--safe-bottom))',
       }}
     >
       <BeatLabel>Strategic timing</BeatLabel>
@@ -309,66 +344,34 @@ function Beat3Timeline({
         style={{
           ...PANEL_LEVEL_1,
           borderRadius: 20,
-          padding: '20px 18px',
+          padding: landscape ? '48px 56px' : '40px 36px',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
         }}
       >
-        {TIMELINE.map((t, i) => {
-          const isLast = i === TIMELINE.length - 1;
-          const dotSize = i === 0 ? 14 : 10;
-          return (
-            <div key={t.y} style={{ display: 'flex', gap: 14 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  flexShrink: 0,
-                  width: 20,
-                }}
-              >
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {TIMELINE.map((t, i) => {
+            const isLast = i === TIMELINE.length - 1;
+            const dotSize = i === 0 ? 20 : 14;
+            return (
+              <div key={t.y} style={{ display: 'flex', gap: 28 }}>
                 <div
                   style={{
-                    position: 'relative',
-                    width: dotSize,
-                    height: dotSize,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
                     flexShrink: 0,
+                    width: 28,
                   }}
                 >
                   <div
-                    aria-hidden
                     style={{
-                      position: 'absolute',
-                      inset: 0,
-                      borderRadius: 9999,
-                      border: `2px solid ${C.n200}`,
-                      opacity: 0.35,
-                    }}
-                  />
-                  <div
-                    ref={(el) => {
-                      if (!rowRefs.current[i])
-                        rowRefs.current[i] = { dot: null, line: null, text: null };
-                      rowRefs.current[i].dot = el;
-                    }}
-                    aria-hidden
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      borderRadius: 9999,
-                      background: C.amber,
-                      transform: 'scale(0)',
-                    }}
-                  />
-                </div>
-                {!isLast && (
-                  <div
-                    style={{
-                      width: 2,
-                      flex: 1,
-                      marginTop: 4,
                       position: 'relative',
-                      borderRadius: 1,
-                      overflow: 'hidden',
+                      width: dotSize,
+                      height: dotSize,
+                      flexShrink: 0,
                     }}
                   >
                     <div
@@ -376,90 +379,132 @@ function Beat3Timeline({
                       style={{
                         position: 'absolute',
                         inset: 0,
-                        background: C.n200,
-                        opacity: 0.2,
+                        borderRadius: 9999,
+                        border: `2px solid ${C.n200}`,
+                        opacity: 0.4,
                       }}
                     />
                     <div
                       ref={(el) => {
                         if (!rowRefs.current[i])
-                          rowRefs.current[i] = {
-                            dot: null,
-                            line: null,
-                            text: null,
-                          };
-                        rowRefs.current[i].line = el;
+                          rowRefs.current[i] = { dot: null, line: null, text: null };
+                        rowRefs.current[i].dot = el;
                       }}
                       aria-hidden
                       style={{
                         position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
+                        inset: 0,
+                        borderRadius: 9999,
                         background: C.amber,
-                        transformOrigin: 'top',
-                        transform: 'scaleY(0)',
+                        transform: 'scale(0)',
                       }}
                     />
                   </div>
-                )}
+                  {!isLast && (
+                    <div
+                      style={{
+                        width: 2,
+                        flex: 1,
+                        minHeight: landscape ? 48 : 40,
+                        marginTop: 6,
+                        position: 'relative',
+                        borderRadius: 1,
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <div
+                        aria-hidden
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: C.n200,
+                          opacity: 0.25,
+                        }}
+                      />
+                      <div
+                        ref={(el) => {
+                          if (!rowRefs.current[i])
+                            rowRefs.current[i] = {
+                              dot: null,
+                              line: null,
+                              text: null,
+                            };
+                          rowRefs.current[i].line = el;
+                        }}
+                        aria-hidden
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          background: C.amber,
+                          transformOrigin: 'top',
+                          transform: 'scaleY(0)',
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+                <div
+                  ref={(el) => {
+                    if (!rowRefs.current[i])
+                      rowRefs.current[i] = { dot: null, line: null, text: null };
+                    rowRefs.current[i].text = el;
+                  }}
+                  style={{
+                    paddingBottom: isLast ? 0 : landscape ? 36 : 30,
+                    opacity: 0,
+                    flex: 1,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontWeight: 500,
+                      fontSize: 15,
+                      color: C.n600,
+                      letterSpacing: '0.02em',
+                    }}
+                  >
+                    {t.y}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      fontWeight: 600,
+                      fontSize: landscape ? 28 : 24,
+                      lineHeight: 1.2,
+                      color: C.n950,
+                      marginTop: 6,
+                      letterSpacing: '-0.015em',
+                    }}
+                  >
+                    {t.t}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: 17,
+                      lineHeight: 1.55,
+                      color: C.n800,
+                      marginTop: 8,
+                      maxWidth: landscape ? 760 : 620,
+                    }}
+                  >
+                    {t.d}
+                  </div>
+                </div>
               </div>
-              <div
-                ref={(el) => {
-                  if (!rowRefs.current[i])
-                    rowRefs.current[i] = { dot: null, line: null, text: null };
-                  rowRefs.current[i].text = el;
-                }}
-                style={{
-                  paddingBottom: isLast ? 0 : 20,
-                  opacity: 0,
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontWeight: 500,
-                    fontSize: 12,
-                    color: C.n600,
-                  }}
-                >
-                  {t.y}
-                </div>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontWeight: 600,
-                    fontSize: 16,
-                    lineHeight: 1.25,
-                    color: C.n950,
-                    marginTop: 3,
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  {t.t}
-                </div>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: 13,
-                    lineHeight: 1.55,
-                    color: C.n800,
-                    marginTop: 3,
-                  }}
-                >
-                  {t.d}
-                </div>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
 }
 
-function Beat4MohaIntel() {
+function Beat4MohaIntel({ landscape }: { landscape: boolean }) {
   return (
     <div
       style={{
@@ -469,25 +514,26 @@ function Beat4MohaIntel() {
         flexDirection: 'column',
         justifyContent: 'center',
         padding:
-          'calc(68px + env(safe-area-inset-top, 0px)) 20px calc(60px + env(safe-area-inset-bottom, 0px))',
+          'calc(120px + var(--safe-top)) var(--content-margin) calc(120px + var(--safe-bottom))',
       }}
     >
       <div
         style={{
           ...PANEL_LEVEL_2,
           borderRadius: 28,
-          padding: '28px 22px',
+          padding: landscape ? '64px 72px' : '52px 44px',
+          maxWidth: landscape ? 1080 : 880,
         }}
       >
         <div
           style={{
             fontFamily: 'var(--font-heading)',
             fontWeight: 600,
-            fontSize: 18,
-            lineHeight: 1.25,
+            fontSize: landscape ? 40 : 32,
+            lineHeight: 1.2,
             color: C.n950,
-            marginBottom: 10,
-            letterSpacing: '-0.01em',
+            marginBottom: 24,
+            letterSpacing: '-0.02em',
           }}
         >
           Moha Intel
@@ -495,9 +541,10 @@ function Beat4MohaIntel() {
         <p
           style={{
             fontFamily: 'var(--font-body)',
-            fontSize: 14,
-            lineHeight: 1.65,
+            fontSize: landscape ? 22 : 18,
+            lineHeight: 1.6,
             color: C.n800,
+            fontWeight: 400,
             margin: 0,
           }}
         >
@@ -511,120 +558,120 @@ function Beat4MohaIntel() {
 function Beat5Faq({
   openIdx,
   setOpenIdx,
+  landscape,
 }: {
   openIdx: number;
   setOpenIdx: (n: number) => void;
+  landscape: boolean;
 }) {
+  const columns = landscape ? 2 : 1;
   return (
     <div
-      className="step-18-faq-scroll"
       style={{
         position: 'absolute',
         inset: 0,
-        overflowY: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        overscrollBehavior: 'contain',
-        scrollbarWidth: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        padding:
+          'calc(88px + var(--safe-top)) var(--content-margin) calc(96px + var(--safe-bottom))',
       }}
     >
-      <style>{`.step-18-faq-scroll::-webkit-scrollbar{display:none;}`}</style>
+      <BeatLabel>Risk factors</BeatLabel>
       <div
         style={{
-          padding:
-            'calc(64px + env(safe-area-inset-top, 0px)) 20px calc(56px + 28px + env(safe-area-inset-bottom, 0px))',
-          display: 'flex',
-          flexDirection: 'column',
+          display: 'grid',
+          gridTemplateColumns: `repeat(${columns}, 1fr)`,
+          columnGap: landscape ? 24 : 0,
+          rowGap: landscape ? 14 : 12,
+          flex: 1,
+          alignContent: 'start',
         }}
       >
-        <BeatLabel>Risk factors</BeatLabel>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {FAQ.map((f, i) => {
-            const open = openIdx === i;
-            const toggle = () => setOpenIdx(open ? -1 : i);
-            return (
-              <div
-                key={f.q}
-                role="button"
-                tabIndex={0}
-                aria-expanded={open}
-                aria-label={f.q}
-                onClick={(e) => {
+        {FAQ.map((f, i) => {
+          const open = openIdx === i;
+          const toggle = () => setOpenIdx(open ? -1 : i);
+          return (
+            <div
+              key={f.q}
+              role="button"
+              tabIndex={0}
+              aria-expanded={open}
+              aria-label={f.q}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggle();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
                   e.stopPropagation();
                   toggle();
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggle();
-                  }
-                }}
+                }
+              }}
+              style={{
+                ...PANEL_LEVEL_1,
+                borderRadius: 20,
+                padding: landscape ? '22px 28px' : '20px 24px',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              <div
                 style={{
-                  ...PANEL_LEVEL_1,
-                  borderRadius: 20,
-                  padding: '12px 14px',
-                  cursor: 'pointer',
-                  WebkitTapHighlightColor: 'transparent',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 16,
                 }}
               >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: 8,
-                  }}
-                >
-                  <div style={{ flex: 1 }}>
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontWeight: 500,
+                      fontSize: 17,
+                      lineHeight: 1.4,
+                      color: C.n950,
+                    }}
+                  >
+                    {f.q}
+                  </div>
+                  <div
+                    style={{
+                      maxHeight: open ? 240 : 0,
+                      overflow: 'hidden',
+                      transition: `max-height 320ms ${EASE.smooth}, opacity 320ms ${EASE.smooth}`,
+                      opacity: open ? 1 : 0,
+                    }}
+                  >
                     <div
                       style={{
                         fontFamily: 'var(--font-body)',
-                        fontWeight: 500,
-                        fontSize: 13,
-                        lineHeight: 1.35,
-                        color: C.n950,
+                        fontSize: 15,
+                        lineHeight: 1.6,
+                        color: C.n800,
+                        marginTop: 12,
                       }}
                     >
-                      {f.q}
+                      {f.a}
                     </div>
-                    <div
-                      style={{
-                        maxHeight: open ? 200 : 0,
-                        overflow: 'hidden',
-                        transition: `max-height 300ms ${EASE.smooth}, opacity 300ms ${EASE.smooth}`,
-                        opacity: open ? 1 : 0,
-                      }}
-                    >
-                      <div
-                        style={{
-                          fontFamily: 'var(--font-body)',
-                          fontSize: 12,
-                          lineHeight: 1.55,
-                          color: C.n800,
-                          marginTop: 8,
-                        }}
-                      >
-                        {f.a}
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    aria-hidden
-                    style={{
-                      fontSize: 14,
-                      color: C.n600,
-                      flexShrink: 0,
-                      transform: open ? 'rotate(180deg)' : 'rotate(0)',
-                      transition: `transform 300ms ${EASE.smooth}`,
-                      lineHeight: 1,
-                    }}
-                  >
-                    ▾
                   </div>
                 </div>
+                <div
+                  aria-hidden
+                  style={{
+                    fontSize: 18,
+                    color: C.n600,
+                    flexShrink: 0,
+                    transform: open ? 'rotate(180deg)' : 'rotate(0)',
+                    transition: `transform 300ms ${EASE.smooth}`,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  ▾
+                </div>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -633,7 +680,9 @@ function Beat5Faq({
 export default function Step18Section9RiskFactors({
   isActive,
   onComplete,
+  onBack,
 }: StepProps) {
+  const landscape = useLandscape();
   const [beat, setBeat] = useState(0);
   const [openFaq, setOpenFaq] = useState(-1);
   const [exiting, setExiting] = useState(false);
@@ -697,10 +746,7 @@ export default function Step18Section9RiskFactors({
         animate(
           tileRefs.current[i],
           [
-            {
-              opacity: 0,
-              transform: 'translateY(20px) scale(0.97)',
-            },
+            { opacity: 0, transform: 'translateY(20px) scale(0.97)' },
             { opacity: 1, transform: 'translateY(0) scale(1)' },
           ],
           { duration: 400, easing: EASE.spring }
@@ -732,7 +778,7 @@ export default function Step18Section9RiskFactors({
           animate(
             r.text,
             [
-              { opacity: 0, transform: 'translateX(-10px)' },
+              { opacity: 0, transform: 'translateX(-12px)' },
               { opacity: 1, transform: 'translateX(0)' },
             ],
             { duration: 350, easing: EASE.settle }
@@ -788,7 +834,6 @@ export default function Step18Section9RiskFactors({
     );
   }, []);
 
-  // Auto-start: when isActive flips on, run beat 1 entrance.
   useEffect(() => {
     if (!isActive) {
       cancelledRef.current = true;
@@ -832,7 +877,10 @@ export default function Step18Section9RiskFactors({
 
   const reverseBeat = useCallback(async () => {
     if (busy.current) return;
-    if (beat <= 1) return;
+    if (beat <= 1) {
+      if (onBack) onBack();
+      return;
+    }
     busy.current = true;
     setOpenFaq(-1);
     const current = beat;
@@ -850,7 +898,7 @@ export default function Step18Section9RiskFactors({
     setBeat(prev);
     await enterBeat(prev);
     busy.current = false;
-  }, [beat, enterBeat, exitBeat]);
+  }, [beat, enterBeat, exitBeat, onBack]);
 
   const advanceStep = useCallback(() => {
     if (exiting) return;
@@ -886,90 +934,78 @@ export default function Step18Section9RiskFactors({
         background: C.bg,
         opacity: exiting ? 0 : 1,
         transform: exiting ? 'scale(0.97)' : 'scale(1)',
-        transition: `opacity 350ms ${EASE.smooth}, transform 350ms ${EASE.smooth}`,
+        transition: `opacity ${EXIT_DURATION_MS}ms ${EASE.smooth}, transform ${EXIT_DURATION_MS}ms ${EASE.smooth}`,
+        touchAction: 'manipulation',
+        WebkitTapHighlightColor: 'transparent',
+      }}
+      role={beat < 5 ? 'button' : undefined}
+      tabIndex={beat < 5 ? 0 : -1}
+      aria-label={beat < 5 ? 'Tap to continue' : undefined}
+      onClick={() => {
+        if (beat < 5) advanceBeat();
+      }}
+      onKeyDown={(e) => {
+        if (beat < 5 && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          advanceBeat();
+        }
       }}
     >
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          justifyContent: 'center',
+      <BeatShell
+        refEl={(el) => {
+          beatRefs.current[0] = el;
         }}
+        visible={beat === 1}
       >
-        <div
-          style={{
-            position: 'relative',
-            width: '100%',
-            maxWidth: 393,
-            cursor: beat < 5 ? 'pointer' : 'default',
-          }}
-          role={beat < 5 ? 'button' : undefined}
-          tabIndex={beat < 5 ? 0 : -1}
-          aria-label={beat < 5 ? 'Tap to continue' : undefined}
-          onClick={() => {
-            if (beat < 5) advanceBeat();
-          }}
-          onKeyDown={(e) => {
-            if (beat < 5 && (e.key === 'Enter' || e.key === ' ')) {
-              e.preventDefault();
-              advanceBeat();
-            }
-          }}
-        >
-          <BeatShell
-            refEl={(el) => {
-              beatRefs.current[0] = el;
-            }}
-            visible={beat === 1}
-          >
-            <Beat1Thesis />
-          </BeatShell>
-          <BeatShell
-            refEl={(el) => {
-              beatRefs.current[1] = el;
-            }}
-            visible={beat === 2}
-          >
-            <Beat2Stats tileRefs={tileRefs} />
-          </BeatShell>
-          <BeatShell
-            refEl={(el) => {
-              beatRefs.current[2] = el;
-            }}
-            visible={beat === 3}
-          >
-            <Beat3Timeline rowRefs={tlRowRefs} />
-          </BeatShell>
-          <BeatShell
-            refEl={(el) => {
-              beatRefs.current[3] = el;
-            }}
-            visible={beat === 4}
-          >
-            <Beat4MohaIntel />
-          </BeatShell>
-          <BeatShell
-            refEl={(el) => {
-              beatRefs.current[4] = el;
-            }}
-            visible={beat === 5}
-          >
-            <Beat5Faq openIdx={openFaq} setOpenIdx={setOpenFaq} />
-          </BeatShell>
-        </div>
-      </div>
+        <Beat1Thesis landscape={landscape} />
+      </BeatShell>
+      <BeatShell
+        refEl={(el) => {
+          beatRefs.current[1] = el;
+        }}
+        visible={beat === 2}
+      >
+        <Beat2Stats tileRefs={tileRefs} landscape={landscape} />
+      </BeatShell>
+      <BeatShell
+        refEl={(el) => {
+          beatRefs.current[2] = el;
+        }}
+        visible={beat === 3}
+      >
+        <Beat3Timeline rowRefs={tlRowRefs} landscape={landscape} />
+      </BeatShell>
+      <BeatShell
+        refEl={(el) => {
+          beatRefs.current[3] = el;
+        }}
+        visible={beat === 4}
+      >
+        <Beat4MohaIntel landscape={landscape} />
+      </BeatShell>
+      <BeatShell
+        refEl={(el) => {
+          beatRefs.current[4] = el;
+        }}
+        visible={beat === 5}
+      >
+        <Beat5Faq
+          openIdx={openFaq}
+          setOpenIdx={setOpenFaq}
+          landscape={landscape}
+        />
+      </BeatShell>
 
       <div
         aria-hidden
         style={{
           position: 'absolute',
-          bottom: 'calc(51px + env(safe-area-inset-bottom, 0px))',
+          bottom: 'calc(40px + var(--safe-bottom))',
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 10,
           zIndex: 80,
           pointerEvents: 'none',
           opacity: beat >= 1 && !exiting ? 1 : 0,
@@ -982,8 +1018,8 @@ export default function Step18Section9RiskFactors({
             <div
               key={i}
               style={{
-                width: active ? 10 : 6,
-                height: active ? 10 : 6,
+                width: active ? 14 : 9,
+                height: active ? 14 : 9,
                 borderRadius: 9999,
                 background: active ? C.amber : C.n200,
                 transition: `width 200ms ${EASE.spring}, height 200ms ${EASE.spring}, background 200ms ${EASE.smooth}`,
@@ -993,7 +1029,7 @@ export default function Step18Section9RiskFactors({
         })}
       </div>
 
-      <BackButton onClick={reverseBeat} visible={beat >= 2 && !exiting} />
+      <BackButton onClick={reverseBeat} visible={beat >= 1 && !exiting} />
       <NextButton onClick={onForward} visible={beat >= 1 && !exiting} />
     </div>
   );

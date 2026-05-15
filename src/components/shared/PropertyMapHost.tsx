@@ -53,7 +53,7 @@ function buildPropertyMapUrl(): string {
   });
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   if (typeof window !== 'undefined' && token) {
-    (window as any).__GKTK_MAPBOX_ACCESS_TOKEN = token;
+    (window as Window & { __GKTK_MAPBOX_ACCESS_TOKEN?: string }).__GKTK_MAPBOX_ACCESS_TOKEN = token;
   }
   return `/playground/prototypes/step-12-section-6-product-hardware/map-prototype-v1/index.html?${params.toString()}`;
 }
