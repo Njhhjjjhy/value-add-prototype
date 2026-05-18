@@ -46,10 +46,16 @@ export function usePropertyMapHost(): PropertyMapHostApi | null {
 function buildPropertyMapUrl(): string {
   const params = new URLSearchParams({
     embed: '1',
+    host: 'valueadd',
     lang: 'en',
     steps: 'properties',
+    // The slideshow features only Chateau Life Ozu 1 in steps 11 and 12.
+    // The map-prototype source applies this filter at module load via
+    // its ?properties= URL param (js/data/properties.js).
+    properties: 'ozu-1',
     chromeless: '1',
-    v: '101',
+    startStep: '1',
+    v: '102',
   });
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   if (typeof window !== 'undefined' && token) {
