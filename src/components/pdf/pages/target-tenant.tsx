@@ -37,8 +37,8 @@ export function TargetTenantPage1() {
 }
 
 export function TargetTenantPage2() {
-  const physical = PAIN_POINTS.filter((p) => p.category === 'physical');
-  const mental = PAIN_POINTS.filter((p) => p.category === 'mental');
+  const physical = PAIN_POINTS.filter((p) => p.group === 'physical');
+  const mental = PAIN_POINTS.filter((p) => p.group === 'mental');
 
   return (
     <View style={s.page}>
@@ -50,8 +50,8 @@ export function TargetTenantPage2() {
             <Text style={s.categoryLabel}>Physical</Text>
             {physical.map((p) => (
               <View key={p.id}>
-                <Text style={s.painTitle}>{p.title}</Text>
-                <Text style={s.painBody}>{p.description}</Text>
+                <Text style={s.painTitle}>{p.label}</Text>
+                <Text style={s.painBody}>{p.expanded}</Text>
                 <Text style={s.painCompanies}>Companies: {p.companies.join(', ')}</Text>
               </View>
             ))}
@@ -60,8 +60,8 @@ export function TargetTenantPage2() {
             <Text style={s.categoryLabel}>Mental</Text>
             {mental.map((p) => (
               <View key={p.id}>
-                <Text style={s.painTitle}>{p.title}</Text>
-                <Text style={s.painBody}>{p.description}</Text>
+                <Text style={s.painTitle}>{p.label}</Text>
+                <Text style={s.painBody}>{p.expanded}</Text>
                 <Text style={s.painCompanies}>Companies: {p.companies.join(', ')}</Text>
               </View>
             ))}

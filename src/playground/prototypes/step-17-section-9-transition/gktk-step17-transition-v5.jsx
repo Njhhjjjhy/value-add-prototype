@@ -1,17 +1,27 @@
 import { useState, useRef, useCallback } from "react";
 
-const COLORS = {
-  neutral950: "#25272C",
-  neutral900: "#383A42",
-  neutral800: "#40444C",
-  neutral600: "#5B616E",
-  neutral200: "#D8DBDF",
-  neutral100: "#EDEEF1",
-  base: "#F9F9F9",
-  white: "#FEFEFE",
+/* ───────────────────────────────────────────────────────
+   step-17 section 9 transition — iPad Pro 13 M4
+   Hand-off from Section 8 (Financials) → Section 9 (Risk).
+   Two variants:
+   recede  — financial projections recede + fade away, then
+             a Resolve panel settles into the center.
+   shutter — amber-lined bands sweep in from top/bottom to
+             cover the financials, hold a beat, then open to
+             reveal the Resolve panel.
+   ─────────────────────────────────────────────────────── */
+
+const C = {
+  heading: "#25272C",
+  sub: "#383A42",
+  body: "#40444C",
+  caption: "#5B616E",
+  disabled: "#8E8F8F",
   amber: "#FBB931",
-  amber50: "#FFFBEc",
+  amber50: "#FFFBEC",
   amber100: "#FEF2C9",
+  hairline: "#EDEEF1",
+  bg: "#F9F9F9",
 };
 
 const EASING = {
@@ -21,44 +31,26 @@ const EASING = {
   sharp: "cubic-bezier(0.4, 0, 0.2, 1)",
 };
 
-const MeshGradientBg = () => (
-  <div
-    style={{
-      position: "absolute",
-      inset: 0,
-      background: COLORS.base,
-      zIndex: 0,
-    }}
-  />
-);
+const FONT_HEADING = '"REM", system-ui, sans-serif';
+const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
-const GlassPanel = ({ children, style = {}, panelRef }) => (
-  <div
-    ref={panelRef}
-    style={{
-      position: "relative",
-      background:"#F9F9F9",
-      border: "1px solid rgba(0,0,0,0.06)",
-      borderRadius: 28,
-      boxShadow:
-        "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
-      padding: "32px 24px",
-      zIndex: 5,
-      ...style,
-    }}
-  >
-    <div style={{ position: "relative", zIndex: 4 }}>{children}</div>
-  </div>
-);
+const an = (el, keyframes, options) => {
+  if (!el) return Promise.resolve();
+  return el.animate(keyframes, { fill: "forwards", ...options }).finished;
+};
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const GhostFinancials = ({ containerRef, headerRef, rowRefs }) => {
+/* ───────────────────────────────────────────────────────
+   Ghost financials — iPad-scaled outgoing panel
+   ─────────────────────────────────────────────────────── */
+const GhostFinancials = ({ containerRef }) => {
   const rows = [
     { label: "Post-tax IRR", value: "18.4%", highlight: true },
     { label: "Equity multiple", value: "2.1x" },
     { label: "Cash-on-cash (yr 3)", value: "8.7%" },
     { label: "Payback period", value: "5.2 yrs" },
     { label: "Exit cap rate", value: "4.8%" },
-    { label: "Net operating income", value: "¥48.2M" },
+    { label: "Net operating income", value: "48.2M JPY" },
   ];
 
   return (
@@ -66,123 +58,186 @@ const GhostFinancials = ({ containerRef, headerRef, rowRefs }) => {
       ref={containerRef}
       style={{
         position: "absolute",
-        top: 60,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        padding: "24px 20px",
-        zIndex: 3,
+        top: "calc(96px + var(--safe-top))",
+        bottom: "calc(96px + var(--safe-bottom))",
+        left: "var(--content-margin)",
+        right: "var(--content-margin)",
         display: "flex",
         flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 3,
       }}
     >
-      <div ref={headerRef} style={{ marginBottom: 20 }}>
-        <div
-          style={{
-            fontFamily: "'REM', sans-serif",
-            fontWeight: 600,
-            fontSize: 22,
-            lineHeight: 1.15,
-            letterSpacing: "-0.02em",
-            color: COLORS.neutral950,
-            marginBottom: 6,
-          }}
-        >
-          Financial projections
-        </div>
-        <div
-          style={{
-            fontFamily: "'Noto Sans JP', sans-serif",
-            fontSize: 13,
-            lineHeight: 1.4,
-            letterSpacing: "0.01em",
-            fontWeight: 500,
-            color: COLORS.neutral600,
-          }}
-        >
-          Base scenario, 7-year hold
-        </div>
-      </div>
-
       <div
         style={{
-          position: "relative",
-          background:"#F9F9F9",
-          border: "1px solid rgba(0,0,0,0.06)",
-          borderRadius: 20,
-          boxShadow: "0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)",
-          overflow: "hidden",
+          width: "100%",
+          maxWidth: 880,
         }}
       >
-        {rows.map((row, i) => (
+        <div style={{ marginBottom: 32 }}>
           <div
-            key={row.label}
-            ref={(el) => { if (rowRefs) rowRefs.current[i] = el; }}
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "14px 20px",
-              borderBottom: i < rows.length - 1 ? `1px solid ${COLORS.neutral100}` : "none",
-              background: row.highlight ? COLORS.amber50 : "transparent",
-              position: "relative",
-              zIndex: 2,
+              fontFamily: FONT_HEADING,
+              fontWeight: 600,
+              fontSize: 32,
+              lineHeight: 1.15,
+              letterSpacing: "-0.02em",
+              color: C.heading,
+              marginBottom: 8,
             }}
           >
-            <span
-              style={{
-                fontFamily: "'Noto Sans JP', sans-serif",
-                fontSize: 13,
-                fontWeight: 500,
-                letterSpacing: "0.01em",
-                color: COLORS.neutral600,
-              }}
-            >
-              {row.label}
-            </span>
-            <span
-              style={{
-                fontFamily: "'REM', sans-serif",
-                fontWeight: 600,
-                fontSize: row.highlight ? 22 : 16,
-                color: COLORS.neutral950,
-                fontVariantNumeric: "tabular-nums",
-              }}
-            >
-              {row.value}
-            </span>
+            Financial projections
           </div>
-        ))}
+          <div
+            style={{
+              fontFamily: FONT_BODY,
+              fontSize: 15,
+              lineHeight: 1.6,
+              fontWeight: 500,
+              color: C.caption,
+            }}
+          >
+            Base scenario, 7-year hold
+          </div>
+        </div>
+
+        <div
+          style={{
+            position: "relative",
+            background: C.bg,
+            border: "1px solid rgba(0,0,0,0.06)",
+            borderRadius: 20,
+            boxShadow:
+              "0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)",
+            overflow: "hidden",
+          }}
+        >
+          {rows.map((row, i) => (
+            <div
+              key={row.label}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "20px 32px",
+                borderBottom:
+                  i < rows.length - 1
+                    ? `1px solid ${C.hairline}`
+                    : "none",
+                background: row.highlight ? C.amber50 : "transparent",
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: FONT_BODY,
+                  fontSize: 15,
+                  fontWeight: 500,
+                  letterSpacing: "0.01em",
+                  color: C.caption,
+                }}
+              >
+                {row.label}
+              </span>
+              <span
+                style={{
+                  fontFamily: FONT_HEADING,
+                  fontWeight: 600,
+                  fontSize: row.highlight ? 32 : 22,
+                  color: C.heading,
+                  fontVariantNumeric: "tabular-nums",
+                  letterSpacing: row.highlight ? "-0.02em" : "-0.01em",
+                }}
+              >
+                {row.value}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
-const ResolveContent = () => (
+/* ───────────────────────────────────────────────────────
+   Resolve panel — incoming section 9 anchor
+   ─────────────────────────────────────────────────────── */
+const ResolvePanel = ({ panelRef, style }) => (
   <div
+    ref={panelRef}
     style={{
-      fontFamily: "'Noto Sans JP', sans-serif",
-      fontSize: 16,
-      lineHeight: 1.65,
-      color: COLORS.neutral800,
-      textAlign: "left",
+      position: "relative",
+      background: C.bg,
+      border: "1px solid rgba(0,0,0,0.08)",
+      borderRadius: 28,
+      boxShadow:
+        "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
+      padding: "48px 56px",
+      ...style,
     }}
   >
-    Every investment carries risk. Here is how this one is structured to mitigate them.
+    <div
+      style={{
+        fontFamily: FONT_BODY,
+        fontSize: 13,
+        fontWeight: 500,
+        color: C.caption,
+        letterSpacing: "0.18em",
+        marginBottom: 20,
+      }}
+    >
+      SECTION 9
+    </div>
+    <div
+      style={{
+        fontFamily: FONT_HEADING,
+        fontSize: 32,
+        fontWeight: 600,
+        lineHeight: 1.15,
+        letterSpacing: "-0.02em",
+        color: C.heading,
+        marginBottom: 16,
+      }}
+    >
+      Every investment carries risk.
+    </div>
+    <div
+      style={{
+        fontFamily: FONT_BODY,
+        fontSize: 18,
+        lineHeight: 1.6,
+        color: C.body,
+      }}
+    >
+      Here is how this one is structured to mitigate them.
+    </div>
+    <div
+      style={{
+        width: 72,
+        height: 3,
+        background: C.amber,
+        borderRadius: 2,
+        marginTop: 32,
+        boxShadow: "0 0 12px rgba(251,185,49,0.4)",
+      }}
+    />
   </div>
 );
 
+/* ───────────────────────────────────────────────────────
+   Tap prompt — bottom caption
+   ─────────────────────────────────────────────────────── */
 const TapPrompt = ({ visible, label = "Tap to continue" }) => (
   <div
     aria-live="polite"
     style={{
       position: "absolute",
-      bottom: 32,
+      bottom: "calc(48px + var(--safe-bottom))",
       left: 0,
       right: 0,
       display: "flex",
       justifyContent: "center",
-      zIndex: 10,
+      zIndex: 20,
       opacity: visible ? 1 : 0,
       transform: visible ? "translateY(0)" : "translateY(8px)",
       transition: `opacity 500ms ${EASING.smooth}, transform 500ms ${EASING.smooth}`,
@@ -191,11 +246,11 @@ const TapPrompt = ({ visible, label = "Tap to continue" }) => (
   >
     <span
       style={{
-        fontFamily: "'Noto Sans JP', sans-serif",
+        fontFamily: FONT_BODY,
         fontSize: 13,
         fontWeight: 500,
         letterSpacing: "0.01em",
-        color: COLORS.neutral600,
+        color: C.caption,
       }}
     >
       {label}
@@ -203,16 +258,11 @@ const TapPrompt = ({ visible, label = "Tap to continue" }) => (
   </div>
 );
 
-const an = (el, keyframes, options) => {
-  if (!el) return Promise.resolve();
-  return el.animate(keyframes, { fill: "forwards", ...options }).finished;
-};
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-
+/* ───────────────────────────────────────────────────────
+   Variant: recede
+   ─────────────────────────────────────────────────────── */
 const VariantRecede = () => {
   const containerRef = useRef(null);
-  const headerRef = useRef(null);
-  const rowRefs = useRef([]);
   const resolveRef = useRef(null);
   const [showTap, setShowTap] = useState(false);
   const [resolveVisible, setResolveVisible] = useState(false);
@@ -227,9 +277,17 @@ const VariantRecede = () => {
         containerRef.current,
         [
           { opacity: 1, transform: "scale(1) translateY(0)" },
-          { opacity: 0.5, transform: "scale(0.92) translateY(-10px)", offset: 0.5 },
-          { opacity: 0.15, transform: "scale(0.85) translateY(-18px)", offset: 0.8 },
-          { opacity: 0, transform: "scale(0.82) translateY(-22px)" },
+          {
+            opacity: 0.5,
+            transform: "scale(0.94) translateY(-12px)",
+            offset: 0.5,
+          },
+          {
+            opacity: 0.15,
+            transform: "scale(0.88) translateY(-22px)",
+            offset: 0.8,
+          },
+          { opacity: 0, transform: "scale(0.85) translateY(-28px)" },
         ],
         { duration: 1100, easing: EASING.gentle }
       );
@@ -243,8 +301,12 @@ const VariantRecede = () => {
       await an(
         resolveRef.current,
         [
-          { opacity: 0, transform: "scale(0.95) translateY(10px)" },
-          { opacity: 0.6, transform: "scale(0.98) translateY(4px)", offset: 0.5 },
+          { opacity: 0, transform: "scale(0.95) translateY(12px)" },
+          {
+            opacity: 0.6,
+            transform: "scale(0.98) translateY(4px)",
+            offset: 0.5,
+          },
           { opacity: 1, transform: "scale(1) translateY(0)" },
         ],
         { duration: 700, easing: EASING.settle }
@@ -257,32 +319,54 @@ const VariantRecede = () => {
 
   return (
     <div
-      style={{ position: "absolute", inset: 0, cursor: "pointer" }}
+      style={{ position: "absolute", inset: 0 }}
       onClick={!running.current ? run : undefined}
       role="button"
       tabIndex={0}
-      aria-label="Tap to continue"
-      onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && !running.current) { e.preventDefault(); run(); } }}
+      aria-label="Tap to see transition"
+      onKeyDown={(e) => {
+        if ((e.key === "Enter" || e.key === " ") && !running.current) {
+          e.preventDefault();
+          run();
+        }
+      }}
     >
-      <MeshGradientBg />
-      <GhostFinancials containerRef={containerRef} headerRef={headerRef} rowRefs={rowRefs} />
+      <GhostFinancials containerRef={containerRef} />
+
       {resolveVisible && (
-        <div style={{ position: "absolute", top: "50%", left: 20, right: 20, transform: "translateY(-50%)", zIndex: 6 }}>
-          <GlassPanel panelRef={resolveRef} style={{ opacity: 0 }}>
-            <ResolveContent />
-          </GlassPanel>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "var(--content-margin)",
+            right: "var(--content-margin)",
+            transform: "translateY(-50%)",
+            display: "flex",
+            justifyContent: "center",
+            zIndex: 6,
+            pointerEvents: "none",
+          }}
+        >
+          <div style={{ width: "100%", maxWidth: 880 }}>
+            <ResolvePanel panelRef={resolveRef} style={{ opacity: 0 }} />
+          </div>
         </div>
       )}
-      <TapPrompt visible={!running.current && !resolveVisible} label="Tap to see transition" />
+
+      <TapPrompt
+        visible={!running.current && !resolveVisible}
+        label="Tap to see transition"
+      />
       <TapPrompt visible={showTap} />
     </div>
   );
 };
 
+/* ───────────────────────────────────────────────────────
+   Variant: shutter
+   ─────────────────────────────────────────────────────── */
 const VariantShutter = () => {
   const containerRef = useRef(null);
-  const headerRef = useRef(null);
-  const rowRefs = useRef([]);
   const resolveRef = useRef(null);
   const topRef = useRef(null);
   const bottomRef = useRef(null);
@@ -300,16 +384,24 @@ const VariantShutter = () => {
     await wait(30);
 
     const t = topRef.current
-      ? an(topRef.current, [{ transform: "translateY(-100%)" }, { transform: "translateY(0)" }], {
-          duration: 750,
-          easing: EASING.gentle,
-        })
+      ? an(
+          topRef.current,
+          [
+            { transform: "translateY(-100%)" },
+            { transform: "translateY(0)" },
+          ],
+          { duration: 750, easing: EASING.gentle }
+        )
       : Promise.resolve();
     const b = bottomRef.current
-      ? an(bottomRef.current, [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }], {
-          duration: 750,
-          easing: EASING.gentle,
-        })
+      ? an(
+          bottomRef.current,
+          [
+            { transform: "translateY(100%)" },
+            { transform: "translateY(0)" },
+          ],
+          { duration: 750, easing: EASING.gentle }
+        )
       : Promise.resolve();
     await Promise.all([t, b]);
 
@@ -319,9 +411,18 @@ const VariantShutter = () => {
       an(
         topRef.current,
         [
-          { boxShadow: "0 2px 0 rgba(251,185,49,0.6), 0 2px 16px rgba(251,185,49,0.2)" },
-          { boxShadow: "0 2px 0 rgba(251,185,49,0.8), 0 2px 36px rgba(251,185,49,0.45)" },
-          { boxShadow: "0 2px 0 rgba(251,185,49,0.6), 0 2px 16px rgba(251,185,49,0.2)" },
+          {
+            boxShadow:
+              "0 2px 0 rgba(251,185,49,0.6), 0 2px 24px rgba(251,185,49,0.2)",
+          },
+          {
+            boxShadow:
+              "0 2px 0 rgba(251,185,49,0.8), 0 2px 48px rgba(251,185,49,0.45)",
+          },
+          {
+            boxShadow:
+              "0 2px 0 rgba(251,185,49,0.6), 0 2px 24px rgba(251,185,49,0.2)",
+          },
         ],
         { duration: 500, easing: EASING.smooth }
       );
@@ -330,9 +431,18 @@ const VariantShutter = () => {
       an(
         bottomRef.current,
         [
-          { boxShadow: "0 -2px 0 rgba(251,185,49,0.6), 0 -2px 16px rgba(251,185,49,0.2)" },
-          { boxShadow: "0 -2px 0 rgba(251,185,49,0.8), 0 -2px 36px rgba(251,185,49,0.45)" },
-          { boxShadow: "0 -2px 0 rgba(251,185,49,0.6), 0 -2px 16px rgba(251,185,49,0.2)" },
+          {
+            boxShadow:
+              "0 -2px 0 rgba(251,185,49,0.6), 0 -2px 24px rgba(251,185,49,0.2)",
+          },
+          {
+            boxShadow:
+              "0 -2px 0 rgba(251,185,49,0.8), 0 -2px 48px rgba(251,185,49,0.45)",
+          },
+          {
+            boxShadow:
+              "0 -2px 0 rgba(251,185,49,0.6), 0 -2px 24px rgba(251,185,49,0.2)",
+          },
         ],
         { duration: 500, easing: EASING.smooth }
       );
@@ -340,16 +450,24 @@ const VariantShutter = () => {
     await wait(550);
 
     const tOpen = topRef.current
-      ? an(topRef.current, [{ transform: "translateY(0)" }, { transform: "translateY(-102%)" }], {
-          duration: 650,
-          easing: EASING.gentle,
-        })
+      ? an(
+          topRef.current,
+          [
+            { transform: "translateY(0)" },
+            { transform: "translateY(-102%)" },
+          ],
+          { duration: 650, easing: EASING.gentle }
+        )
       : Promise.resolve();
     const bOpen = bottomRef.current
-      ? an(bottomRef.current, [{ transform: "translateY(0)" }, { transform: "translateY(102%)" }], {
-          duration: 650,
-          easing: EASING.gentle,
-        })
+      ? an(
+          bottomRef.current,
+          [
+            { transform: "translateY(0)" },
+            { transform: "translateY(102%)" },
+          ],
+          { duration: 650, easing: EASING.gentle }
+        )
       : Promise.resolve();
 
     await wait(120);
@@ -371,21 +489,40 @@ const VariantShutter = () => {
 
   return (
     <div
-      style={{ position: "absolute", inset: 0, cursor: "pointer" }}
+      style={{ position: "absolute", inset: 0 }}
       onClick={!running.current ? run : undefined}
       role="button"
       tabIndex={0}
-      aria-label="Tap to continue"
-      onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && !running.current) { e.preventDefault(); run(); } }}
+      aria-label="Tap to see transition"
+      onKeyDown={(e) => {
+        if ((e.key === "Enter" || e.key === " ") && !running.current) {
+          e.preventDefault();
+          run();
+        }
+      }}
     >
-      <MeshGradientBg />
-      <GhostFinancials containerRef={containerRef} headerRef={headerRef} rowRefs={rowRefs} />
+      <GhostFinancials containerRef={containerRef} />
 
       {resolveVisible && (
-        <div style={{ position: "absolute", top: "50%", left: 20, right: 20, transform: "translateY(-50%)", zIndex: 6 }}>
-          <GlassPanel panelRef={resolveRef} style={{ opacity: 0, transform: "scale(0.97)" }}>
-            <ResolveContent />
-          </GlassPanel>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "var(--content-margin)",
+            right: "var(--content-margin)",
+            transform: "translateY(-50%)",
+            display: "flex",
+            justifyContent: "center",
+            zIndex: 6,
+            pointerEvents: "none",
+          }}
+        >
+          <div style={{ width: "100%", maxWidth: 880 }}>
+            <ResolvePanel
+              panelRef={resolveRef}
+              style={{ opacity: 0, transform: "scale(0.97)" }}
+            />
+          </div>
         </div>
       )}
 
@@ -399,13 +536,13 @@ const VariantShutter = () => {
               left: 0,
               right: 0,
               height: "50%",
-              background: `linear-gradient(180deg, ${COLORS.neutral100} 0%, ${COLORS.base} 80%)`,
+              background: `linear-gradient(180deg, ${C.hairline} 0%, ${C.bg} 80%)`,
               zIndex: 12,
               transform: "translateY(-100%)",
-              boxShadow: "0 2px 0 rgba(251,185,49,0.6), 0 2px 16px rgba(251,185,49,0.2)",
+              boxShadow:
+                "0 2px 0 rgba(251,185,49,0.6), 0 2px 24px rgba(251,185,49,0.2)",
             }}
-          >
-          </div>
+          />
           <div
             ref={bottomRef}
             style={{
@@ -414,94 +551,30 @@ const VariantShutter = () => {
               left: 0,
               right: 0,
               height: "50%",
-              background: `linear-gradient(0deg, ${COLORS.neutral100} 0%, ${COLORS.base} 80%)`,
+              background: `linear-gradient(0deg, ${C.hairline} 0%, ${C.bg} 80%)`,
               zIndex: 12,
               transform: "translateY(100%)",
-              boxShadow: "0 -2px 0 rgba(251,185,49,0.6), 0 -2px 16px rgba(251,185,49,0.2)",
+              boxShadow:
+                "0 -2px 0 rgba(251,185,49,0.6), 0 -2px 24px rgba(251,185,49,0.2)",
             }}
-          >
-          </div>
+          />
         </>
       )}
 
-      <TapPrompt visible={!running.current && !resolveVisible} label="Tap to see transition" />
+      <TapPrompt
+        visible={!running.current && !resolveVisible}
+        label="Tap to see transition"
+      />
       <TapPrompt visible={showTap} />
     </div>
   );
 };
 
-const IPhoneFrame = ({ children }) => (
-  <div
-    style={{
-      position: "relative",
-      width: 393,
-      height: 852,
-      background: "#1A1A1C",
-      borderRadius: 54,
-      flexShrink: 0,
-    }}
-  >
-    <div
-      style={{
-        position: "absolute",
-        inset: -1,
-        borderRadius: 55,
-        background: "linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.15) 100%)",
-        zIndex: 0,
-        pointerEvents: "none",
-      }}
-    />
-    <div
-      style={{
-        position: "absolute",
-        top: 20,
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: 126,
-        height: 37,
-        background: "#000",
-        borderRadius: 20,
-        zIndex: 20,
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          right: 18,
-          transform: "translateY(-50%)",
-          width: 11,
-          height: 11,
-          borderRadius: "50%",
-          background: "radial-gradient(circle at 40% 40%, #2a2a3a 0%, #111 60%, #000 100%)",
-          boxShadow: "inset 0 0 2px rgba(255,255,255,0.15)",
-        }}
-      />
-    </div>
-    <div style={{ position: "absolute", top: 180, right: -3, width: 4, height: 80, background: "#2a2a2c", borderRadius: "0 3px 3px 0" }} />
-    <div style={{ position: "absolute", top: 150, left: -3, width: 4, height: 36, background: "#2a2a2c", borderRadius: "3px 0 0 3px" }} />
-    <div style={{ position: "absolute", top: 200, left: -3, width: 4, height: 36, background: "#2a2a2c", borderRadius: "3px 0 0 3px" }} />
-    <div style={{ position: "absolute", top: 115, left: -3, width: 4, height: 18, background: "#2a2a2c", borderRadius: "3px 0 0 3px" }} />
-    <div
-      style={{
-        position: "absolute",
-        top: 10,
-        left: 10,
-        right: 10,
-        bottom: 10,
-        borderRadius: 44,
-        overflow: "hidden",
-        background: COLORS.base,
-      }}
-    >
-      {children}
-    </div>
-  </div>
-);
-
 const VARIANT_MAP = { recede: VariantRecede, shutter: VariantShutter };
 
-export default function Step17TransitionV5({ variant } = {}) {
+export default function Step17TransitionV5({
+  variant = "recede"
+} = {}) {
   const resolved = VARIANT_MAP[variant] ? variant : "recede";
   const Comp = VARIANT_MAP[resolved];
 
@@ -509,14 +582,9 @@ export default function Step17TransitionV5({ variant } = {}) {
     <div
       data-proto="step-17"
       style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 24,
-        minHeight: "100vh",
-        background: "#EDEEF1",
-        fontFamily: "'Noto Sans JP', 'Inter', system-ui, sans-serif",
+        position: "absolute",
+        inset: 0,
+        background: C.bg,
       }}
     >
       <style>{`
@@ -533,9 +601,7 @@ export default function Step17TransitionV5({ variant } = {}) {
         }
       `}</style>
 
-      <IPhoneFrame>
-        <Comp key={resolved} />
-      </IPhoneFrame>
+      <Comp key={resolved} />
     </div>
   );
 }

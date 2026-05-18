@@ -5,19 +5,20 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   PointerEvent as ReactPointerEvent,
 } from 'react';
-import NextButton from '@/components/shared/NextButton';
 
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
+  onBack?: () => void;
 }
 
 const C = {
   bg: '#F9F9F9',
   amber: '#FBB931',
-  n950: '#25272C',
-  n800: '#40444C',
-  n600: '#5B616E',
+  heading: '#25272C',
+  sub: '#383A42',
+  body: '#40444C',
+  caption: '#5B616E',
   disabled: '#8E8F8F',
 };
 
@@ -29,7 +30,7 @@ const PANEL_LEVEL_1 = {
 
 const PANEL_LEVEL_2 = {
   background: C.bg,
-  border: '1px solid rgba(0,0,0,0.06)',
+  border: '1px solid rgba(0,0,0,0.08)',
   boxShadow: '0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)',
 } as const;
 
@@ -87,6 +88,7 @@ const DEAL_ROWS: Array<[string, string]> = [
   ['Hurdle rate', '7% p.a.'],
 ];
 
+const ENTER_DELAY_MS = 80;
 const EXIT_DELAY_MS = 150;
 const EXIT_DURATION_MS = 350;
 
@@ -105,7 +107,18 @@ function ScenarioTabs({
   onChange: (s: Scenario) => void;
 }) {
   return (
-    <div role="tablist" aria-label="Scenario" style={{ display: 'flex', gap: 6 }}>
+    <div
+      role="tablist"
+      aria-label="Scenario"
+      style={{
+        display: 'inline-flex',
+        gap: 8,
+        padding: 6,
+        borderRadius: 14,
+        background: 'rgba(0,0,0,0.03)',
+        border: '1px solid rgba(0,0,0,0.05)',
+      }}
+    >
       {SCENARIOS.map((s) => {
         const active = scenario === s;
         return (
@@ -114,8 +127,12 @@ function ScenarioTabs({
             type="button"
             role="tab"
             aria-selected={active}
-            onClick={() => onChange(s)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onChange(s);
+            }}
             onPointerDown={(e) => {
+              e.stopPropagation();
               e.currentTarget.style.transform = 'scale(0.97)';
             }}
             onPointerUp={(e) => {
@@ -128,15 +145,15 @@ function ScenarioTabs({
               e.currentTarget.style.transform = 'scale(1)';
             }}
             style={{
-              padding: '8px 20px',
-              borderRadius: 12,
+              padding: '14px 28px',
+              minHeight: 56,
+              borderRadius: 10,
               border: 'none',
-              cursor: 'pointer',
-              fontFamily: 'var(--font-body)',
-              fontSize: 12,
-              fontWeight: 500,
               background: active ? C.bg : 'transparent',
-              color: active ? C.n950 : C.disabled,
+              color: active ? C.heading : C.disabled,
+              fontFamily: 'var(--font-body)',
+              fontSize: 15,
+              fontWeight: active ? 600 : 500,
               boxShadow: active ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
               transition: `transform 120ms ${EASE.sharp}, background 250ms ${EASE.smooth}, color 250ms ${EASE.smooth}, box-shadow 250ms ${EASE.smooth}`,
               touchAction: 'manipulation',
@@ -180,6 +197,7 @@ function YearSlider({
   );
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     dragging.current = true;
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
@@ -218,7 +236,7 @@ function YearSlider({
   };
 
   return (
-    <div style={{ padding: '0 4px' }}>
+    <div style={{ padding: '0 8px' }} onClick={(e) => e.stopPropagation()}>
       <div
         ref={trackRef}
         role="slider"
@@ -235,8 +253,7 @@ function YearSlider({
         onKeyDown={onKey}
         style={{
           position: 'relative',
-          height: 40,
-          cursor: 'pointer',
+          height: 64,
           touchAction: 'none',
           userSelect: 'none',
           WebkitUserSelect: 'none',
@@ -247,11 +264,11 @@ function YearSlider({
           aria-hidden
           style={{
             position: 'absolute',
-            top: 16,
+            top: 26,
             left: 0,
             right: 0,
-            height: 4,
-            borderRadius: 2,
+            height: 6,
+            borderRadius: 3,
             background: 'rgba(0,0,0,0.06)',
           }}
         />
@@ -259,14 +276,14 @@ function YearSlider({
           aria-hidden
           style={{
             position: 'absolute',
-            top: 16,
+            top: 26,
             left: 0,
             width: `${pct}%`,
-            height: 4,
-            borderRadius: 2,
+            height: 6,
+            borderRadius: 3,
             background:
               'linear-gradient(90deg, #FBB931 0%, rgba(251,185,49,0.6) 100%)',
-            boxShadow: '0 0 6px rgba(251,185,49,0.2)',
+            boxShadow: '0 0 8px rgba(251,185,49,0.25)',
             transition: `width 250ms ${EASE.smooth}`,
           }}
         />
@@ -274,16 +291,16 @@ function YearSlider({
           aria-hidden
           style={{
             position: 'absolute',
-            top: 6,
+            top: 14,
             left: `${pct}%`,
             transform: 'translateX(-50%)',
-            width: 24,
-            height: 24,
-            borderRadius: 12,
+            width: 32,
+            height: 32,
+            borderRadius: 16,
             background: C.amber,
-            border: '3px solid #FEFEFE',
+            border: '4px solid #FFFFFF',
             boxShadow:
-              '0 2px 10px rgba(251,185,49,0.4), 0 1px 3px rgba(0,0,0,0.1)',
+              '0 2px 12px rgba(251,185,49,0.4), 0 1px 4px rgba(0,0,0,0.1)',
             transition: `left 250ms ${EASE.smooth}`,
           }}
         />
@@ -295,14 +312,15 @@ function YearSlider({
               aria-hidden
               style={{
                 position: 'absolute',
-                top: 30,
+                top: 48,
                 left: `${(i / (YEARS.length - 1)) * 100}%`,
                 transform: 'translateX(-50%)',
                 fontFamily: 'var(--font-body)',
-                fontSize: 12,
+                fontSize: 15,
                 fontWeight: active ? 600 : 400,
-                color: active ? C.n950 : C.disabled,
+                color: active ? C.heading : C.disabled,
                 transition: `color 250ms ${EASE.smooth}, font-weight 250ms ${EASE.smooth}`,
+                fontVariantNumeric: 'tabular-nums',
               }}
             >
               {y}Y
@@ -317,11 +335,13 @@ function YearSlider({
 function AnimVal({
   value,
   size,
-  color = C.n950,
+  color = C.heading,
+  weight = 600,
 }: {
   value: string;
   size: number;
   color?: string;
+  weight?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const prev = useRef(value);
@@ -335,7 +355,7 @@ function AnimVal({
         { opacity: 0.3, transform: 'translateY(4px)' },
         { opacity: 1, transform: 'translateY(0)' },
       ],
-      { duration: 150, easing: EASE.sharp, fill: 'forwards' }
+      { duration: 200, easing: EASE.sharp, fill: 'forwards' }
     );
   }, [value]);
   return (
@@ -343,7 +363,7 @@ function AnimVal({
       ref={ref}
       style={{
         fontFamily: 'var(--font-heading)',
-        fontWeight: 600,
+        fontWeight: weight,
         fontSize: size,
         color,
         letterSpacing: '-0.02em',
@@ -371,7 +391,7 @@ function BearReveal({
     if (scenario !== 'bear' || shown) return;
     setShown(true);
     setVisible(true);
-    const t = setTimeout(() => setVisible(false), 4000);
+    const t = setTimeout(() => setVisible(false), 4500);
     return () => clearTimeout(t);
   }, [scenario, shown]);
 
@@ -385,11 +405,11 @@ function BearReveal({
     el.animate(
       [
         { opacity: 0, transform: 'translateY(8px)', offset: 0 },
-        { opacity: 1, transform: 'translateY(0)', offset: 0.1 },
-        { opacity: 1, transform: 'translateY(0)', offset: 0.8 },
+        { opacity: 1, transform: 'translateY(0)', offset: 0.08 },
+        { opacity: 1, transform: 'translateY(0)', offset: 0.88 },
         { opacity: 0, transform: 'translateY(0)', offset: 1 },
       ],
-      { duration: 4000, easing: 'ease-in-out', fill: 'forwards' }
+      { duration: 4500, easing: 'ease-in-out', fill: 'forwards' }
     );
   }, [visible]);
 
@@ -399,14 +419,13 @@ function BearReveal({
       ref={ref}
       role="status"
       style={{
-        padding: '10px 14px',
-        borderRadius: 12,
-        marginTop: 10,
+        padding: '16px 20px',
+        borderRadius: 14,
         background: 'rgba(251,185,49,0.08)',
-        border: '1px solid rgba(251,185,49,0.15)',
+        border: '1px solid rgba(251,185,49,0.18)',
         fontFamily: 'var(--font-body)',
-        fontSize: 12,
-        color: C.n800,
+        fontSize: 15,
+        color: C.body,
         lineHeight: 1.5,
         opacity: 0,
       }}
@@ -425,13 +444,14 @@ function DealTerms({
   onToggle: () => void;
 }) {
   return (
-    <div style={{ marginTop: 12 }}>
+    <div onClick={(e) => e.stopPropagation()}>
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={expanded}
         onPointerDown={(e) => {
-          e.currentTarget.style.transform = 'scale(0.97)';
+          e.stopPropagation();
+          e.currentTarget.style.transform = 'scale(0.98)';
         }}
         onPointerUp={(e) => {
           e.currentTarget.style.transform = 'scale(1)';
@@ -445,14 +465,15 @@ function DealTerms({
         style={{
           background: 'none',
           border: 'none',
-          cursor: 'pointer',
-          padding: 0,
           fontFamily: 'var(--font-body)',
-          fontSize: 12,
-          color: C.n600,
+          fontSize: 15,
+          fontWeight: 500,
+          color: C.caption,
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 4,
+          gap: 8,
+          padding: '12px 0',
+          minHeight: 44,
           transition: `transform 120ms ${EASE.sharp}`,
           WebkitTapHighlightColor: 'transparent',
         }}
@@ -460,10 +481,10 @@ function DealTerms({
         <span
           aria-hidden
           style={{
-            display: 'inline-block',
-            fontSize: 8,
             transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
             transition: `transform 250ms ${EASE.smooth}`,
+            display: 'inline-block',
+            fontSize: 10,
           }}
         >
           ▶
@@ -474,9 +495,9 @@ function DealTerms({
         <div
           style={{
             ...PANEL_LEVEL_1,
-            borderRadius: 14,
-            padding: 14,
-            marginTop: 10,
+            padding: '8px 24px',
+            borderRadius: 16,
+            marginTop: 8,
           }}
         >
           {DEAL_ROWS.map(([k, v], i) => (
@@ -486,18 +507,18 @@ function DealTerms({
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                padding: '5px 0',
+                padding: '14px 0',
                 borderBottom:
                   i < DEAL_ROWS.length - 1
-                    ? '1px solid rgba(0,0,0,0.04)'
+                    ? '1px solid rgba(0,0,0,0.05)'
                     : 'none',
               }}
             >
               <span
                 style={{
                   fontFamily: 'var(--font-body)',
-                  fontSize: 12,
-                  color: C.n600,
+                  fontSize: 15,
+                  color: C.caption,
                 }}
               >
                 {k}
@@ -505,8 +526,8 @@ function DealTerms({
               <span
                 style={{
                   fontFamily: 'var(--font-body)',
-                  fontSize: 10,
-                  color: C.n950,
+                  fontSize: 15,
+                  color: C.heading,
                   fontWeight: 500,
                   fontVariantNumeric: 'tabular-nums',
                   textAlign: 'right',
@@ -519,9 +540,10 @@ function DealTerms({
           <div
             style={{
               fontFamily: 'var(--font-body)',
-              fontSize: 9,
+              fontSize: 13,
               color: C.disabled,
-              marginTop: 8,
+              marginTop: 4,
+              paddingBottom: 14,
             }}
           >
             Indicative. Subject to final investor agreement.
@@ -536,22 +558,35 @@ export default function Step16Section8Financials({
   isActive,
   onComplete,
 }: StepProps) {
+  const [mounted, setMounted] = useState(false);
   const [scenario, setScenario] = useState<Scenario>('normal');
   const [year, setYear] = useState<Year>(5);
   const [expanded, setExpanded] = useState(false);
   const [exiting, setExiting] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const mountTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const d = DATA[scenario][year];
 
   useEffect(() => {
     if (!isActive) {
+      setMounted(false);
       setScenario('normal');
       setYear(5);
       setExpanded(false);
       setExiting(false);
+      setHasInteracted(false);
       return;
     }
+    mountTimer.current = setTimeout(() => setMounted(true), ENTER_DELAY_MS);
+    return () => {
+      if (mountTimer.current) clearTimeout(mountTimer.current);
+    };
+  }, [isActive]);
+
+  useEffect(() => {
+    if (!mounted) return;
     const el = contentRef.current;
     if (!el) return;
     if (reducedMotion()) {
@@ -560,18 +595,32 @@ export default function Step16Section8Financials({
     }
     el.animate(
       [
-        { opacity: 0, transform: 'translateY(20px) scale(0.98)' },
+        { opacity: 0, transform: 'translateY(24px) scale(0.98)' },
         { opacity: 1, transform: 'translateY(0) scale(1)' },
       ],
-      { duration: 450, easing: EASE.smooth, fill: 'forwards' }
+      { duration: 500, easing: EASE.smooth, fill: 'forwards' }
     );
-  }, [isActive]);
+  }, [mounted]);
+
+  const handleScenarioChange = useCallback((s: Scenario) => {
+    setHasInteracted(true);
+    setScenario(s);
+  }, []);
+
+  const handleYearChange = useCallback((y: Year) => {
+    setHasInteracted(true);
+    setYear(y);
+  }, []);
 
   const advance = useCallback(() => {
     if (exiting) return;
+    if (!hasInteracted) {
+      setHasInteracted(true);
+      return;
+    }
     if (exitTimer.current) clearTimeout(exitTimer.current);
     exitTimer.current = setTimeout(() => setExiting(true), EXIT_DELAY_MS);
-  }, [exiting]);
+  }, [exiting, hasInteracted]);
 
   useEffect(() => {
     if (!exiting) return;
@@ -592,62 +641,111 @@ export default function Step16Section8Financials({
 
   return (
     <div
+      data-step-16
+      onClick={advance}
       style={{
         position: 'absolute',
         inset: 0,
         background: C.bg,
         opacity: exiting ? 0 : 1,
         transform: exiting ? 'scale(0.97)' : 'scale(1)',
-        transition: `opacity 350ms ${EASE.smooth}, transform 350ms ${EASE.smooth}`,
+        transition: `opacity ${EXIT_DURATION_MS}ms ${EASE.smooth}, transform ${EXIT_DURATION_MS}ms ${EASE.smooth}`,
+        touchAction: 'manipulation',
+        WebkitTapHighlightColor: 'transparent',
       }}
     >
+      <style>{`
+        @media (prefers-reduced-motion: reduce) {
+          [data-step-16] *,
+          [data-step-16] *::before,
+          [data-step-16] *::after {
+            animation-duration: 0.001ms !important;
+            animation-delay: 0ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.001ms !important;
+            transition-delay: 0ms !important;
+          }
+        }
+        [data-step-16] ::-webkit-scrollbar { display: none; }
+        [data-step-16] * { scrollbar-width: none; }
+      `}</style>
       <div
+        ref={contentRef}
         style={{
           position: 'absolute',
           inset: 0,
+          padding:
+            'calc(96px + var(--safe-top)) var(--content-margin) calc(56px + var(--safe-bottom))',
           display: 'flex',
-          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: 32,
+          boxSizing: 'border-box',
+          opacity: 0,
         }}
       >
-        <div
-          ref={contentRef}
-          style={{
-            width: '100%',
-            maxWidth: 393,
-            padding:
-              'calc(70px + env(safe-area-inset-top, 0px)) 20px calc(40px + env(safe-area-inset-bottom, 0px))',
-            boxSizing: 'border-box',
-            opacity: 0,
-          }}
-        >
-          <h2
+        {/* header */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 13,
+              fontWeight: 500,
+              color: C.caption,
+              letterSpacing: '0.18em',
+            }}
+          >
+            SECTION 8
+          </div>
+          <h1
             style={{
               fontFamily: 'var(--font-heading)',
               fontWeight: 600,
-              fontSize: 18,
-              color: C.n950,
-              letterSpacing: '-0.01em',
+              fontSize: 48,
+              color: C.heading,
+              letterSpacing: '-0.025em',
+              lineHeight: 1.1,
               margin: 0,
-              marginBottom: 16,
-              lineHeight: 1.2,
             }}
           >
             Return projections
-          </h2>
+          </h1>
+        </div>
 
-          <div style={{ marginBottom: 14 }}>
-            <ScenarioTabs scenario={scenario} onChange={setScenario} />
+        {/* controls row */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 32,
+            flexWrap: 'wrap',
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <ScenarioTabs scenario={scenario} onChange={handleScenarioChange} />
+          <div style={{ flex: 1, minWidth: 280, maxWidth: 520 }}>
+            <YearSlider year={year} onChange={handleYearChange} />
           </div>
-          <div style={{ marginBottom: 24 }}>
-            <YearSlider year={year} onChange={setYear} />
-          </div>
+        </div>
 
+        {/* main grid: hero IRR left, secondary stack right */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1.4fr 1fr',
+            gap: 24,
+            flex: 1,
+            minHeight: 0,
+          }}
+        >
+          {/* hero IRR panel */}
           <div
             style={{
               ...PANEL_LEVEL_2,
-              borderRadius: 24,
-              padding: '28px 24px',
-              marginBottom: 16,
+              padding: '44px 44px',
+              borderRadius: 28,
+              overflow: 'hidden',
+              position: 'relative',
             }}
           >
             <div
@@ -655,51 +753,79 @@ export default function Step16Section8Financials({
               aria-label={`Estimated IRR pre-tax: ${fmtIrr(d.ip)}. ${fmtIrr(
                 d.ipo
               )} post-tax.`}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
+              }}
             >
               <div
                 style={{
                   fontFamily: 'var(--font-body)',
-                  fontSize: 12,
-                  color: C.n600,
-                  marginBottom: 8,
+                  fontSize: 15,
+                  fontWeight: 500,
+                  color: C.caption,
+                  letterSpacing: '0.04em',
+                  marginBottom: 16,
                 }}
               >
                 Estimated IRR (pre-tax)
               </div>
-              <AnimVal value={fmtIrr(d.ip)} size={56} />
+              <AnimVal value={fmtIrr(d.ip)} size={144} />
               <div
                 style={{
                   fontFamily: 'var(--font-body)',
-                  fontSize: 12,
-                  color: C.n600,
-                  marginTop: 8,
+                  fontSize: 17,
+                  color: C.caption,
+                  marginTop: 16,
                   fontVariantNumeric: 'tabular-nums',
                 }}
               >
                 {fmtIrr(d.ipo)} post-tax
               </div>
+              <div
+                aria-hidden
+                style={{
+                  marginTop: 32,
+                  height: 6,
+                  borderRadius: 3,
+                  width: `${heroBarPct}%`,
+                  background:
+                    'linear-gradient(90deg, #FBB931 0%, rgba(251,185,49,0.3) 100%)',
+                  transition: `width 400ms ${EASE.smooth}`,
+                  boxShadow: '0 0 12px rgba(251,185,49,0.3)',
+                }}
+              />
+              <div style={{ flex: 1 }} />
+              <div
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 13,
+                  color: C.disabled,
+                  marginTop: 16,
+                  lineHeight: 1.5,
+                }}
+              >
+                Based on 1 billion yen equity in a 2 billion yen project.
+              </div>
             </div>
-            <div
-              aria-hidden
-              style={{
-                marginTop: 18,
-                height: 3,
-                borderRadius: 2,
-                width: `${heroBarPct}%`,
-                background:
-                  'linear-gradient(90deg, #FBB931 0%, rgba(251,185,49,0.3) 100%)',
-                transition: `width 350ms ${EASE.smooth}`,
-              }}
-            />
           </div>
 
-          <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+          {/* secondary metrics stack */}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 16,
+            }}
+          >
             <div
               style={{
                 ...PANEL_LEVEL_1,
+                padding: '28px 32px',
+                borderRadius: 20,
                 flex: 1,
-                borderRadius: 12,
-                padding: '14px 16px',
+                overflow: 'hidden',
               }}
             >
               <div
@@ -711,20 +837,21 @@ export default function Step16Section8Financials({
                 <div
                   style={{
                     fontFamily: 'var(--font-body)',
-                    fontSize: 12,
-                    color: C.n600,
-                    marginBottom: 4,
+                    fontSize: 15,
+                    fontWeight: 500,
+                    color: C.caption,
+                    marginBottom: 12,
                   }}
                 >
                   Equity multiple
                 </div>
-                <AnimVal value={fmtEm(d.ep)} size={20} />
+                <AnimVal value={fmtEm(d.ep)} size={56} />
                 <div
                   style={{
                     fontFamily: 'var(--font-body)',
-                    fontSize: 12,
+                    fontSize: 15,
                     color: C.disabled,
-                    marginTop: 3,
+                    marginTop: 8,
                     fontVariantNumeric: 'tabular-nums',
                   }}
                 >
@@ -732,37 +859,40 @@ export default function Step16Section8Financials({
                 </div>
               </div>
             </div>
+
             <div
               style={{
                 ...PANEL_LEVEL_1,
+                padding: '28px 32px',
+                borderRadius: 20,
                 flex: 1,
-                borderRadius: 12,
-                padding: '14px 16px',
+                overflow: 'hidden',
               }}
             >
               <div
                 role="group"
-                aria-label={`Total return: ${fmtYen(d.rp)}. ${fmtYen(
+                aria-label={`Total return: ${fmtYen(d.rp)} JPY. ${fmtYen(
                   d.rpo
                 )} post-tax.`}
               >
                 <div
                   style={{
                     fontFamily: 'var(--font-body)',
-                    fontSize: 12,
-                    color: C.n600,
-                    marginBottom: 4,
+                    fontSize: 15,
+                    fontWeight: 500,
+                    color: C.caption,
+                    marginBottom: 12,
                   }}
                 >
                   Total return
                 </div>
-                <AnimVal value={fmtYen(d.rp)} size={20} />
+                <AnimVal value={fmtYen(d.rp)} size={56} />
                 <div
                   style={{
                     fontFamily: 'var(--font-body)',
-                    fontSize: 12,
+                    fontSize: 15,
                     color: C.disabled,
-                    marginTop: 3,
+                    marginTop: 8,
                     fontVariantNumeric: 'tabular-nums',
                   }}
                 >
@@ -771,16 +901,14 @@ export default function Step16Section8Financials({
               </div>
             </div>
           </div>
-
-          <BearReveal scenario={scenario} postIrr={d.ipo} />
-          <DealTerms
-            expanded={expanded}
-            onToggle={() => setExpanded((v) => !v)}
-          />
         </div>
-      </div>
 
-      <NextButton onClick={advance} visible={!exiting} />
+        <BearReveal scenario={scenario} postIrr={d.ipo} />
+        <DealTerms
+          expanded={expanded}
+          onToggle={() => setExpanded((v) => !v)}
+        />
+      </div>
     </div>
   );
 }

@@ -1,27 +1,38 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
+  onBack?: () => void;
 }
 
 const C = {
   bg: '#F9F9F9',
   n950: '#25272C',
   n600: '#5B616E',
+  amber: '#FBB931',
+};
+
+const F = {
+  h: '"REM", system-ui, sans-serif',
+  b: '"Noto Sans JP", system-ui, sans-serif',
 };
 
 const PANEL_LEVEL_1 = {
   background: C.bg,
   border: '1px solid rgba(0,0,0,0.06)',
   boxShadow: '0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)',
+  borderRadius: 20,
 } as const;
 
-const EASE = {
-  gentle: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-};
+const PANEL_LEVEL_2 = {
+  background: C.bg,
+  border: '1px solid rgba(0,0,0,0.08)',
+  boxShadow: '0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)',
+  borderRadius: 28,
+} as const;
 
 const FAQ_GHOST = [
   'What if TSMC slows down or pulls out?',
@@ -32,90 +43,158 @@ const FAQ_GHOST = [
   'What governance rights do TK investors have?',
 ];
 
+const LABEL_FADE_MS = 300;
+const PRE_CARDS_DELAY_MS = 200;
+const CARD_DURATION_MS = 600;
+const CARD_STAGGER_MS = 100;
+const POST_CARDS_HOLD_MS = 800;
+const PRE_RESOLVE_DELAY_MS = 0;
+const RESOLVE_DURATION_MS = 650;
+const TAP_PROMPT_DELAY_MS = 400;
+
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 const reducedMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const CARD_DURATION_MS = 600;
-const CARD_STAGGER_MS = 100;
-const TRAILING_BUFFER_MS = 250;
-
 export default function Step19Section10Transition({
   isActive,
   onComplete,
 }: StepProps) {
-  const labelRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const resolveRef = useRef<HTMLDivElement | null>(null);
+
+  const [resolveVisible, setResolveVisible] = useState(false);
+  const [tapVisible, setTapVisible] = useState(false);
+  const running = useRef(false);
+  const cancelledRef = useRef(false);
 
   useEffect(() => {
     if (!isActive) return;
+    cancelledRef.current = false;
+
     const label = labelRef.current;
     const cards = cardRefs.current;
-    let cancelled = false;
-    let advanceTimer: ReturnType<typeof setTimeout> | null = null;
 
     const run = async () => {
+      if (running.current) return;
+      running.current = true;
+
       if (reducedMotion()) {
         if (label) label.style.opacity = '0';
-        cards.forEach((card) => {
-          if (card) {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(-140px)';
-          }
+        cards.forEach((c) => {
+          if (c) c.style.opacity = '0';
         });
-        advanceTimer = setTimeout(() => {
-          if (!cancelled) onComplete();
-        }, 200);
+        setResolveVisible(true);
+        await wait(30);
+        if (cancelledRef.current) return;
+        if (resolveRef.current) resolveRef.current.style.opacity = '1';
+        setTapVisible(true);
         return;
       }
 
       if (label) {
         label.animate(
           [{ opacity: 1 }, { opacity: 0 }],
-          { duration: 300, easing: EASE.gentle, fill: 'forwards' }
+          {
+            duration: LABEL_FADE_MS,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            fill: 'forwards',
+          }
         );
       }
-      await wait(200);
-      if (cancelled) return;
+      await wait(PRE_CARDS_DELAY_MS);
+      if (cancelledRef.current) return;
 
+      // Cards rise upward in reverse order (5 → 0), last in first out
       for (let i = FAQ_GHOST.length - 1; i >= 0; i--) {
         const card = cards[i];
-        if (card) {
-          card.animate(
-            [
-              { opacity: 1, transform: 'translateY(0)' },
-              { opacity: 0.6, transform: 'translateY(-30px)', offset: 0.4 },
-              { opacity: 0.2, transform: 'translateY(-80px)', offset: 0.75 },
-              { opacity: 0, transform: 'translateY(-140px)' },
-            ],
-            { duration: CARD_DURATION_MS, easing: EASE.gentle, fill: 'forwards' }
-          );
-        }
-        if (i > 0) await wait(CARD_STAGGER_MS);
+        if (!card) continue;
+        card.animate(
+          [
+            { opacity: 1, transform: 'translateY(0)' },
+            { opacity: 0.6, transform: 'translateY(-48px)', offset: 0.4 },
+            { opacity: 0.2, transform: 'translateY(-128px)', offset: 0.75 },
+            { opacity: 0, transform: 'translateY(-220px)' },
+          ],
+          {
+            duration: CARD_DURATION_MS,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            fill: 'forwards',
+          }
+        );
+        await wait(CARD_STAGGER_MS);
       }
 
-      await wait(CARD_DURATION_MS + TRAILING_BUFFER_MS);
-      if (cancelled) return;
+      await wait(POST_CARDS_HOLD_MS);
+      if (cancelledRef.current) return;
 
-      onComplete();
+      await wait(PRE_RESOLVE_DELAY_MS);
+      if (cancelledRef.current) return;
+
+      setResolveVisible(true);
+      await wait(30);
+      if (cancelledRef.current) return;
+
+      if (resolveRef.current) {
+        resolveRef.current.animate(
+          [
+            { opacity: 0, transform: 'translateY(40px) scale(0.97)' },
+            {
+              opacity: 0.6,
+              transform: 'translateY(12px) scale(0.99)',
+              offset: 0.5,
+            },
+            { opacity: 1, transform: 'translateY(0) scale(1)' },
+          ],
+          {
+            duration: RESOLVE_DURATION_MS,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            fill: 'forwards',
+          }
+        );
+        await wait(RESOLVE_DURATION_MS);
+      }
+      if (cancelledRef.current) return;
+
+      await wait(TAP_PROMPT_DELAY_MS);
+      if (cancelledRef.current) return;
+      setTapVisible(true);
     };
+
     run();
 
     return () => {
-      cancelled = true;
-      if (advanceTimer) clearTimeout(advanceTimer);
-      [label, ...cards].forEach((node) => {
+      cancelledRef.current = true;
+      running.current = false;
+      const nodes: Array<HTMLElement | null> = [
+        label,
+        resolveRef.current,
+        ...cards,
+      ];
+      nodes.forEach((node) => {
         node?.getAnimations().forEach((a) => a.cancel());
       });
     };
-  }, [isActive, onComplete]);
+  }, [isActive]);
 
   if (!isActive) return null;
 
   return (
     <div
+      data-step-19
+      onClick={tapVisible ? onComplete : undefined}
+      role="button"
+      tabIndex={0}
+      aria-label="Tap to continue"
+      onKeyDown={(e) => {
+        if ((e.key === 'Enter' || e.key === ' ') && tapVisible) {
+          e.preventDefault();
+          onComplete();
+        }
+      }}
       style={{
         position: 'absolute',
         inset: 0,
@@ -123,99 +202,178 @@ export default function Step19Section10Transition({
         overflow: 'hidden',
       }}
     >
+      <style>{`
+        @media (prefers-reduced-motion: reduce) {
+          [data-step-19] *,
+          [data-step-19] *::before,
+          [data-step-19] *::after {
+            animation-duration: 0.001ms !important;
+            animation-delay: 0ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.001ms !important;
+            transition-delay: 0ms !important;
+          }
+        }
+      `}</style>
+
       <div
         style={{
           position: 'absolute',
-          inset: 0,
+          top: 'calc(96px + var(--safe-top))',
+          bottom: 'calc(120px + var(--safe-bottom))',
+          left: 'var(--content-margin)',
+          right: 'var(--content-margin)',
           display: 'flex',
-          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
+          zIndex: 3,
         }}
       >
+        <div style={{ width: '100%', maxWidth: 880 }}>
+          <div
+            ref={labelRef}
+            style={{
+              fontFamily: F.b,
+              fontWeight: 500,
+              fontSize: 13,
+              letterSpacing: '0.01em',
+              color: C.n600,
+              marginBottom: 24,
+            }}
+          >
+            Risk factors
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {FAQ_GHOST.map((q, i) => (
+              <div
+                key={q}
+                ref={(el) => {
+                  cardRefs.current[i] = el;
+                }}
+                style={{
+                  ...PANEL_LEVEL_1,
+                  padding: '20px 24px',
+                  overflow: 'hidden',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <div
+                    style={{
+                      flex: 1,
+                      fontFamily: F.b,
+                      fontWeight: 500,
+                      fontSize: 17,
+                      lineHeight: 1.45,
+                      color: C.n950,
+                    }}
+                  >
+                    {q}
+                  </div>
+                  <div
+                    aria-hidden
+                    style={{ fontSize: 18, color: C.n600, flexShrink: 0 }}
+                  >
+                    &#9662;
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {resolveVisible && (
         <div
           style={{
-            position: 'relative',
-            width: '100%',
-            maxWidth: 393,
+            position: 'absolute',
+            top: '50%',
+            left: 'var(--content-margin)',
+            right: 'var(--content-margin)',
+            transform: 'translateY(-50%)',
+            display: 'flex',
+            justifyContent: 'center',
+            zIndex: 6,
           }}
         >
           <div
+            ref={resolveRef}
             style={{
-              position: 'absolute',
-              inset: 0,
-              padding:
-                'calc(64px + env(safe-area-inset-top, 0px)) 20px calc(56px + env(safe-area-inset-bottom, 0px))',
-              display: 'flex',
-              flexDirection: 'column',
+              ...PANEL_LEVEL_2,
+              padding: '48px 56px',
+              opacity: 0,
+              width: '100%',
+              maxWidth: 720,
+              overflow: 'hidden',
             }}
           >
-            <div
-              ref={labelRef}
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontWeight: 500,
-                fontSize: 12,
-                color: C.n600,
-                marginBottom: 12,
-                letterSpacing: '0.01em',
-              }}
-            >
-              Risk factors
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 6,
-              }}
-            >
-              {FAQ_GHOST.map((q, i) => (
-                <div
-                  key={q}
-                  ref={(el) => {
-                    cardRefs.current[i] = el;
-                  }}
-                  style={{
-                    ...PANEL_LEVEL_1,
-                    borderRadius: 20,
-                    padding: '12px 14px',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                    }}
-                  >
-                    <div
-                      style={{
-                        flex: 1,
-                        fontFamily: 'var(--font-body)',
-                        fontWeight: 500,
-                        fontSize: 13,
-                        lineHeight: 1.35,
-                        color: C.n950,
-                      }}
-                    >
-                      {q}
-                    </div>
-                    <div
-                      aria-hidden
-                      style={{
-                        fontSize: 14,
-                        color: C.n600,
-                        flexShrink: 0,
-                        lineHeight: 1,
-                      }}
-                    >
-                      ▾
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div style={{ position: 'relative', zIndex: 4 }}>
+              <div
+                style={{
+                  fontFamily: F.b,
+                  fontWeight: 500,
+                  fontSize: 13,
+                  letterSpacing: '0.18em',
+                  color: C.n600,
+                  marginBottom: 16,
+                }}
+              >
+                Section 10
+              </div>
+              <div
+                style={{
+                  fontFamily: F.h,
+                  fontWeight: 600,
+                  fontSize: 48,
+                  lineHeight: 1.1,
+                  letterSpacing: '-0.025em',
+                  color: C.n950,
+                }}
+              >
+                Exit strategy
+              </div>
+              <div
+                style={{
+                  width: 64,
+                  height: 3,
+                  background: C.amber,
+                  borderRadius: 2,
+                  marginTop: 28,
+                  boxShadow: '0 0 12px rgba(251,185,49,0.4)',
+                }}
+              />
             </div>
           </div>
         </div>
+      )}
+
+      <div
+        aria-live="polite"
+        style={{
+          position: 'absolute',
+          bottom: 'calc(48px + var(--safe-bottom))',
+          left: 0,
+          right: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          zIndex: 10,
+          opacity: tapVisible ? 1 : 0,
+          transform: tapVisible ? 'translateY(0)' : 'translateY(8px)',
+          transition:
+            'opacity 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          pointerEvents: 'none',
+        }}
+      >
+        <span
+          style={{
+            fontFamily: F.b,
+            fontSize: 15,
+            fontWeight: 500,
+            letterSpacing: '0.01em',
+            color: C.n600,
+          }}
+        >
+          Tap to continue
+        </span>
       </div>
     </div>
   );

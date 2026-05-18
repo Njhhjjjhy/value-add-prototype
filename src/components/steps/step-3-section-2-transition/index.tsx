@@ -1,29 +1,28 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
+  onBack?: () => void;
 }
 
-const N = {
-  950: '#25272C',
-  900: '#383A42',
-  800: '#40444C',
+const C = {
+  heading: '#25272C',
+  sub: '#383A42',
+  bg: '#F9F9F9',
+  band: '#EDEEF1',
 };
+
+const FONT_HEADING = '"REM", system-ui, sans-serif';
+const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
 const ENTRY_HOLD_MS = 900;
 const SWEEP_DURATION_MS = 700;
+const TOTAL_DURATION_MS = ENTRY_HOLD_MS + SWEEP_DURATION_MS;
 
-const BARS = [
-  { label: 'Serviced apartments', width: '78%', elev: 1 },
-  { label: 'TSMC / JASM semiconductor hub', width: '92%', elev: 1 },
-  { label: 'Taiwanese engineers', width: '68%', elev: 1 },
-  { label: '12-15% IRR', width: '52%', elev: 2 },
-];
-
-function Logo({ id, size }: { id: string; size: number }) {
+function Logo({ id = 'step3', size = 96 }: { id?: string; size?: number }) {
   const h = size * (24 / 56);
   return (
     <svg width={size} height={h} viewBox="0 0 56 24" fill="none">
@@ -64,25 +63,46 @@ function Logo({ id, size }: { id: string; size: number }) {
 }
 
 export default function Step3Section2Transition({ isActive, onComplete }: StepProps) {
-  const [phase, setPhase] = useState<'entry' | 'exiting'>('entry');
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const exitingRef = useRef<HTMLDivElement | null>(null);
+  const bandRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!isActive) return;
-    setPhase('entry');
+
+    if (exitingRef.current) exitingRef.current.style.animation = 'none';
+    if (bandRef.current) bandRef.current.style.animation = 'none';
+
     timers.current = [
-      setTimeout(() => setPhase('exiting'), ENTRY_HOLD_MS),
-      setTimeout(() => onComplete(), ENTRY_HOLD_MS + SWEEP_DURATION_MS),
+      setTimeout(() => {
+        if (exitingRef.current) {
+          exitingRef.current.style.animation = `step3SweepOut ${SWEEP_DURATION_MS}ms ease-in-out forwards`;
+        }
+        if (bandRef.current) {
+          bandRef.current.style.animation = `step3SweepBand ${SWEEP_DURATION_MS}ms ease-in-out forwards`;
+        }
+      }, ENTRY_HOLD_MS),
+      setTimeout(() => onComplete(), TOTAL_DURATION_MS),
     ];
+
     return () => {
       timers.current.forEach(clearTimeout);
+      timers.current = [];
     };
   }, [isActive, onComplete]);
 
   if (!isActive) return null;
 
   return (
-    <div data-step-3 className="relative w-full h-full" style={{ background: '#F9F9F9' }}>
+    <div
+      data-step-3
+      style={{
+        position: 'absolute',
+        inset: 0,
+        background: C.bg,
+        overflow: 'hidden',
+      }}
+    >
       <style>{`
         @keyframes step3SweepOut {
           0% { clip-path: inset(0 0 0 0); }
@@ -94,47 +114,54 @@ export default function Step3Section2Transition({ isActive, onComplete }: StepPr
           55% { clip-path: inset(0 0 0 0); }
           100% { clip-path: inset(0 0 0 100%); }
         }
+        @media (prefers-reduced-motion: reduce) {
+          [data-step-3] *,
+          [data-step-3] *::before,
+          [data-step-3] *::after {
+            animation-duration: 0.001ms !important;
+            animation-delay: 0ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.001ms !important;
+            transition-delay: 0ms !important;
+          }
+        }
       `}</style>
 
       <div
+        ref={exitingRef}
         style={{
           position: 'absolute',
           inset: 0,
-          animation:
-            phase === 'exiting'
-              ? `step3SweepOut ${SWEEP_DURATION_MS}ms ease-in-out forwards`
-              : 'none',
+          zIndex: 5,
         }}
       >
         <div
           style={{
             position: 'absolute',
-            top: 'calc(60px + env(safe-area-inset-top, 0px))',
-            left: 24,
+            top: 'calc(96px + var(--safe-top))',
+            left: 'var(--content-margin)',
           }}
         >
-          <Logo id="step3" size={48} />
+          <Logo />
         </div>
-
         <div
           style={{
             position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            padding: '0 24px',
-            justifyContent: 'center',
+            bottom: 'calc(200px + var(--safe-bottom))',
+            left: 'var(--content-margin)',
+            right: 'var(--content-margin)',
+            maxWidth: 1120,
           }}
         >
           <h1
             style={{
-              fontFamily: 'var(--font-heading)',
+              fontFamily: FONT_HEADING,
               fontWeight: 600,
-              fontSize: 36,
-              lineHeight: 1.1,
-              letterSpacing: '-0.025em',
-              color: N[950],
-              margin: '0 0 8px 0',
+              fontSize: 96,
+              lineHeight: 1.05,
+              letterSpacing: '-0.03em',
+              color: C.heading,
+              margin: '0 0 24px 0',
             }}
           >
             Why Kumamoto,
@@ -143,56 +170,28 @@ export default function Step3Section2Transition({ isActive, onComplete }: StepPr
           </h1>
           <p
             style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: 15,
-              fontWeight: 400,
-              color: N[900],
-              lineHeight: 1.5,
-              margin: '0 0 28px 0',
+              fontFamily: FONT_BODY,
+              fontSize: 22,
+              lineHeight: 1.4,
+              color: C.sub,
+              margin: 0,
             }}
           >
             {"Japan's fastest-rising property market"}
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {BARS.map((b, i) => {
-              const isL2 = b.elev === 2;
-              return (
-                <div
-                  key={i}
-                  style={{
-                    width: b.width,
-                    padding: isL2 ? '10px 16px' : '8px 14px',
-                    borderRadius: 12,
-                    background: '#F9F9F9',
-                    border: `1px solid rgba(0,0,0,${isL2 ? 0.08 : 0.06})`,
-                    boxShadow: isL2
-                      ? '0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)'
-                      : '0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)',
-                    fontFamily: 'var(--font-body)',
-                    fontSize: 14,
-                    fontWeight: isL2 ? 600 : 400,
-                    color: isL2 ? N[950] : N[800],
-                    lineHeight: 1.4,
-                  }}
-                >
-                  {b.label}
-                </div>
-              );
-            })}
-          </div>
         </div>
       </div>
 
-      {phase === 'exiting' && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: '#EDEEF1',
-            animation: `step3SweepBand ${SWEEP_DURATION_MS}ms ease-in-out forwards`,
-          }}
-        />
-      )}
+      <div
+        ref={bandRef}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 6,
+          background: C.band,
+          clipPath: 'inset(0 100% 0 0)',
+        }}
+      />
     </div>
   );
 }

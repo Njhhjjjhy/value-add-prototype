@@ -1,28 +1,30 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import NextButton from '@/components/shared/NextButton';
 
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
+  onBack?: () => void;
 }
 
+const AMBER = '#FBB931';
 const N = {
   950: '#25272C',
   900: '#383A42',
   800: '#40444C',
+  600: '#5B616E',
 };
 
+const HOLD_DURATION = 800;
+const RING_SIZE = 72;
+const RING_R = 33;
+const RING_C = RING_SIZE / 2;
+const CIRCUMFERENCE = 2 * Math.PI * RING_R;
+
+const ENTER_DELAY_MS = 80;
 const EXIT_DELAY_MS = 150;
 const EXIT_DURATION_MS = 350;
-
-const BARS = [
-  { label: 'Serviced apartments', width: '78%', elev: 1, delay: 0 },
-  { label: 'TSMC / JASM semiconductor hub', width: '92%', elev: 1, delay: 0.08 },
-  { label: 'Taiwanese engineers', width: '68%', elev: 1, delay: 0.16 },
-  { label: '12-15% IRR', width: '52%', elev: 2, delay: 0.24 },
-];
 
 function Logo({ id, size }: { id: string; size: number }) {
   const h = size * (24 / 56);
@@ -65,127 +67,307 @@ function Logo({ id, size }: { id: string; size: number }) {
 }
 
 export default function Step2Section1Entry({ isActive, onComplete }: StepProps) {
+  const [mounted, setMounted] = useState(false);
   const [exiting, setExiting] = useState(false);
-  const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [holdProgress, setHoldProgress] = useState(0);
+  const [holding, setHolding] = useState(false);
+  const holdStart = useRef<number | null>(null);
+  const holdRaf = useRef<number | null>(null);
+  const holdConfirmed = useRef(false);
+  const mountTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const exitDelayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const advance = useCallback(() => {
+  useEffect(() => {
+    if (!isActive) {
+      setMounted(false);
+      setExiting(false);
+      setHoldProgress(0);
+      setHolding(false);
+      holdStart.current = null;
+      holdConfirmed.current = false;
+      return;
+    }
+    mountTimer.current = setTimeout(() => setMounted(true), ENTER_DELAY_MS);
+    return () => {
+      if (mountTimer.current) clearTimeout(mountTimer.current);
+    };
+  }, [isActive]);
+
+  const triggerAdvance = useCallback(() => {
     if (exiting) return;
-    if (exitTimer.current) clearTimeout(exitTimer.current);
-    exitTimer.current = setTimeout(() => setExiting(true), EXIT_DELAY_MS);
+    if (exitDelayTimer.current) clearTimeout(exitDelayTimer.current);
+    exitDelayTimer.current = setTimeout(() => setExiting(true), EXIT_DELAY_MS);
   }, [exiting]);
 
   useEffect(() => {
     if (!exiting) return;
-    const timer = setTimeout(() => onComplete(), EXIT_DURATION_MS);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => onComplete(), EXIT_DURATION_MS);
+    return () => clearTimeout(t);
   }, [exiting, onComplete]);
 
   useEffect(() => {
     return () => {
-      if (exitTimer.current) clearTimeout(exitTimer.current);
+      if (holdRaf.current) cancelAnimationFrame(holdRaf.current);
+      if (exitDelayTimer.current) clearTimeout(exitDelayTimer.current);
     };
+  }, []);
+
+  const animateHold = useCallback(() => {
+    if (!holdStart.current) return;
+    const elapsed = Date.now() - holdStart.current;
+    const p = Math.min(elapsed / HOLD_DURATION, 1);
+    setHoldProgress(p);
+    if (p >= 1 && !holdConfirmed.current) {
+      holdConfirmed.current = true;
+      triggerAdvance();
+      return;
+    }
+    if (p < 1) holdRaf.current = requestAnimationFrame(animateHold);
+  }, [triggerAdvance]);
+
+  const onHoldStart = useCallback(
+    (e: React.PointerEvent) => {
+      e.preventDefault();
+      if (exiting || holdConfirmed.current) return;
+      holdConfirmed.current = false;
+      holdStart.current = Date.now();
+      setHolding(true);
+      holdRaf.current = requestAnimationFrame(animateHold);
+    },
+    [exiting, animateHold],
+  );
+
+  const onHoldEnd = useCallback(() => {
+    holdStart.current = null;
+    setHolding(false);
+    if (holdRaf.current) cancelAnimationFrame(holdRaf.current);
+    if (!holdConfirmed.current) setHoldProgress(0);
   }, []);
 
   if (!isActive) return null;
 
+  const dashOffset = CIRCUMFERENCE * (1 - holdProgress);
+
   return (
-    <div data-step-2 className="relative w-full h-full" style={{ background: '#F9F9F9' }}>
+    <div
+      data-step-2
+      style={{
+        position: 'absolute',
+        inset: 0,
+        background: '#F9F9F9',
+        opacity: exiting ? 0 : 1,
+        transform: exiting ? 'scale(0.97)' : 'scale(1)',
+        transition: `opacity ${EXIT_DURATION_MS}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform ${EXIT_DURATION_MS}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
+        touchAction: 'manipulation',
+        WebkitTapHighlightColor: 'transparent',
+      }}
+    >
       <style>{`
         [data-step-2] .entry-h1 {
           font-family: var(--font-heading);
           font-weight: 600;
-          font-size: 36px;
-          line-height: 1.1;
-          letter-spacing: -0.025em;
+          font-size: 72px;
+          line-height: 1.05;
+          letter-spacing: -0.03em;
           color: ${N[950]};
-          margin: 0 0 8px 0;
+          margin: 0 0 16px 0;
         }
         [data-step-2] .entry-sub {
           font-family: var(--font-body);
-          font-size: 15px;
+          font-size: 22px;
           font-weight: 400;
           color: ${N[900]};
           line-height: 1.5;
-          margin: 0 0 28px 0;
+          margin: 0;
         }
-        [data-step-2] .glass-bar {
-          padding: 8px 14px;
-          border-radius: 12px;
+        [data-step-2] .fact-chip {
+          display: inline-block;
+          padding: 10px 22px;
+          border-radius: 9999px;
           background: #F9F9F9;
           border: 1px solid rgba(0,0,0,0.06);
           box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
           font-family: var(--font-body);
-          font-size: 14px;
-          font-weight: 400;
-          color: ${N[800]};
+          font-size: 15px;
+          font-weight: 500;
+          color: ${N[600]};
+          letter-spacing: 0.01em;
           line-height: 1.4;
         }
-        [data-step-2] .glass-bar.elev2 {
-          padding: 10px 16px;
-          border: 1px solid rgba(0,0,0,0.08);
-          box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+        [data-step-2] .fact-chip.bold {
           font-weight: 600;
           color: ${N[950]};
         }
-        @keyframes step2BarSlideIn {
-          from { opacity: 0; transform: translateX(-16px); }
-          to { opacity: 1; transform: translateX(0); }
+        @keyframes step2FadeRise {
+          from { opacity: 0; transform: translateY(24px) scale(0.97); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes step2ChipRise {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          [data-step-2] *,
+          [data-step-2] *::before,
+          [data-step-2] *::after {
+            animation-duration: 0.001ms !important;
+            animation-delay: 0ms !important;
+            transition-duration: 0.001ms !important;
+            transition-delay: 0ms !important;
+          }
         }
       `}</style>
 
+      {/* Logo top-left */}
       <div
         style={{
           position: 'absolute',
-          inset: 0,
-          opacity: exiting ? 0 : 1,
-          transform: exiting ? 'scale(0.97)' : 'scale(1)',
+          top: 'calc(96px + var(--safe-top))',
+          left: 'var(--content-margin)',
+          opacity: mounted ? 1 : 0,
+          transform: mounted ? 'translateY(0)' : 'translateY(8px)',
           transition:
-            'opacity 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            'opacity 500ms cubic-bezier(0,0,0.2,1) 50ms, transform 500ms cubic-bezier(0,0,0.2,1) 50ms',
         }}
+      >
+        <Logo id="step2-warmth" size={80} />
+      </div>
+
+      {/* Bottom-anchored copy block + chips */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 'calc(180px + var(--safe-bottom))',
+          left: 'var(--content-margin)',
+          right: 'var(--content-margin)',
+          maxWidth: 1040,
+        }}
+      >
+        <h1
+          className="entry-h1"
+          style={{
+            opacity: mounted ? 1 : 0,
+            transform: mounted ? 'translateY(0) scale(1)' : 'translateY(24px) scale(0.97)',
+            transition:
+              'opacity 600ms cubic-bezier(0,0,0.2,1) 150ms, transform 600ms cubic-bezier(0,0,0.2,1) 150ms',
+          }}
+        >
+          Why Kumamoto,
+          <br />
+          Why Now?
+        </h1>
+        <p
+          className="entry-sub"
+          style={{
+            marginBottom: 32,
+            opacity: mounted ? 1 : 0,
+            transform: mounted ? 'translateY(0)' : 'translateY(12px)',
+            transition:
+              'opacity 600ms cubic-bezier(0,0,0.2,1) 320ms, transform 600ms cubic-bezier(0,0,0.2,1) 320ms',
+          }}
+        >
+          {"Japan's fastest-rising property market"}
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+          {[
+            { label: 'Serviced apartments', bold: false, delay: 480 },
+            { label: 'TSMC / JASM hub', bold: false, delay: 560 },
+            { label: 'Taiwanese engineers', bold: false, delay: 640 },
+            { label: '12-15% IRR', bold: true, delay: 720 },
+          ].map((chip) => (
+            <span
+              key={chip.label}
+              className={`fact-chip${chip.bold ? ' bold' : ''}`}
+              style={{
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? 'translateY(0)' : 'translateY(12px)',
+                transition: `opacity 500ms cubic-bezier(0,0,0.2,1) ${chip.delay}ms, transform 500ms cubic-bezier(0,0,0.2,1) ${chip.delay}ms`,
+              }}
+            >
+              {chip.label}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Hold-to-confirm button, bottom-right */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 'calc(72px + var(--safe-bottom))',
+          right: 'var(--content-margin)',
+          zIndex: 10,
+          width: RING_SIZE,
+          height: RING_SIZE,
+          touchAction: 'none',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          opacity: mounted ? 1 : 0,
+          transform: mounted ? 'scale(1)' : 'scale(0.94)',
+          transition:
+            'opacity 500ms cubic-bezier(0,0,0.2,1) 800ms, transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 800ms',
+        }}
+        onPointerDown={onHoldStart}
+        onPointerUp={onHoldEnd}
+        onPointerLeave={onHoldEnd}
+        onPointerCancel={onHoldEnd}
+        role="button"
+        aria-label="Hold to enter"
       >
         <div
           style={{
             position: 'absolute',
-            top: 'calc(60px + env(safe-area-inset-top, 0px))',
-            left: 24,
+            inset: 0,
+            borderRadius: '50%',
+            background: '#F9F9F9',
+            border: '1px solid rgba(0,0,0,0.06)',
+            boxShadow: holding
+              ? '0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)'
+              : '0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)',
+            transition: 'box-shadow 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           }}
+        />
+        <svg
+          style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}
+          width={RING_SIZE}
+          height={RING_SIZE}
         >
-          <Logo id="step2-layers" size={48} />
-        </div>
-
-        <div
+          <circle
+            cx={RING_C}
+            cy={RING_C}
+            r={RING_R}
+            fill="none"
+            stroke={AMBER}
+            strokeWidth="3"
+            strokeDasharray={CIRCUMFERENCE}
+            strokeDashoffset={dashOffset}
+            strokeLinecap="round"
+            style={{
+              transition: holding
+                ? 'none'
+                : 'stroke-dashoffset 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            }}
+          />
+        </svg>
+        <svg
           style={{
             position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            padding: '0 24px',
-            justifyContent: 'center',
+            top: (RING_SIZE - 28) / 2,
+            left: (RING_SIZE - 28) / 2,
           }}
+          width="28"
+          height="28"
+          viewBox="0 0 20 20"
+          fill="none"
         >
-          <h1 className="entry-h1">
-            Why Kumamoto,
-            <br />
-            Why Now?
-          </h1>
-          <p className="entry-sub">{"Japan's fastest-rising property market"}</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {BARS.map((b, i) => (
-              <div
-                key={i}
-                className={`glass-bar${b.elev === 2 ? ' elev2' : ''}`}
-                style={{
-                  width: b.width,
-                  animation: `step2BarSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${b.delay}s both`,
-                }}
-              >
-                {b.label}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <NextButton onClick={advance} />
+          <path
+            d="M7 4l6 6-6 6"
+            stroke={N[950]}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </div>
     </div>
   );

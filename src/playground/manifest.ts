@@ -28,6 +28,11 @@ export type PrototypeFile = {
   /** "jsx" renders as a mounted React component. "html" iframes a static file in /public. */
   kind: "jsx" | "html";
   /** Only for kind === "jsx". Lazy component loader. May accept a `variant` prop. */
+  // reason: `any` is intentional. Every prototype file is fully self-contained
+  // per the playground isolation rule (CLAUDE.md), so they each have different
+  // internal prop shapes (variant ids, component signatures). The manifest
+  // treats them as opaque components; a shared generic type would force them
+  // to share a contract, breaking the isolation.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component?: ComponentType<any>;
   /** Only for kind === "html". Absolute URL path under /public. */
@@ -39,6 +44,14 @@ export type PrototypeFile = {
    * matching variant. Internal chips inside the prototype should be removed.
    */
   variants?: PrototypeVariant[];
+  /**
+   * True for prototypes that were designed at iPhone dimensions (393×852)
+   * and still draw their own iPhone shell internally. The playground preview
+   * will render a clean "pending iPad adaptation" placeholder for these
+   * instead of loading the iPhone-framed content. Remove this flag once a
+   * prototype has been redesigned at iPad Pro 13 dimensions.
+   */
+  iphoneEra?: boolean;
 };
 
 export type StepDrawer = {
@@ -201,6 +214,78 @@ const Step18RiskFactors = dynamic(
   { ssr: false }
 );
 
+const Step8PersonaSpecimen = dynamic(
+  () =>
+    import(
+      "./prototypes/step-8-section-4-persona/step-8-persona-v1-specimen.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step8PersonaDay = dynamic(
+  () =>
+    import(
+      "./prototypes/step-8-section-4-persona/step-8-persona-v2-day.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step8PersonaGrid = dynamic(
+  () =>
+    import(
+      "./prototypes/step-8-section-4-persona/step-8-persona-v3-grid.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step21PdfTransitionThreshold = dynamic(
+  () =>
+    import(
+      "./prototypes/step-21-pdf-transition/step-21-pdf-transition-v1-threshold.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step21PdfTransitionMemo = dynamic(
+  () =>
+    import(
+      "./prototypes/step-21-pdf-transition/step-21-pdf-transition-v2-memo.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step21PdfTransitionReveal = dynamic(
+  () =>
+    import(
+      "./prototypes/step-21-pdf-transition/step-21-pdf-transition-v3-reveal.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step22DownloadPdfThreshold = dynamic(
+  () =>
+    import(
+      "./prototypes/step-22-download-pdf/step-22-download-pdf-v1-threshold.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step22DownloadPdfMemo = dynamic(
+  () =>
+    import(
+      "./prototypes/step-22-download-pdf/step-22-download-pdf-v2-memo.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step22DownloadPdfReveal = dynamic(
+  () =>
+    import(
+      "./prototypes/step-22-download-pdf/step-22-download-pdf-v3-reveal.jsx"
+    ),
+  { ssr: false }
+);
+
 export const STEPS: StepDrawer[] = [
   {
     index: 1,
@@ -332,8 +417,24 @@ export const STEPS: StepDrawer[] = [
     index: 8,
     id: "step-8-section-4-persona",
     label: "Section 4 — persona",
-    status: "blocked",
-    prototypes: [],
+    status: "in-progress",
+    prototypes: [
+      {
+        filename: "step-8-persona-v1-specimen.jsx",
+        kind: "jsx",
+        component: Step8PersonaSpecimen,
+      },
+      {
+        filename: "step-8-persona-v2-day.jsx",
+        kind: "jsx",
+        component: Step8PersonaDay,
+      },
+      {
+        filename: "step-8-persona-v3-grid.jsx",
+        kind: "jsx",
+        component: Step8PersonaGrid,
+      },
+    ],
   },
   {
     index: 9,
@@ -541,6 +642,52 @@ export const STEPS: StepDrawer[] = [
           { id: "A", label: "A: the reveal" },
           { id: "C", label: "C: the depth" },
         ],
+      },
+    ],
+  },
+  {
+    index: 21,
+    id: "step-21-pdf-transition",
+    label: "PDF transition (handoff)",
+    status: "in-progress",
+    prototypes: [
+      {
+        filename: "step-21-pdf-transition-v1-threshold.jsx",
+        kind: "jsx",
+        component: Step21PdfTransitionThreshold,
+      },
+      {
+        filename: "step-21-pdf-transition-v2-memo.jsx",
+        kind: "jsx",
+        component: Step21PdfTransitionMemo,
+      },
+      {
+        filename: "step-21-pdf-transition-v3-reveal.jsx",
+        kind: "jsx",
+        component: Step21PdfTransitionReveal,
+      },
+    ],
+  },
+  {
+    index: 22,
+    id: "step-22-download-pdf",
+    label: "Download PDF",
+    status: "in-progress",
+    prototypes: [
+      {
+        filename: "step-22-download-pdf-v1-threshold.jsx",
+        kind: "jsx",
+        component: Step22DownloadPdfThreshold,
+      },
+      {
+        filename: "step-22-download-pdf-v2-memo.jsx",
+        kind: "jsx",
+        component: Step22DownloadPdfMemo,
+      },
+      {
+        filename: "step-22-download-pdf-v3-reveal.jsx",
+        kind: "jsx",
+        component: Step22DownloadPdfReveal,
       },
     ],
   },

@@ -1,10 +1,36 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
+/* ───────────────────────────────────────────────────────
+   step-2 section-1 entry — iPad Pro 13 M4
+   Hold-to-confirm entry into the Kumamoto pitch.
+   Four variants, all of which transition via a sweep band
+   into a bridge paragraph. Resets on tap.
+
+   A "the warmth"  — chip cluster, logo top-left
+   B "the layers"  — stacked elevated bars, centered
+   C "the signal"  — chip cluster + faint logo backdrop
+   D "the stagger" — diamond/dot list, editorial column
+   ─────────────────────────────────────────────────────── */
+
 /* ── constants ── */
 const AMBER = "#FBB931";
-const N = { 950: "#25272C", 900: "#383A42", 800: "#40444C", 600: "#5B616E", 200: "#D8DBDF", 100: "#EDEEF1", dis: "#8E8F8F" };
+const N = {
+  950: "#25272C",
+  900: "#383A42",
+  800: "#40444C",
+  600: "#5B616E",
+  200: "#D8DBDF",
+  100: "#EDEEF1",
+  dis: "#8E8F8F",
+};
+const FONT_HEADING = '"REM", system-ui, sans-serif';
+const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
+
 const HOLD_DURATION = 800;
-const CIRCUMFERENCE = 2 * Math.PI * 26;
+const RING_SIZE = 72;
+const RING_R = 33;
+const RING_C = RING_SIZE / 2;
+const CIRCUMFERENCE = 2 * Math.PI * RING_R;
 
 /* ── Logo SVG ── */
 function Logo({ id, size }) {
@@ -25,24 +51,23 @@ function Logo({ id, size }) {
   );
 }
 
-/* ── Glass surfaces ── */
-const glass1 = {
-  background:"#F9F9F9",
-  
-  
-  border: "1px solid rgba(0,0,0,0.06)",
-  boxShadow: "0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)",
-};
-
 /* ── Entry layout: A — the warmth ── */
 function EntryWarmth() {
   return (
     <>
-      <div className="entry-logo"><Logo id="warmth" size={48} /></div>
-      <div style={{ position: "absolute", bottom: 100, left: 24, right: 24 }}>
+      <div className="entry-logo"><Logo id="warmth" size={80} /></div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "calc(180px + var(--safe-bottom))",
+          left: "var(--content-margin)",
+          right: "var(--content-margin)",
+          maxWidth: 1040,
+        }}
+      >
         <h1 className="entry-h1">Why Kumamoto,<br />Why Now?</h1>
-        <p className="entry-sub" style={{ marginBottom: 24 }}>{"Japan's fastest-rising property market"}</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        <p className="entry-sub" style={{ marginBottom: 32 }}>{"Japan's fastest-rising property market"}</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
           <span className="fact-chip">Serviced apartments</span>
           <span className="fact-chip">TSMC / JASM hub</span>
           <span className="fact-chip">Taiwanese engineers</span>
@@ -56,20 +81,37 @@ function EntryWarmth() {
 /* ── Entry layout: B — the layers ── */
 function EntryLayers() {
   const bars = [
-    { label: "Serviced apartments", width: "78%", elev: 1, delay: 0 },
-    { label: "TSMC / JASM semiconductor hub", width: "92%", elev: 1, delay: 0.08 },
-    { label: "Taiwanese engineers", width: "68%", elev: 1, delay: 0.16 },
-    { label: "12-15% IRR", width: "52%", elev: 2, delay: 0.24 },
+    { label: "Serviced apartments", width: "72%", elev: 1, delay: 0 },
+    { label: "TSMC / JASM semiconductor hub", width: "84%", elev: 1, delay: 0.08 },
+    { label: "Taiwanese engineers", width: "62%", elev: 1, delay: 0.16 },
+    { label: "12-15% IRR", width: "46%", elev: 2, delay: 0.24 },
   ];
   return (
     <>
-      <div className="entry-logo"><Logo id="layers" size={48} /></div>
-      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", padding: "0 24px", justifyContent: "center" }}>
+      <div className="entry-logo"><Logo id="layers" size={80} /></div>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          flexDirection: "column",
+          padding: "0 var(--content-margin)",
+          justifyContent: "center",
+          maxWidth: 1040,
+          margin: "0 auto",
+        }}
+      >
         <h1 className="entry-h1">Why Kumamoto,<br />Why Now?</h1>
-        <p className="entry-sub" style={{ marginBottom: 28 }}>{"Japan's fastest-rising property market"}</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <p className="entry-sub" style={{ marginBottom: 36 }}>{"Japan's fastest-rising property market"}</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {bars.map((b, i) => (
-            <div key={i} className={`glass-bar${b.elev === 2 ? " elev2" : ""}`} style={{ width: b.width, animation: `barSlideIn 0.6s ease-out ${b.delay}s both` }}>{b.label}</div>
+            <div
+              key={i}
+              className={`glass-bar${b.elev === 2 ? " elev2" : ""}`}
+              style={{ width: b.width, animation: `barSlideIn 0.6s ease-out ${b.delay}s both` }}
+            >
+              {b.label}
+            </div>
           ))}
         </div>
       </div>
@@ -81,19 +123,36 @@ function EntryLayers() {
 function EntrySignal() {
   return (
     <>
-      <div style={{ position: "absolute", top: "18%", left: "50%", transform: "translateX(-50%)", opacity: 0.14, animation: "logoPulse 4s ease-in-out infinite" }}>
-        <Logo id="signal-bg" size={240} />
+      <div
+        style={{
+          position: "absolute",
+          top: "18%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          opacity: 0.14,
+          animation: "logoPulse 4s ease-in-out infinite",
+        }}
+      >
+        <Logo id="signal-bg" size={420} />
       </div>
-      <div className="entry-logo"><Logo id="signal" size={48} /></div>
-      <div style={{ position: "absolute", bottom: 100, left: 24, right: 24 }}>
+      <div className="entry-logo"><Logo id="signal" size={80} /></div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "calc(180px + var(--safe-bottom))",
+          left: "var(--content-margin)",
+          right: "var(--content-margin)",
+          maxWidth: 1040,
+        }}
+      >
         <h1 className="entry-h1">Why Kumamoto,<br />Why Now?</h1>
-        <p className="entry-sub" style={{ marginBottom: 20 }}>{"Japan's fastest-rising property market"}</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ display: "flex", gap: 8 }}>
+        <p className="entry-sub" style={{ marginBottom: 28 }}>{"Japan's fastest-rising property market"}</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ display: "flex", gap: 12 }}>
             <span className="fact-chip">Serviced apartments</span>
             <span className="fact-chip">TSMC / JASM hub</span>
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: 12 }}>
             <span className="fact-chip">Taiwanese engineers</span>
             <span className="fact-chip bold">12-15% IRR</span>
           </div>
@@ -106,24 +165,66 @@ function EntrySignal() {
 /* ── Entry layout: D — the stagger ── */
 function EntryStagger() {
   const items = [
-    { icon: "\u25CA", text: "Serviced apartments", bold: false },
-    { icon: "\u25CA", text: "TSMC / JASM semiconductor hub", bold: false },
-    { icon: "\u25CA", text: "Taiwanese engineers", bold: false },
-    { icon: "\u25CF", text: "12-15% IRR", bold: true },
+    { icon: "◊", text: "Serviced apartments", bold: false },
+    { icon: "◊", text: "TSMC / JASM semiconductor hub", bold: false },
+    { icon: "◊", text: "Taiwanese engineers", bold: false },
+    { icon: "●", text: "12-15% IRR", bold: true },
   ];
   return (
     <>
-      <div className="entry-logo"><Logo id="stagger" size={48} /></div>
-      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", padding: "0 24px" }}>
-        <div style={{ marginTop: 110 }}>
-          <h1 className="entry-h1" style={{ fontSize: 44, lineHeight: 1.0, letterSpacing: "-0.03em" }}>Why<br />Kumamoto,<br />Why Now?</h1>
-          <div style={{ width: 40, height: 3, borderRadius: 2, background: `linear-gradient(90deg,${AMBER},#FF8660)`, margin: "0 0 16px 0" }} />
-          <p className="entry-sub" style={{ fontSize: 14, marginBottom: 32, maxWidth: 240 }}>{"Japan's fastest-rising property market"}</p>
+      <div className="entry-logo"><Logo id="stagger" size={80} /></div>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          flexDirection: "column",
+          padding: "0 var(--content-margin)",
+          maxWidth: 1040,
+          margin: "0 auto",
+        }}
+      >
+        <div style={{ marginTop: "calc(220px + var(--safe-top))" }}>
+          <h1
+            className="entry-h1"
+            style={{ fontSize: 88, lineHeight: 1.0, letterSpacing: "-0.03em" }}
+          >
+            Why<br />Kumamoto,<br />Why Now?
+          </h1>
+          <div
+            style={{
+              width: 64,
+              height: 4,
+              borderRadius: 2,
+              background: `linear-gradient(90deg,${AMBER},#FF8660)`,
+              margin: "20px 0 24px 0",
+            }}
+          />
+          <p
+            className="entry-sub"
+            style={{ marginBottom: 48, maxWidth: 420 }}
+          >
+            {"Japan's fastest-rising property market"}
+          </p>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {items.map((it, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: "'Noto Sans JP',sans-serif", fontSize: 14, fontWeight: it.bold ? 600 : 400, color: it.bold ? N[950] : N[800], lineHeight: 1.4, animation: `fadeSlideIn 0.5s ease-out ${i * 0.1}s both` }}>
-              <span style={{ color: AMBER, fontSize: 8 }}>{it.icon}</span>{it.text}
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                fontFamily: FONT_BODY,
+                fontSize: 18,
+                fontWeight: it.bold ? 600 : 400,
+                color: it.bold ? N[950] : N[800],
+                lineHeight: 1.5,
+                animation: `fadeSlideIn 0.5s ease-out ${i * 0.1}s both`,
+              }}
+            >
+              <span style={{ color: AMBER, fontSize: 12 }}>{it.icon}</span>
+              {it.text}
             </div>
           ))}
         </div>
@@ -135,15 +236,55 @@ function EntryStagger() {
 /* ── Bridge (shown after transition) ── */
 function BridgeContent() {
   return (
-    <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 24px", background: "#F9F9F9" }}>
-      <div className="entry-logo"><Logo id="bridge" size={48} /></div>
-      <p style={{ fontFamily: "'Noto Sans JP',sans-serif", fontSize: 17, fontWeight: 400, color: N[800], lineHeight: 1.65, maxWidth: 340 }}>
-        The COVID-era chip shortage exposed a hard truth: semiconductor security is national security. Now, Japan is investing over 10 trillion yen to rebuild its chip industry.
-      </p>
-      <p style={{ fontFamily: "'Noto Sans JP',sans-serif", fontSize: 15, fontWeight: 400, color: N[600], lineHeight: 1.65, maxWidth: 340, marginTop: 16 }}>
-        With over 47,000 jobs being created, Kumamoto is set to attract waves of high-income engineers, fueling real estate growth for decades.
-      </p>
-      <p style={{ fontFamily: "'Noto Sans JP',sans-serif", fontSize: 12, color: N.dis, marginTop: 24 }}>Tap anywhere to reset</p>
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "0 var(--content-margin)",
+        background: "#F9F9F9",
+      }}
+    >
+      <div className="entry-logo"><Logo id="bridge" size={80} /></div>
+      <div style={{ maxWidth: 880 }}>
+        <p
+          style={{
+            fontFamily: FONT_BODY,
+            fontSize: 22,
+            fontWeight: 400,
+            color: N[800],
+            lineHeight: 1.6,
+            margin: 0,
+          }}
+        >
+          The COVID-era chip shortage exposed a hard truth: semiconductor security is national security. Now, Japan is investing over 10 trillion yen to rebuild its chip industry.
+        </p>
+        <p
+          style={{
+            fontFamily: FONT_BODY,
+            fontSize: 18,
+            fontWeight: 400,
+            color: N[600],
+            lineHeight: 1.65,
+            marginTop: 24,
+          }}
+        >
+          With over 47,000 jobs being created, Kumamoto is set to attract waves of high-income engineers, fueling real estate growth for decades.
+        </p>
+        <p
+          style={{
+            fontFamily: FONT_BODY,
+            fontSize: 13,
+            color: N.dis,
+            marginTop: 36,
+            letterSpacing: "0.01em",
+          }}
+        >
+          Tap anywhere to reset
+        </p>
+      </div>
     </div>
   );
 }
@@ -164,16 +305,28 @@ const TRANSITIONS = [
 
 /* ── Scatter particles ── */
 function ScatterDots() {
-  const dots = Array.from({ length: 12 }, (_, i) => ({
+  const dots = Array.from({ length: 16 }, (_, i) => ({
     opacity: (0.3 + Math.random() * 0.4).toFixed(2),
-    left: `${(30 + Math.random() * 40).toFixed(1)}%`,
-    top: `${(30 + Math.random() * 40).toFixed(1)}%`,
+    left: `${(25 + Math.random() * 50).toFixed(1)}%`,
+    top: `${(25 + Math.random() * 50).toFixed(1)}%`,
     anim: `particle${i % 4} 0.8s ease-out forwards`,
   }));
   return (
     <>
       {dots.map((d, i) => (
-        <div key={i} style={{ position: "absolute", width: 6, height: 6, borderRadius: "50%", background: `rgba(251,185,49,${d.opacity})`, left: d.left, top: d.top, animation: d.anim }} />
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            width: 8,
+            height: 8,
+            borderRadius: "50%",
+            background: `rgba(251,185,49,${d.opacity})`,
+            left: d.left,
+            top: d.top,
+            animation: d.anim,
+          }}
+        />
       ))}
     </>
   );
@@ -182,10 +335,10 @@ function ScatterDots() {
 /* ── Main component ── */
 const ENTRY_BY_VARIANT = { A: 0, B: 1, C: 2, D: 3 };
 
-export default function GKTKEntryTransitions({ variant } = {}) {
+export default function GKTKEntryTransitions({ variant = "A" } = {}) {
   const entryIdx = ENTRY_BY_VARIANT[variant] ?? 0;
   const transIdx = 0; // sweep — default transition
-  const [phase, setPhase] = useState("entry"); // entry | transitioning | bridge
+  const [phase, setPhase] = useState("entry");
   const [holdProgress, setHoldProgress] = useState(0);
   const [holding, setHolding] = useState(false);
   const holdStart = useRef(null);
@@ -206,7 +359,7 @@ export default function GKTKEntryTransitions({ variant } = {}) {
   const startTransition = useCallback(() => {
     const t = TRANSITIONS[transIdx];
     setPhase("transitioning");
-    if (t.key === "scatter") setScatterKey(k => k + 1);
+    if (t.key === "scatter") setScatterKey((k) => k + 1);
     transTimer.current = setTimeout(() => setPhase("bridge"), t.duration);
   }, [transIdx]);
 
@@ -223,14 +376,17 @@ export default function GKTKEntryTransitions({ variant } = {}) {
     if (p < 1) holdRaf.current = requestAnimationFrame(animateHold);
   }, [startTransition]);
 
-  const onHoldStart = useCallback((e) => {
-    e.preventDefault();
-    if (phase !== "entry") return;
-    holdConfirmed.current = false;
-    holdStart.current = Date.now();
-    setHolding(true);
-    holdRaf.current = requestAnimationFrame(animateHold);
-  }, [phase, animateHold]);
+  const onHoldStart = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (phase !== "entry") return;
+      holdConfirmed.current = false;
+      holdStart.current = Date.now();
+      setHolding(true);
+      holdRaf.current = requestAnimationFrame(animateHold);
+    },
+    [phase, animateHold],
+  );
 
   const onHoldEnd = useCallback(() => {
     holdStart.current = null;
@@ -239,17 +395,28 @@ export default function GKTKEntryTransitions({ variant } = {}) {
     if (!holdConfirmed.current) setHoldProgress(0);
   }, []);
 
-  useEffect(() => () => {
-    if (holdRaf.current) cancelAnimationFrame(holdRaf.current);
-    if (transTimer.current) clearTimeout(transTimer.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (holdRaf.current) cancelAnimationFrame(holdRaf.current);
+      if (transTimer.current) clearTimeout(transTimer.current);
+    },
+    [],
+  );
 
   const t = TRANSITIONS[transIdx];
   const Entry = ENTRIES[entryIdx].Comp;
   const dashOffset = CIRCUMFERENCE * (1 - holdProgress);
 
   return (
-    <div data-proto="step-2" style={{ fontFamily: "'Noto Sans JP',sans-serif", background: N[100], minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+    <div
+      data-proto="step-2"
+      style={{
+        position: "absolute",
+        inset: 0,
+        background: "#F9F9F9",
+        fontFamily: FONT_BODY,
+      }}
+    >
       <style>{`
         @media (prefers-reduced-motion: reduce) {
           [data-proto="step-2"] *,
@@ -262,15 +429,68 @@ export default function GKTKEntryTransitions({ variant } = {}) {
             transition-delay: 0ms !important;
           }
         }
-      `}</style>
-      <style>{`
-        .entry-logo { position: absolute; top: 60px; left: 24px; }
-        .entry-h1 { font-family: var(--font-heading); font-weight: 600; font-size: 36px; line-height: 1.1; letter-spacing: -0.025em; color: ${N[950]}; margin: 0 0 8px 0; }
-        .entry-sub { font-family: var(--font-body); font-size: 15px; font-weight: 400; color: ${N[900]}; line-height: 1.5; margin: 0; }
-        .fact-chip { display: inline-block; padding: 6px 14px; border-radius: 12px; background: #F9F9F9; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); font-family: var(--font-body); font-size: 13px; font-weight: 500; color: ${N[600]}; letter-spacing: 0.01em; line-height: 1.4; }
-        .fact-chip.bold { font-weight: 600; color: ${N[950]}; }
-        .glass-bar { padding: 8px 14px; border-radius: 12px; background: #F9F9F9; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); font-family: var(--font-body); font-size: 14px; font-weight: 400; color: ${N[800]}; line-height: 1.4; }
-        .glass-bar.elev2 { padding: 10px 16px; background: #F9F9F9; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06); font-weight: 600; color: ${N[950]}; }
+
+        [data-proto="step-2"] .entry-logo {
+          position: absolute;
+          top: calc(96px + var(--safe-top));
+          left: var(--content-margin);
+        }
+        [data-proto="step-2"] .entry-h1 {
+          font-family: ${FONT_HEADING};
+          font-weight: 600;
+          font-size: 72px;
+          line-height: 1.05;
+          letter-spacing: -0.03em;
+          color: ${N[950]};
+          margin: 0 0 16px 0;
+        }
+        [data-proto="step-2"] .entry-sub {
+          font-family: ${FONT_BODY};
+          font-size: 22px;
+          font-weight: 400;
+          color: ${N[900]};
+          line-height: 1.5;
+          margin: 0;
+        }
+        [data-proto="step-2"] .fact-chip {
+          display: inline-block;
+          padding: 10px 22px;
+          border-radius: 9999px;
+          background: #F9F9F9;
+          border: 1px solid rgba(0,0,0,0.06);
+          box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+          font-family: ${FONT_BODY};
+          font-size: 15px;
+          font-weight: 500;
+          color: ${N[600]};
+          letter-spacing: 0.01em;
+          line-height: 1.4;
+        }
+        [data-proto="step-2"] .fact-chip.bold {
+          font-weight: 600;
+          color: ${N[950]};
+        }
+        [data-proto="step-2"] .glass-bar {
+          padding: 14px 22px;
+          border-radius: 12px;
+          background: #F9F9F9;
+          border: 1px solid rgba(0,0,0,0.06);
+          box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+          font-family: ${FONT_BODY};
+          font-size: 17px;
+          font-weight: 400;
+          color: ${N[800]};
+          line-height: 1.4;
+        }
+        [data-proto="step-2"] .glass-bar.elev2 {
+          padding: 16px 24px;
+          background: #F9F9F9;
+          border: 1px solid rgba(0,0,0,0.08);
+          box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+          font-weight: 600;
+          color: ${N[950]};
+        }
+
         @keyframes logoPulse { 0%, 100% { opacity: 0.12; transform: translateX(-50%) scale(1); } 50% { opacity: 0.18; transform: translateX(-50%) scale(1.03); } }
         @keyframes barSlideIn { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes fadeSlideIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
@@ -281,98 +501,163 @@ export default function GKTKEntryTransitions({ variant } = {}) {
         @keyframes scatterIn { from { transform: scale(1.04); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes dissolveOut { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.98); } 100% { opacity: 0; transform: scale(0.96); } }
         @keyframes dissolveIn { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: scale(1); } }
-        @keyframes dropOut { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(60px); opacity: 0; } }
-        @keyframes dropIn { from { transform: translateY(-40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes dropOut { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(80px); opacity: 0; } }
+        @keyframes dropIn { from { transform: translateY(-60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes sweepBand { 0% { clip-path: inset(0 100% 0 0); } 45% { clip-path: inset(0 0 0 0); } 55% { clip-path: inset(0 0 0 0); } 100% { clip-path: inset(0 0 0 100%); } }
-        @keyframes particle0 { to { transform: translate(-80px, -120px) scale(0); opacity: 0; } }
-        @keyframes particle1 { to { transform: translate(100px, -90px) scale(0); opacity: 0; } }
-        @keyframes particle2 { to { transform: translate(-60px, 110px) scale(0); opacity: 0; } }
-        @keyframes particle3 { to { transform: translate(90px, 80px) scale(0); opacity: 0; } }
+        @keyframes particle0 { to { transform: translate(-160px, -200px) scale(0); opacity: 0; } }
+        @keyframes particle1 { to { transform: translate(180px, -160px) scale(0); opacity: 0; } }
+        @keyframes particle2 { to { transform: translate(-140px, 200px) scale(0); opacity: 0; } }
+        @keyframes particle3 { to { transform: translate(160px, 160px) scale(0); opacity: 0; } }
       `}</style>
 
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        {/* iPhone device frame */}
-        <div style={{ position: "relative", width: 393, height: 852, flexShrink: 0 }}>
-          {/* Outer shell */}
-          <div style={{ position: "absolute", inset: 0, borderRadius: 54, background: "#1A1A1C", boxShadow: "0 0 0 1px rgba(255,255,255,0.08) inset" }}>
-            {/* Metallic edge */}
-            <div style={{ position: "absolute", inset: -1, borderRadius: 55, background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.04) 40%, rgba(0,0,0,0.1) 60%, rgba(255,255,255,0.08) 100%)", zIndex: -1 }} />
-            {/* Side buttons */}
-            <div style={{ position: "absolute", right: -2, top: 180, width: 3, height: 80, borderRadius: "0 2px 2px 0", background: "#1A1A1C" }} />
-            <div style={{ position: "absolute", left: -2, top: 160, width: 3, height: 36, borderRadius: "2px 0 0 2px", background: "#1A1A1C" }} />
-            <div style={{ position: "absolute", left: -2, top: 204, width: 3, height: 36, borderRadius: "2px 0 0 2px", background: "#1A1A1C" }} />
-            <div style={{ position: "absolute", left: -2, top: 120, width: 3, height: 18, borderRadius: "2px 0 0 2px", background: "#1A1A1C" }} />
+      {/* Phase content */}
+      <div style={{ position: "absolute", inset: 0 }}>
+        {phase === "entry" && (
+          <div style={{ position: "absolute", inset: 0 }}>
+            <Entry />
           </div>
-
-          {/* Screen */}
-          <div style={{ position: "absolute", top: 6, left: 6, right: 6, bottom: 6, borderRadius: 49, overflow: "hidden", background: "#F9F9F9" }}>
-            {/* Dynamic Island */}
-            <div style={{ position: "absolute", top: 11, left: "50%", transform: "translateX(-50%)", width: 126, height: 37, background: "#000", borderRadius: 20, zIndex: 20 }}>
-              <div style={{ position: "absolute", top: "50%", right: 18, transform: "translateY(-50%)", width: 11, height: 11, borderRadius: "50%", background: "radial-gradient(circle at 40% 40%, #1E2028 0%, #0A0A0C 50%, #1A1A1E 100%)", boxShadow: "0 0 0 1.5px #0D0D0F, 0 0 3px rgba(255,255,255,0.06) inset" }} />
-            </div>
-
-            {/* Flat screen bg (was mesh gradient) */}
-            <div style={{ position: "absolute", inset: 0, background: "#F9F9F9", zIndex: 0 }} />
-
-            {/* Phone content */}
-            <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
-              {phase === "entry" && (
-                <div style={{ position: "absolute", inset: 0 }}>
-                  <Entry />
-                </div>
-              )}
-              {phase === "transitioning" && (
-                <div style={{ position: "absolute", inset: 0, animation: `${t.key}Out ${t.duration}ms ease-in-out forwards` }}>
-                  <Entry />
-                </div>
-              )}
-              {phase === "bridge" && (
-                <div
-                  style={{ position: "absolute", inset: 0, animation: `${t.key}In 0.5s ease-out forwards`, cursor: "pointer" }}
-                  onClick={resetToEntry}
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Reset"
-                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); resetToEntry(e); } }}
-                >
-                  <BridgeContent />
-                </div>
-              )}
-            </div>
-
-            {/* Hold button */}
-            {phase === "entry" && (
-              <div
-                style={{ position: "absolute", bottom: 32, right: 24, zIndex: 10, width: 56, height: 56, cursor: "pointer", touchAction: "none", userSelect: "none", WebkitUserSelect: "none" }}
-                onPointerDown={onHoldStart}
-                onPointerUp={onHoldEnd}
-                onPointerLeave={onHoldEnd}
-                onPointerCancel={onHoldEnd}
-              >
-                <div style={{ position: "absolute", inset: 0, borderRadius: "50%", ...glass1, boxShadow: holding ? "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)" : glass1.boxShadow, transition: "box-shadow 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)" }} />
-                <svg style={{ position: "absolute", inset: 0, transform: "rotate(-90deg)" }} width="56" height="56">
-                  <circle cx="28" cy="28" r="26" fill="none" stroke={AMBER} strokeWidth="2.5" strokeDasharray={CIRCUMFERENCE} strokeDashoffset={dashOffset} strokeLinecap="round" style={{ transition: holding ? "none" : "stroke-dashoffset 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)" }} />
-                </svg>
-                <svg style={{ position: "absolute", top: 18, left: 18 }} width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M7 4l6 6-6 6" stroke={N[950]} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            )}
-
-            {/* Sweep overlay */}
-            {phase === "transitioning" && t.key === "sweep" && (
-              <div style={{ position: "absolute", inset: 0, zIndex: 5, background: "#EDEEF1", animation: `sweepBand ${t.duration}ms ease-in-out forwards` }} />
-            )}
-
-            {/* Scatter particles */}
-            {phase === "transitioning" && t.key === "scatter" && (
-              <div key={scatterKey} style={{ position: "absolute", inset: 0, zIndex: 5, pointerEvents: "none", overflow: "hidden" }}>
-                <ScatterDots />
-              </div>
-            )}
+        )}
+        {phase === "transitioning" && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              animation: `${t.key}Out ${t.duration}ms ease-in-out forwards`,
+            }}
+          >
+            <Entry />
           </div>
-        </div>
+        )}
+        {phase === "bridge" && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              animation: `${t.key}In 0.5s ease-out forwards`,
+            }}
+            onClick={resetToEntry}
+            role="button"
+            tabIndex={0}
+            aria-label="Reset"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                resetToEntry();
+              }
+            }}
+          >
+            <BridgeContent />
+          </div>
+        )}
       </div>
+
+      {/* Hold-to-confirm button */}
+      {phase === "entry" && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "calc(72px + var(--safe-bottom))",
+            right: "var(--content-margin)",
+            zIndex: 10,
+            width: RING_SIZE,
+            height: RING_SIZE,
+            touchAction: "none",
+            userSelect: "none",
+            WebkitUserSelect: "none",
+          }}
+          onPointerDown={onHoldStart}
+          onPointerUp={onHoldEnd}
+          onPointerLeave={onHoldEnd}
+          onPointerCancel={onHoldEnd}
+          role="button"
+          aria-label="Hold to enter"
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              borderRadius: "50%",
+              background: "#F9F9F9",
+              border: "1px solid rgba(0,0,0,0.06)",
+              boxShadow: holding
+                ? "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)"
+                : "0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)",
+              transition: "box-shadow 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            }}
+          />
+          <svg
+            style={{ position: "absolute", inset: 0, transform: "rotate(-90deg)" }}
+            width={RING_SIZE}
+            height={RING_SIZE}
+          >
+            <circle
+              cx={RING_C}
+              cy={RING_C}
+              r={RING_R}
+              fill="none"
+              stroke={AMBER}
+              strokeWidth="3"
+              strokeDasharray={CIRCUMFERENCE}
+              strokeDashoffset={dashOffset}
+              strokeLinecap="round"
+              style={{
+                transition: holding
+                  ? "none"
+                  : "stroke-dashoffset 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+              }}
+            />
+          </svg>
+          <svg
+            style={{
+              position: "absolute",
+              top: (RING_SIZE - 28) / 2,
+              left: (RING_SIZE - 28) / 2,
+            }}
+            width="28"
+            height="28"
+            viewBox="0 0 20 20"
+            fill="none"
+          >
+            <path
+              d="M7 4l6 6-6 6"
+              stroke={N[950]}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+      )}
+
+      {/* Sweep band overlay */}
+      {phase === "transitioning" && t.key === "sweep" && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 5,
+            background: "#EDEEF1",
+            animation: `sweepBand ${t.duration}ms ease-in-out forwards`,
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
+      {/* Scatter particles */}
+      {phase === "transitioning" && t.key === "scatter" && (
+        <div
+          key={scatterKey}
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 5,
+            pointerEvents: "none",
+            overflow: "hidden",
+          }}
+        >
+          <ScatterDots />
+        </div>
+      )}
     </div>
   );
 }
