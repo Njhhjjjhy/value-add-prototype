@@ -392,7 +392,7 @@ export const STEPS: StepDrawer[] = [
         filename: "map-prototype-v1.html",
         kind: "html",
         publicPath:
-          "/playground/prototypes/step-6-section-3-map/map-prototype-v1/index.html?embed=1&lang=en&steps=government-support,corporate-investment,transport-access,future-outlook",
+          "/playground/prototypes/step-6-section-3-map/map-prototype-v1/index.html?embed=1&host=valueadd&lang=en&steps=government-support,corporate-investment,transport-access&startStep=1",
       },
     ],
   },
@@ -504,7 +504,7 @@ export const STEPS: StepDrawer[] = [
         filename: "map-prototype-v1.html",
         kind: "html",
         publicPath:
-          "/playground/prototypes/step-12-section-6-product-hardware/map-prototype-v1/index.html?embed=1&lang=en&steps=properties&v=100",
+          "/playground/prototypes/step-12-section-6-product-hardware/map-prototype-v1/index.html?embed=1&host=valueadd&lang=en&steps=properties&properties=ozu-1&startStep=1&v=102",
       },
     ],
   },
