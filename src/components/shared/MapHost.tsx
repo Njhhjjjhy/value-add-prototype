@@ -58,10 +58,17 @@ function buildMapUrl(): string {
   // reload to reach a different internal step. The bundle reads
   // ?steps= once at module load — passing all three keeps every
   // internal step navigable via postMessage if we ever need that.
+  //
+  // host=valueadd activates the embed host that fills 100% of the
+  // iframe (no phone frame) and wires up the postMessage events the
+  // slideshow listens for. startStep=1 makes the iframe land on
+  // government-support immediately instead of the welcome screen.
   const params = new URLSearchParams({
     embed: '1',
+    host: 'valueadd',
     lang: 'en',
     steps: 'government-support,corporate-investment,transport-access',
+    startStep: '1',
   });
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   if (typeof window !== 'undefined' && token) {
