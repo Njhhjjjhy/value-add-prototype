@@ -193,7 +193,7 @@ const Step17Transition = dynamic(
 const Step19Transition = dynamic(
   () =>
     import(
-      "./prototypes/step-19-section-10-transition/gktk-step19-transition-v6.jsx"
+      "./prototypes/step-23-section-12-transition/gktk-step19-transition-v6.jsx"
     ),
   { ssr: false }
 );
@@ -613,7 +613,7 @@ export const STEPS: StepDrawer[] = [
   },
   {
     index: 19,
-    id: "step-19-section-10-transition",
+    id: "step-23-section-12-transition",
     label: "Section 10 — transition",
     status: "locked",
     prototypes: [
