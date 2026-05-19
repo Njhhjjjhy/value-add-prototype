@@ -209,7 +209,7 @@ const Step20ExitStrategy = dynamic(
 const Step18RiskFactors = dynamic(
   () =>
     import(
-      "./prototypes/step-18-section-9-risk-factors/gktk-step18-risk-factors-v8.jsx"
+      "./prototypes/step-22-section-11-risk-factors/gktk-step18-risk-factors-v8.jsx"
     ),
   { ssr: false }
 );
@@ -596,7 +596,7 @@ export const STEPS: StepDrawer[] = [
   },
   {
     index: 18,
-    id: "step-18-section-9-risk-factors",
+    id: "step-22-section-11-risk-factors",
     label: "Section 9 — risk factors",
     status: "locked",
     prototypes: [
