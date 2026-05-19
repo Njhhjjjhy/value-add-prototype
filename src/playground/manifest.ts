@@ -145,7 +145,7 @@ const Step11Transition = dynamic(
 const Step13Transition = dynamic(
   () =>
     import(
-      "./prototypes/step-13-section-7-transition/gktk-step13-transition-v2.jsx"
+      "./prototypes/step-17-section-9-transition/gktk-step13-transition-v2.jsx"
     ),
   { ssr: false }
 );
@@ -510,7 +510,7 @@ export const STEPS: StepDrawer[] = [
   },
   {
     index: 13,
-    id: "step-13-section-7-transition",
+    id: "step-17-section-9-transition",
     label: "Section 7 — transition",
     status: "locked",
     prototypes: [
