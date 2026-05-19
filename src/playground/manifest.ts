@@ -265,7 +265,7 @@ const Step21PdfTransitionReveal = dynamic(
 const Step22DownloadPdfThreshold = dynamic(
   () =>
     import(
-      "./prototypes/step-22-download-pdf/step-22-download-pdf-v1-threshold.jsx"
+      "./prototypes/step-28-download-pdf/step-22-download-pdf-v1-threshold.jsx"
     ),
   { ssr: false }
 );
@@ -273,7 +273,7 @@ const Step22DownloadPdfThreshold = dynamic(
 const Step22DownloadPdfMemo = dynamic(
   () =>
     import(
-      "./prototypes/step-22-download-pdf/step-22-download-pdf-v2-memo.jsx"
+      "./prototypes/step-28-download-pdf/step-22-download-pdf-v2-memo.jsx"
     ),
   { ssr: false }
 );
@@ -281,7 +281,7 @@ const Step22DownloadPdfMemo = dynamic(
 const Step22DownloadPdfReveal = dynamic(
   () =>
     import(
-      "./prototypes/step-22-download-pdf/step-22-download-pdf-v3-reveal.jsx"
+      "./prototypes/step-28-download-pdf/step-22-download-pdf-v3-reveal.jsx"
     ),
   { ssr: false }
 );
@@ -670,7 +670,7 @@ export const STEPS: StepDrawer[] = [
   },
   {
     index: 22,
-    id: "step-22-download-pdf",
+    id: "step-28-download-pdf",
     label: "Download PDF",
     status: "in-progress",
     prototypes: [

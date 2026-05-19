@@ -30,7 +30,7 @@ const stepComponents = [
   dynamic(() => import('../steps/step-19-section-10-transition')),
   dynamic(() => import('../steps/step-20-section-10-exit-strategy')),
   dynamic(() => import('../steps/step-21-pdf-transition')),
-  dynamic(() => import('../steps/step-22-download-pdf')),
+  dynamic(() => import('../steps/step-28-download-pdf')),
 ];
 
 const IS_DEV = process.env.NODE_ENV !== 'production';
