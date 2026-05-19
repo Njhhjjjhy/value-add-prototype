@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import NextButton from '@/components/shared/NextButton';
 
 interface StepProps {
   isActive: boolean;
@@ -10,203 +11,243 @@ interface StepProps {
 
 const C = {
   bg: '#F9F9F9',
-  n950: '#25272C',
-  n600: '#5B616E',
   amber: '#FBB931',
+  n950: '#25272C',
+  n800: '#40444C',
 };
 
-const F = {
-  h: '"REM", system-ui, sans-serif',
-  b: '"Noto Sans JP", system-ui, sans-serif',
+const FONT_HEADING = '"REM", system-ui, sans-serif';
+const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
+
+const EASE = {
+  smooth: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+  spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
 };
 
-const PANEL_LEVEL_1 = {
-  background: C.bg,
-  border: '1px solid rgba(0,0,0,0.06)',
-  boxShadow: '0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)',
-  borderRadius: 20,
-} as const;
-
-const PANEL_LEVEL_2 = {
-  background: C.bg,
-  border: '1px solid rgba(0,0,0,0.08)',
-  boxShadow: '0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)',
-  borderRadius: 28,
-} as const;
-
-const FAQ_GHOST = [
-  'What if TSMC slows down or pulls out?',
-  'JPY volatility and rising rates?',
-  'Construction over budget or delayed?',
-  'How is GK-TK structure tax-efficient?',
-  'What stops major hotel chains?',
-  'What governance rights do TK investors have?',
+const SERVICES = [
+  'Property secretary',
+  'Medical navigation',
+  'Education support',
+  'Admin support',
+  'Mental wellness',
+  'Cultural program',
 ];
 
-const LABEL_FADE_MS = 300;
-const PRE_CARDS_DELAY_MS = 200;
-const CARD_DURATION_MS = 600;
-const CARD_STAGGER_MS = 100;
-const POST_CARDS_HOLD_MS = 800;
-const PRE_RESOLVE_DELAY_MS = 0;
-const RESOLVE_DURATION_MS = 650;
-const TAP_PROMPT_DELAY_MS = 400;
+const HEADING = 'The investment case.';
+
+const EXIT_DELAY_MS = 150;
+const EXIT_DURATION_MS = 350;
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
-const reducedMotion = () =>
-  typeof window !== 'undefined' &&
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-export default function Step19Section10Transition({
+export default function Step15Section8Transition({
   isActive,
   onComplete,
 }: StepProps) {
-  const labelRef = useRef<HTMLDivElement | null>(null);
-  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const resolveRef = useRef<HTMLDivElement | null>(null);
+  const rowRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const dotRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const ledgerRuleRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const underlineRef = useRef<HTMLDivElement>(null);
 
-  const [resolveVisible, setResolveVisible] = useState(false);
-  const [tapVisible, setTapVisible] = useState(false);
-  const running = useRef(false);
-  const cancelledRef = useRef(false);
+  const [isLandscape, setIsLandscape] = useState(true);
+  const [showNext, setShowNext] = useState(false);
+  const [exiting, setExiting] = useState(false);
+  const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(orientation: landscape)');
+    const update = () => setIsLandscape(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
 
   useEffect(() => {
     if (!isActive) return;
-    cancelledRef.current = false;
 
-    const label = labelRef.current;
-    const cards = cardRefs.current;
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    const rowSnap = rowRefs;
+    const dotSnap = dotRefs;
+    const ruleSnap = ledgerRuleRef;
+    const hSnap = headingRef;
+    const underSnap = underlineRef;
+
+    let cancelled = false;
     const run = async () => {
-      if (running.current) return;
-      running.current = true;
+      const rows = rowSnap.current.filter(
+        (e): e is HTMLDivElement => Boolean(e)
+      );
+      const dots = dotSnap.current.filter(
+        (e): e is HTMLSpanElement => Boolean(e)
+      );
+      const rule = ruleSnap.current;
+      const h = hSnap.current;
+      const under = underSnap.current;
 
-      if (reducedMotion()) {
-        if (label) label.style.opacity = '0';
-        cards.forEach((c) => {
-          if (c) c.style.opacity = '0';
+      if (reduced) {
+        rows.forEach((el) => {
+          el.style.opacity = '1';
         });
-        setResolveVisible(true);
-        await wait(30);
-        if (cancelledRef.current) return;
-        if (resolveRef.current) resolveRef.current.style.opacity = '1';
-        setTapVisible(true);
+        if (rule) rule.style.transform = 'scaleX(1)';
+        if (h) h.style.opacity = '1';
+        if (under) under.style.transform = 'scaleX(1)';
+        if (!cancelled) setShowNext(true);
         return;
       }
 
-      if (label) {
-        label.animate(
-          [{ opacity: 1 }, { opacity: 0 }],
-          {
-            duration: LABEL_FADE_MS,
-            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-            fill: 'forwards',
-          }
-        );
-      }
-      await wait(PRE_CARDS_DELAY_MS);
-      if (cancelledRef.current) return;
-
-      // Cards rise upward in reverse order (5 → 0), last in first out
-      for (let i = FAQ_GHOST.length - 1; i >= 0; i--) {
-        const card = cards[i];
-        if (!card) continue;
-        card.animate(
+      // 1. rows fade and slide in
+      rows.forEach((el, i) => {
+        el.animate(
           [
+            { opacity: 0, transform: 'translateY(8px)' },
             { opacity: 1, transform: 'translateY(0)' },
-            { opacity: 0.6, transform: 'translateY(-48px)', offset: 0.4 },
-            { opacity: 0.2, transform: 'translateY(-128px)', offset: 0.75 },
-            { opacity: 0, transform: 'translateY(-220px)' },
           ],
-          {
-            duration: CARD_DURATION_MS,
-            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-            fill: 'forwards',
-          }
+          { duration: 320, delay: i * 80, easing: EASE.smooth, fill: 'forwards' }
         );
-        await wait(CARD_STAGGER_MS);
+      });
+      await wait(320 + (rows.length - 1) * 80 + 60);
+      if (cancelled) return;
+
+      // 2. amber tally rule draws beneath rows
+      if (rule) {
+        rule.animate(
+          [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }],
+          { duration: 480, easing: EASE.smooth, fill: 'forwards' }
+        );
       }
+      await wait(420);
+      if (cancelled) return;
 
-      await wait(POST_CARDS_HOLD_MS);
-      if (cancelledRef.current) return;
-
-      await wait(PRE_RESOLVE_DELAY_MS);
-      if (cancelledRef.current) return;
-
-      setResolveVisible(true);
-      await wait(30);
-      if (cancelledRef.current) return;
-
-      if (resolveRef.current) {
-        resolveRef.current.animate(
+      // 3. dots pulse and settle
+      dots.forEach((d, i) => {
+        d.animate(
           [
-            { opacity: 0, transform: 'translateY(40px) scale(0.97)' },
-            {
-              opacity: 0.6,
-              transform: 'translateY(12px) scale(0.99)',
-              offset: 0.5,
-            },
-            { opacity: 1, transform: 'translateY(0) scale(1)' },
+            { transform: 'scale(1)', opacity: 1 },
+            { transform: 'scale(1.6)', opacity: 1, offset: 0.5 },
+            { transform: 'scale(1)', opacity: 1 },
           ],
-          {
-            duration: RESOLVE_DURATION_MS,
-            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-            fill: 'forwards',
-          }
+          { duration: 420, delay: i * 40, easing: EASE.spring, fill: 'forwards' }
         );
-        await wait(RESOLVE_DURATION_MS);
+      });
+      await wait(420 + (dots.length - 1) * 40);
+      if (cancelled) return;
+
+      // 4. hold — rows readable
+      await wait(1800);
+      if (cancelled) return;
+
+      // 5. fade ledger out
+      rows.forEach((el) =>
+        el.animate(
+          [{ opacity: 1 }, { opacity: 0 }],
+          { duration: 520, easing: EASE.smooth, fill: 'forwards' }
+        )
+      );
+      if (rule) {
+        rule.animate(
+          [{ opacity: 1 }, { opacity: 0 }],
+          { duration: 520, easing: EASE.smooth, fill: 'forwards' }
+        );
       }
-      if (cancelledRef.current) return;
+      await wait(440);
+      if (cancelled) return;
 
-      await wait(TAP_PROMPT_DELAY_MS);
-      if (cancelledRef.current) return;
-      setTapVisible(true);
+      // 6. heading fades in, underline draws
+      if (h) {
+        try {
+          await h.animate(
+            [
+              { opacity: 0, transform: 'translateY(8px)' },
+              { opacity: 1, transform: 'translateY(0)' },
+            ],
+            { duration: 480, easing: EASE.smooth, fill: 'forwards' }
+          ).finished;
+        } catch {
+          /* cancelled */
+        }
+      }
+      if (cancelled) return;
+      if (under) {
+        under.animate(
+          [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }],
+          { duration: 520, easing: EASE.smooth, fill: 'forwards' }
+        );
+      }
+      await wait(520);
+      if (cancelled) return;
+      setShowNext(true);
     };
-
     run();
 
     return () => {
-      cancelledRef.current = true;
-      running.current = false;
-      const nodes: Array<HTMLElement | null> = [
-        label,
-        resolveRef.current,
-        ...cards,
-      ];
-      nodes.forEach((node) => {
+      cancelled = true;
+      const rows = rowSnap.current.filter(
+        (e): e is HTMLDivElement => Boolean(e)
+      );
+      const dots = dotSnap.current.filter(
+        (e): e is HTMLSpanElement => Boolean(e)
+      );
+      [
+        ...rows,
+        ...dots,
+        ruleSnap.current,
+        hSnap.current,
+        underSnap.current,
+      ].forEach((node) => {
         node?.getAnimations().forEach((a) => a.cancel());
       });
     };
   }, [isActive]);
 
+  const advance = useCallback(() => {
+    if (exiting) return;
+    if (exitTimer.current) clearTimeout(exitTimer.current);
+    exitTimer.current = setTimeout(() => setExiting(true), EXIT_DELAY_MS);
+  }, [exiting]);
+
+  useEffect(() => {
+    if (!exiting) return;
+    const t = setTimeout(() => onComplete(), EXIT_DURATION_MS);
+    return () => clearTimeout(t);
+  }, [exiting, onComplete]);
+
+  useEffect(() => {
+    return () => {
+      if (exitTimer.current) clearTimeout(exitTimer.current);
+    };
+  }, []);
+
   if (!isActive) return null;
+
+  const rowFontSize = 22;
+  const rowGap = 18;
+  const dotSize = 10;
+  const listMaxWidth = isLandscape ? 880 : 720;
 
   return (
     <div
-      data-step-19
-      onClick={tapVisible ? onComplete : undefined}
-      role="button"
-      tabIndex={0}
-      aria-label="Tap to continue"
-      onKeyDown={(e) => {
-        if ((e.key === 'Enter' || e.key === ' ') && tapVisible) {
-          e.preventDefault();
-          onComplete();
-        }
-      }}
+      data-step-15
       style={{
         position: 'absolute',
         inset: 0,
         background: C.bg,
+        fontFamily: FONT_BODY,
         overflow: 'hidden',
+        opacity: exiting ? 0 : 1,
+        transform: exiting ? 'scale(0.97)' : 'scale(1)',
+        transition: `opacity 350ms ${EASE.smooth}, transform 350ms ${EASE.smooth}`,
       }}
     >
       <style>{`
         @media (prefers-reduced-motion: reduce) {
-          [data-step-19] *,
-          [data-step-19] *::before,
-          [data-step-19] *::after {
+          [data-step-15] *,
+          [data-step-15] *::before,
+          [data-step-15] *::after {
             animation-duration: 0.001ms !important;
             animation-delay: 0ms !important;
             animation-iteration-count: 1 !important;
@@ -216,165 +257,142 @@ export default function Step19Section10Transition({
         }
       `}</style>
 
+      {/* Ledger list — centered horizontally, anchored to upper-middle vertically */}
       <div
         style={{
           position: 'absolute',
-          top: 'calc(96px + var(--safe-top))',
-          bottom: 'calc(120px + var(--safe-bottom))',
+          top: 'calc(200px + var(--safe-top))',
           left: 'var(--content-margin)',
           right: 'var(--content-margin)',
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          zIndex: 3,
-        }}
-      >
-        <div style={{ width: '100%', maxWidth: 880 }}>
-          <div
-            ref={labelRef}
-            style={{
-              fontFamily: F.b,
-              fontWeight: 500,
-              fontSize: 13,
-              letterSpacing: '0.01em',
-              color: C.n600,
-              marginBottom: 24,
-            }}
-          >
-            Risk factors
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {FAQ_GHOST.map((q, i) => (
-              <div
-                key={q}
-                ref={(el) => {
-                  cardRefs.current[i] = el;
-                }}
-                style={{
-                  ...PANEL_LEVEL_1,
-                  padding: '20px 24px',
-                  overflow: 'hidden',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  <div
-                    style={{
-                      flex: 1,
-                      fontFamily: F.b,
-                      fontWeight: 500,
-                      fontSize: 17,
-                      lineHeight: 1.45,
-                      color: C.n950,
-                    }}
-                  >
-                    {q}
-                  </div>
-                  <div
-                    aria-hidden
-                    style={{ fontSize: 18, color: C.n600, flexShrink: 0 }}
-                  >
-                    &#9662;
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {resolveVisible && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: 'var(--content-margin)',
-            right: 'var(--content-margin)',
-            transform: 'translateY(-50%)',
-            display: 'flex',
-            justifyContent: 'center',
-            zIndex: 6,
-          }}
-        >
-          <div
-            ref={resolveRef}
-            style={{
-              ...PANEL_LEVEL_2,
-              padding: '48px 56px',
-              opacity: 0,
-              width: '100%',
-              maxWidth: 720,
-              overflow: 'hidden',
-            }}
-          >
-            <div style={{ position: 'relative', zIndex: 4 }}>
-              <div
-                style={{
-                  fontFamily: F.b,
-                  fontWeight: 500,
-                  fontSize: 13,
-                  letterSpacing: '0.18em',
-                  color: C.n600,
-                  marginBottom: 16,
-                }}
-              >
-                Section 10
-              </div>
-              <div
-                style={{
-                  fontFamily: F.h,
-                  fontWeight: 600,
-                  fontSize: 48,
-                  lineHeight: 1.1,
-                  letterSpacing: '-0.025em',
-                  color: C.n950,
-                }}
-              >
-                Exit strategy
-              </div>
-              <div
-                style={{
-                  width: 64,
-                  height: 3,
-                  background: C.amber,
-                  borderRadius: 2,
-                  marginTop: 28,
-                  boxShadow: '0 0 12px rgba(251,185,49,0.4)',
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div
-        aria-live="polite"
-        style={{
-          position: 'absolute',
-          bottom: 'calc(48px + var(--safe-bottom))',
-          left: 0,
-          right: 0,
-          display: 'flex',
           justifyContent: 'center',
-          zIndex: 10,
-          opacity: tapVisible ? 1 : 0,
-          transform: tapVisible ? 'translateY(0)' : 'translateY(8px)',
-          transition:
-            'opacity 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          zIndex: 5,
           pointerEvents: 'none',
         }}
       >
-        <span
+        <div
           style={{
-            fontFamily: F.b,
-            fontSize: 15,
-            fontWeight: 500,
-            letterSpacing: '0.01em',
-            color: C.n600,
+            width: '100%',
+            maxWidth: listMaxWidth,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: rowGap,
           }}
         >
-          Tap to continue
-        </span>
+          {SERVICES.map((s, i) => (
+            <div
+              key={i}
+              ref={(el) => {
+                rowRefs.current[i] = el;
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16,
+                opacity: 0,
+                fontFamily: FONT_BODY,
+                fontSize: rowFontSize,
+                lineHeight: 1.3,
+                color: C.n800,
+                fontWeight: 400,
+              }}
+            >
+              <span style={{ whiteSpace: 'nowrap' }}>{s}</span>
+              <span
+                aria-hidden
+                style={{
+                  flex: 1,
+                  height: 1,
+                  background:
+                    'repeating-linear-gradient(90deg, rgba(0,0,0,0.18) 0 3px, transparent 3px 9px)',
+                }}
+              />
+              <span
+                ref={(el) => {
+                  dotRefs.current[i] = el;
+                }}
+                style={{
+                  width: dotSize,
+                  height: dotSize,
+                  borderRadius: '50%',
+                  background: C.amber,
+                  flex: 'none',
+                  boxShadow: '0 0 12px rgba(251,185,49,0.35)',
+                }}
+              />
+            </div>
+          ))}
+
+          {/* Amber tally rule beneath the list */}
+          <div
+            ref={ledgerRuleRef}
+            style={{
+              marginTop: 12,
+              height: 2,
+              background: C.amber,
+              borderRadius: 1,
+              transformOrigin: 'left center',
+              transform: 'scaleX(0)',
+              boxShadow: '0 0 16px rgba(251,185,49,0.4)',
+            }}
+          />
+        </div>
       </div>
+
+      {/* Heading + underline — centered in viewport, resolves after ledger fades */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '0 var(--content-margin)',
+          zIndex: 20,
+          pointerEvents: 'none',
+        }}
+      >
+        <div
+          style={{
+            display: 'inline-flex',
+            flexDirection: 'column',
+            alignItems: 'stretch',
+          }}
+        >
+          <h1
+            ref={headingRef}
+            style={{
+              fontFamily: FONT_HEADING,
+              fontWeight: 600,
+              fontSize: isLandscape ? 72 : 56,
+              lineHeight: 1.05,
+              color: C.n950,
+              letterSpacing: '-0.03em',
+              whiteSpace: 'nowrap',
+              margin: 0,
+              opacity: 0,
+              textAlign: 'left',
+            }}
+          >
+            {HEADING}
+          </h1>
+          <div
+            ref={underlineRef}
+            style={{
+              width: '100%',
+              height: 3,
+              background: C.amber,
+              borderRadius: 2,
+              marginTop: 20,
+              transformOrigin: 'left center',
+              transform: 'scaleX(0)',
+              boxShadow: '0 0 16px rgba(251,185,49,0.4)',
+            }}
+          />
+        </div>
+      </div>
+
+      <NextButton onClick={advance} visible={showNext && !exiting} />
     </div>
   );
 }

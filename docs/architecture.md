@@ -14,20 +14,28 @@ The experience is a strict alternation of transitions and content sections. Ever
 | 4 | Content | Section 2: bridge |
 | 5 | Transition | Bridge to map |
 | 6 | Content | Section 3: map |
-| 7 | Transition | Map to persona |
-| 8 | Content | Section 4: persona |
-| 9 | Transition | Persona to current options |
-| 10 | Content | Section 5: current options |
-| 11 | Transition | Current options to product (hardware) |
-| 12 | Content | Section 6: product (hardware) |
-| 13 | Transition | Product (hardware) to product (software) |
-| 14 | Content | Section 7: product (software) |
-| 15 | Transition | Product (software) to financials |
-| 16 | Content | Section 8: financials |
-| 17 | Transition | Financials to risk factors |
-| 18 | Content | Section 9: risk factors and hedges |
-| 19 | Transition | Risk factors to exit strategy |
-| 20 | Content | Section 10: exit strategy |
+| 7 | Transition | Map to parallel hook |
+| 8 | Content | Section 4: parallel hook |
+| 9 | Transition | Parallel hook to pain points |
+| 10 | Content | Section 5: pain points |
+| 11 | Transition | Pain points to persona |
+| 12 | Content | Section 6: persona |
+| 13 | Transition | Persona to current options |
+| 14 | Content | Section 7: current options |
+| 15 | Transition | Current options to product (hardware) |
+| 16 | Content | Section 8: product (hardware) |
+| 17 | Transition | Product (hardware) to product (software) |
+| 18 | Content | Section 9: product (software) |
+| 19 | Transition | Product (software) to financials |
+| 20 | Content | Section 10: financials |
+| 21 | Transition | Financials to risk factors |
+| 22 | Content | Section 11: risk factors and hedges |
+| 23 | Transition | Risk factors to exit strategy |
+| 24 | Content | Section 12: exit strategy |
+| 25 | Transition | Exit strategy to parallel timeline |
+| 26 | Content | Section 13: parallel timeline |
+| 27 | Transition | Parallel timeline to PDF (handoff) |
+| 28 | Content | Download PDF (terminal handoff) |
 
 The names in this table are internal labels, not display text. They do not appear in the UI.
 
@@ -62,17 +70,21 @@ The "Enter Kumamoto" CTA (title case, CTA exception) navigates the user into the
 
 | Section | Status |
 |---|---|
-| Opening transition | Not started |
-| Section 1: entry | In progress in Claude.ai. Two layout options survive. Not yet in Claude Code. |
-| Section 2: bridge | Not started. Blocked by entry approval. |
-| Section 3: map | Not started. Separate map prototype exists. |
-| Section 4: persona | Not started |
-| Section 5: current options | Not started |
-| Section 6: product (hardware) | Not started |
-| Section 7: product (software) | Not started |
-| Section 8: financials | Not started |
-| Section 9: risk factors and hedges | Content finalized in wireframe. Concept not started. |
-| Section 10: exit strategy | Not started |
+| Opening transition | Locked |
+| Section 1: entry | Locked |
+| Section 2: bridge | Locked |
+| Section 3: map | Locked (separate map prototype synced via `pnpm sync`) |
+| Section 4: parallel hook | In progress. Scaffold with locked copy from `docs/value-add-prototype-flow-feedback.md` §3 |
+| Section 5: pain points | In progress. Scaffold reads `src/data/painPoints.ts` |
+| Section 6: persona | In progress (3 prototype variants in playground) |
+| Section 7: current options | Locked. Minimal visual-led copy (3 photo slots) |
+| Section 8: product (hardware) | Locked (PropertyMapHost iframe). 3D walkthrough loaded live from `3d-vertical-test.vercel.app` |
+| Section 9: product (software) | Locked |
+| Section 10: financials | Locked. Custom Ozu-1 table + 3 IRR paragraphs per `docs/step-16-section-8-financials-flow.md` |
+| Section 11: risk factors and hedges | Locked |
+| Section 12: exit strategy | Locked. Single-option "One door" framing |
+| Section 13: parallel timeline | In progress. Scaffold with two-phase Hsinchu → Kumamoto layout |
+| PDF handoff (step 27 transition, step 28 download) | In progress (3 variants in playground) |
 
 ---
 

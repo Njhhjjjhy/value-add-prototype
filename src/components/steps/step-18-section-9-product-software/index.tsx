@@ -511,7 +511,7 @@ function IntroColumn({ onContinue }: { onContinue: () => void }) {
           letterSpacing: '0.18em',
         }}
       >
-        SECTION 7 — PRODUCT, SOFTWARE
+        Section 9 · Product, software
       </div>
       <h2
         style={{

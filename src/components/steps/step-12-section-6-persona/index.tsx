@@ -19,7 +19,7 @@ const C = {
 };
 
 const SECTION = {
-  eyebrow: 'Section 04 · Demand',
+  eyebrow: 'Section 6 · Demand',
   headline: 'Who lives here.',
   persona: {
     title: 'The semiconductor engineer',

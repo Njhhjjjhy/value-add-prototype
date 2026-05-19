@@ -16,21 +16,27 @@ const stepComponents = [
   dynamic(() => import('../steps/step-5-section-3-transition')),
   dynamic(() => import('../steps/step-6-section-3-map')),
   dynamic(() => import('../steps/step-7-section-4-transition')),
-  dynamic(() => import('../steps/step-8-section-4-persona')),
+  dynamic(() => import('../steps/step-8-section-4-parallel-hook')),
   dynamic(() => import('../steps/step-9-section-5-transition')),
-  dynamic(() => import('../steps/step-10-section-5-current-options')),
+  dynamic(() => import('../steps/step-10-section-5-pain-points')),
   dynamic(() => import('../steps/step-11-section-6-transition')),
-  dynamic(() => import('../steps/step-12-section-6-product-hardware')),
+  dynamic(() => import('../steps/step-12-section-6-persona')),
   dynamic(() => import('../steps/step-13-section-7-transition')),
-  dynamic(() => import('../steps/step-14-section-7-product-software')),
+  dynamic(() => import('../steps/step-14-section-7-current-options')),
   dynamic(() => import('../steps/step-15-section-8-transition')),
-  dynamic(() => import('../steps/step-16-section-8-financials')),
+  dynamic(() => import('../steps/step-16-section-8-product-hardware')),
   dynamic(() => import('../steps/step-17-section-9-transition')),
-  dynamic(() => import('../steps/step-18-section-9-risk-factors')),
+  dynamic(() => import('../steps/step-18-section-9-product-software')),
   dynamic(() => import('../steps/step-19-section-10-transition')),
-  dynamic(() => import('../steps/step-20-section-10-exit-strategy')),
-  dynamic(() => import('../steps/step-21-pdf-transition')),
-  dynamic(() => import('../steps/step-22-download-pdf')),
+  dynamic(() => import('../steps/step-20-section-10-financials')),
+  dynamic(() => import('../steps/step-21-section-11-transition')),
+  dynamic(() => import('../steps/step-22-section-11-risk-factors')),
+  dynamic(() => import('../steps/step-23-section-12-transition')),
+  dynamic(() => import('../steps/step-24-section-12-exit-strategy')),
+  dynamic(() => import('../steps/step-25-section-13-transition')),
+  dynamic(() => import('../steps/step-26-section-13-parallel-timeline')),
+  dynamic(() => import('../steps/step-27-pdf-transition')),
+  dynamic(() => import('../steps/step-28-download-pdf')),
 ];
 
 const IS_DEV = process.env.NODE_ENV !== 'production';
@@ -58,26 +64,28 @@ export default function Orchestrator() {
     />
   );
 
-  // MapHost is rendered for steps 5–7 so it preloads during the
-  // step-5 transition, stays alive across the step-6 map, and
-  // continues into step-7's descent — eliminating the "blank map
-  // loading" frames the user used to see at each boundary.
-  const mapVisible = currentStep >= 5 && currentStep <= 7;
+  // MapHost is rendered for steps 5–6 (transition + map) and step 11
+  // (persona transition, descent variant) so the map preloads during
+  // the step-5 transition, stays alive across the step-6 map, and
+  // continues into step-11's descent — eliminating the "blank map
+  // loading" frames at boundaries.
+  const mapVisible =
+    (currentStep >= 5 && currentStep <= 6) || currentStep === 11;
 
-  // PropertyMapHost mirrors that pattern for steps 11–13: the
-  // property-map iframe preloads during step-11's tilt transition,
-  // stays alive across the step-12 boundary so the user never sees
-  // a reload, and remains live through step 13 so the lift transition
+  // PropertyMapHost mirrors that pattern for steps 15–17: the
+  // property-map iframe preloads during step-15's tilt transition,
+  // stays alive across the step-16 boundary so the user never sees
+  // a reload, and remains live through step 17 so the lift transition
   // animates the actual map at its current state, not a duplicate.
-  const propertyMapVisible = currentStep >= 11 && currentStep <= 13;
+  const propertyMapVisible = currentStep >= 15 && currentStep <= 17;
 
-  // Steps 6 and 12 render no foreground content; the prototype's
+  // Steps 6 and 16 render no foreground content; the prototype's
   // nav arrows and sheet live inside the iframe behind them. Make
   // the wrapping div transparent to clicks on those steps so the
   // forward/back arrows remain reachable. Other steps capture
   // clicks normally.
   const wrapperStyle =
-    currentStep === 6 || currentStep === 12
+    currentStep === 6 || currentStep === 16
       ? ({ pointerEvents: 'none' } as const)
       : undefined;
 

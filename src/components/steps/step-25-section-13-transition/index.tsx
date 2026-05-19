@@ -8,7 +8,7 @@ interface StepProps {
 
 const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
-export default function Step7Section4Transition({ onComplete }: StepProps) {
+export default function Step25Section13Transition({ onComplete }: StepProps) {
   return (
     <button
       type="button"
@@ -17,7 +17,7 @@ export default function Step7Section4Transition({ onComplete }: StepProps) {
       style={{ background: '#F9F9F9', fontFamily: FONT_BODY }}
     >
       <span style={{ fontSize: 13, letterSpacing: '0.01em', color: '#5B616E' }}>
-        Section 4 · transition
+        We said we&apos;d come back to this.
       </span>
     </button>
   );

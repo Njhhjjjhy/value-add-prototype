@@ -42,33 +42,39 @@ Read the relevant doc before working on any section. Do not load all of them at 
 
 ---
 
-## The 22 steps
+## The 28 steps
 
-Steps 1–20 alternate strictly transition → content. Steps 21 and 22 are a post-pitch handoff pair appended after the 10-section deck — they preserve the transition → content order but sit outside the alternating pitch flow. Step 22 is the terminal step: there is no step 23 transition because the deck ends with the PDF download action.
+Steps 1–26 alternate strictly transition → content across 13 content sections. Steps 27 and 28 are a post-pitch handoff pair appended after the 13-section deck — they preserve the transition → content order but sit outside the alternating pitch flow. Step 28 is the terminal step: there is no step 29 transition because the deck ends with the PDF download action.
 
 ```
- 1  step-1-opening-transition         transition
- 2  step-2-section-1-entry            content
- 3  step-3-section-2-transition       transition
- 4  step-4-section-2-bridge           content
- 5  step-5-section-3-transition       transition
- 6  step-6-section-3-map              content
- 7  step-7-section-4-transition       transition
- 8  step-8-section-4-persona          content
- 9  step-9-section-5-transition       transition
-10  step-10-section-5-current-options content
-11  step-11-section-6-transition      transition
-12  step-12-section-6-product-hardware content
-13  step-13-section-7-transition      transition
-14  step-14-section-7-product-software content
-15  step-15-section-8-transition      transition
-16  step-16-section-8-financials      content
-17  step-17-section-9-transition      transition
-18  step-18-section-9-risk-factors    content
-19  step-19-section-10-transition     transition
-20  step-20-section-10-exit-strategy  content
-21  step-21-pdf-transition            transition  (handoff)
-22  step-22-download-pdf              content     (terminal — opens /pdf in same tab)
+ 1  step-1-opening-transition                transition
+ 2  step-2-section-1-entry                   content   (section 1: entry)
+ 3  step-3-section-2-transition              transition
+ 4  step-4-section-2-bridge                  content   (section 2: bridge)
+ 5  step-5-section-3-transition              transition
+ 6  step-6-section-3-map                     content   (section 3: map)
+ 7  step-7-section-4-transition              transition
+ 8  step-8-section-4-parallel-hook           content   (section 4: parallel hook)
+ 9  step-9-section-5-transition              transition
+10  step-10-section-5-pain-points            content   (section 5: pain points)
+11  step-11-section-6-transition             transition
+12  step-12-section-6-persona                content   (section 6: persona)
+13  step-13-section-7-transition             transition
+14  step-14-section-7-current-options        content   (section 7: current options)
+15  step-15-section-8-transition             transition
+16  step-16-section-8-product-hardware       content   (section 8: hardware)
+17  step-17-section-9-transition             transition
+18  step-18-section-9-product-software       content   (section 9: software)
+19  step-19-section-10-transition            transition
+20  step-20-section-10-financials            content   (section 10: financials)
+21  step-21-section-11-transition            transition
+22  step-22-section-11-risk-factors          content   (section 11: risk factors)
+23  step-23-section-12-transition            transition
+24  step-24-section-12-exit-strategy         content   (section 12: exit strategy)
+25  step-25-section-13-transition            transition
+26  step-26-section-13-parallel-timeline     content   (section 13: parallel timeline)
+27  step-27-pdf-transition                   transition  (handoff)
+28  step-28-download-pdf                     content     (terminal — opens /pdf in same tab)
 ```
 
 Naming: these canonical names are used for folders, routes, and the component identifier inside the file. PascalCase for the component: `step-1-opening-transition` becomes `Step1OpeningTransition`. The file itself is always `index.tsx`.
@@ -366,7 +372,7 @@ Never apply `text-transform: uppercase` or `text-transform: lowercase` to any el
 5. No Tesla analogy anywhere.
 6. "MOHA" is always written as "Moha Intel."
 7. "MoreHarvest" is one word, capital M capital H.
-8. Banned property names that must never appear: "Ozu," "Haramizu," "Kikuyo." Use "Site 1" through "Site 5."
+8. **Ozu-1 is the canonical property identifier** for the deck's single hardware asset. The retired "Site 1 to Site 5" placeholder convention should not be used in new code. "Haramizu" remains banned as a property name. "Ozu" and "Kikuyo" are allowed only as town names in sourced data citations (e.g., "Ozu Town +33% land prices", "Kikuyo-cho land appreciation 40 to 80%"). They must not appear as property names or in deck headings outside such citations.
 9. Never invent or add content the user did not provide. If you need copy for a section and it is not in the content contract or the prototype, stop and ask.
 
 ## Brand rules
@@ -484,10 +490,18 @@ showcase/                             -- regenerated after every commit (gitigno
 
 ## File rules
 
-- Never modify files in `docs/` or `reference/`. They are read-only.
+- Never modify files in `docs/` or `reference/`. They are read-only. **Exception:** when an authoritative domain spec (such as `docs/gktk-value-add-prototype-pain-points.md`) explicitly declares itself "the single authoritative source", it may override file rules within its domain. Such overrides must be narrow (smallest possible change surface) and flagged to the user before execution.
 - After every commit, update the `showcase/` folder. This is mandatory.
 - Never delete the `showcase/` folder.
 - Never put prototype files, HTML mockups, or reference files in the repo. Only production code enters the repo. **Exception:** the playground (see "Playground" section below) is the one place where raw prototype files are permitted — `src/playground/prototypes/` for `.jsx` and `public/playground/prototypes/` for `.html`. Nowhere else.
+
+### Map embed sync
+
+The two map embeds at `public/playground/prototypes/step-6-section-3-map/map-prototype-v1/` and `public/playground/prototypes/step-12-section-6-product-hardware/map-prototype-v1/` are built and pushed here by the sibling project `map-prototype` via its `pnpm sync` command. Do not edit the build artifacts (`assets/index-*.js`, `assets/index-*.css`, `index.html`) directly in this repo — they will be overwritten on the next sync. Per-embed overrides (e.g., `assets/embed-mobile-overrides.css`) are preserved by the sync script.
+
+The hardware embed folder name still uses the old `step-12-section-6-product-hardware` segment (not the renumbered `step-16`) because the sync workflow's `TARGETS` array in `map-prototype/scripts/sync-to-slideshow.js` points at the old path. Cross-project rename is deferred until the in-flight map-package migration (see `for-riaan.md`) retires the copy workflow entirely. `PropertyMapHost` in this repo intentionally points at the old path for the same reason.
+
+Canonical workflow: `/Users/riaan/Documents/Design Files/Code Projects/map-prototype/docs/architecture-and-sync-workflow.md`.
 
 ---
 
@@ -508,7 +522,7 @@ The playground is a sealed-off testing room inside this repo where raw prototype
 3. **Iterations coexist.** Multiple prototype files per drawer are allowed (v5, v6, v7, etc.). Never auto-delete an older prototype. Remove a prototype only when the user explicitly asks.
 4. **Frames.** New prototypes are built with an iPad Pro 13 M4 frame at 1366×1024 (landscape) or 1024×1366 (portrait). Older prototypes that ship their own iPhone 17 Pro frame remain in the drawer as historical reference — they render iPhone-sized inside the larger iPad viewport, which makes their origin obvious. The playground viewer wraps `.html` prototypes in an `HtmlIpadFrame` and exposes a landscape/portrait toggle. `.jsx` prototypes draw their own frame; the viewer adds no chrome around them.
 5. **Variant chips.** Each prototype file carries its own internal variant selector. The playground's chips only switch between prototype *files*, never between variants inside a file.
-6. **Status.** Every step has one status: `locked`, `blocked`, `blocked-3d`, `available`, or `in-test`. Updated in `manifest.ts` when the user reports a change.
+6. **Status.** Every step has one status: `locked`, `blocked`, or `in-progress`. Updated in `manifest.ts` when the user reports a change.
 7. **Promotion.** When the user says "promote step N", read the playground prototype, follow `docs/prototype-workflow.md` (strip the device frame, translate animations to GSAP/Framer Motion, adapt per the iPad-first Responsive breakpoints table above using iPadOS HIG), write into `src/components/steps/step-N-…/`. **The playground file is never touched or deleted during promotion** — it stays as reference.
 8. **Visual language of the playground chrome itself** follows iPadOS HIG: flat surfaces on `#F9F9F9`, thin borders, subtle shadows, left-aligned text, amber accents only. No frosted glass on the chrome (that contradicts the visual identity above).
 
