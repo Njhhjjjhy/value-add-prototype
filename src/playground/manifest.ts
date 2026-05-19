@@ -217,7 +217,7 @@ const Step18RiskFactors = dynamic(
 const Step8PersonaSpecimen = dynamic(
   () =>
     import(
-      "./prototypes/step-8-section-4-persona/step-8-persona-v1-specimen.jsx"
+      "./prototypes/step-12-section-6-persona/step-8-persona-v1-specimen.jsx"
     ),
   { ssr: false }
 );
@@ -225,7 +225,7 @@ const Step8PersonaSpecimen = dynamic(
 const Step8PersonaDay = dynamic(
   () =>
     import(
-      "./prototypes/step-8-section-4-persona/step-8-persona-v2-day.jsx"
+      "./prototypes/step-12-section-6-persona/step-8-persona-v2-day.jsx"
     ),
   { ssr: false }
 );
@@ -233,7 +233,7 @@ const Step8PersonaDay = dynamic(
 const Step8PersonaGrid = dynamic(
   () =>
     import(
-      "./prototypes/step-8-section-4-persona/step-8-persona-v3-grid.jsx"
+      "./prototypes/step-12-section-6-persona/step-8-persona-v3-grid.jsx"
     ),
   { ssr: false }
 );
@@ -415,7 +415,7 @@ export const STEPS: StepDrawer[] = [
   },
   {
     index: 8,
-    id: "step-8-section-4-persona",
+    id: "step-12-section-6-persona",
     label: "Section 4 — persona",
     status: "in-progress",
     prototypes: [
