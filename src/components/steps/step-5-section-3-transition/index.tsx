@@ -19,9 +19,10 @@ const C = {
 const FONT_HEADING = '"REM", system-ui, sans-serif';
 const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
-const WARP_DURATION_MS = 4000;
-const GHOST_FADE_MS = 1400;
+const COLLAPSE_DURATION_MS = 3800;
+const GHOST_FADE_MS = 1200;
 const COMPLETE_DELAY_MS = 200;
+const PARTICLE_COUNT = 500;
 
 function GlassPanel({
   level = 1,
@@ -230,37 +231,37 @@ function ReadyPrompt() {
   );
 }
 
-interface WarpLine {
-  angle: number;
-  baseDist: number;
-  speedMult: number;
-  maxDist: number;
-  isAmber: boolean;
+interface Particle {
+  origX: number;
+  origY: number;
+  size: number;
+  speed: number;
   brightness: number;
-  thickness: number;
+  isAmber: boolean;
 }
 
 export default function Step5Section3Transition({ isActive, onComplete }: StepProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animRef = useRef<number | null>(null);
-  const linesRef = useRef<WarpLine[] | null>(null);
+  const particlesRef = useRef<Particle[] | null>(null);
   const completed = useRef(false);
-  const [phase, setPhase] = useState<'ready' | 'warping' | 'done'>('ready');
+  const [phase, setPhase] = useState<'ready' | 'collapsing' | 'done'>('ready');
 
   useEffect(() => {
-    const lines: WarpLine[] = [];
-    for (let i = 0; i < 700; i++) {
-      lines.push({
-        angle: Math.random() * Math.PI * 2,
-        baseDist: 40 + Math.random() * 160,
-        speedMult: 0.5 + Math.random() * 1.5,
-        maxDist: 600 + Math.random() * 800,
-        isAmber: Math.random() < 0.35,
-        brightness: 0.4 + Math.random() * 0.6,
-        thickness: 0.8 + Math.random() * 2.0,
+    const particles: Particle[] = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 100 + Math.random() * 700;
+      particles.push({
+        origX: Math.cos(angle) * dist,
+        origY: Math.sin(angle) * dist,
+        size: 1.5 + Math.random() * 3.5,
+        speed: 0.3 + Math.random() * 0.7,
+        brightness: 0.2 + Math.random() * 0.5,
+        isAmber: Math.random() < 0.25,
       });
     }
-    linesRef.current = lines;
+    particlesRef.current = particles;
   }, []);
 
   useEffect(() => {
@@ -275,9 +276,9 @@ export default function Step5Section3Transition({ isActive, onComplete }: StepPr
     []
   );
 
-  const startWarp = useCallback(() => {
+  const startCollapse = useCallback(() => {
     if (phase !== 'ready') return;
-    setPhase('warping');
+    setPhase('collapsing');
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -286,75 +287,70 @@ export default function Step5Section3Transition({ isActive, onComplete }: StepPr
     const W = canvas.width;
     const H = canvas.height;
     const cx = W / 2;
-    const cy = H * 0.42;
-    const lines = linesRef.current ?? [];
+    const cy = H * 0.45;
+    const particles = particlesRef.current ?? [];
     const start = performance.now();
 
     const draw = (now: number) => {
       const elapsed = now - start;
-      const t = Math.min(elapsed / WARP_DURATION_MS, 1);
+      const t = Math.min(elapsed / COLLAPSE_DURATION_MS, 1);
       ctx.clearRect(0, 0, W, H);
 
-      let accel: number;
-      let lineAlpha: number;
-      if (t < 0.2) {
-        const p = t / 0.2;
-        accel = p * 0.03;
-        lineAlpha = p * 0.15;
-      } else if (t < 0.4) {
-        const p = (t - 0.2) / 0.2;
-        accel = 0.03 + p * 0.07;
-        lineAlpha = 0.15 + p * 0.15;
-      } else if (t < 0.6) {
-        const p = (t - 0.4) / 0.2;
-        accel = 0.1 + p * 0.25;
-        lineAlpha = 0.3 + p * 0.2;
-      } else if (t < 0.78) {
-        const p = (t - 0.6) / 0.18;
-        accel = 0.35 + p * 0.35;
-        lineAlpha = 0.5 + p * 0.25;
-      } else if (t < 0.9) {
-        const p = (t - 0.78) / 0.12;
-        accel = 0.7 + p * 0.3;
-        lineAlpha = 0.75 + p * 0.25;
+      let collapse: number;
+      if (t < 0.15) {
+        collapse = (t / 0.15) * 0.05;
+      } else if (t < 0.55) {
+        collapse = 0.05 + ((t - 0.15) / 0.4) * 0.55;
+      } else if (t < 0.82) {
+        collapse = 0.6 + ((t - 0.55) / 0.27) * 0.35;
       } else {
-        accel = 1.0;
-        lineAlpha = 1.0;
+        collapse = 0.95 + ((t - 0.82) / 0.18) * 0.05;
       }
 
-      const coolMix = Math.min(t * 1.2, 1);
+      // Echo rings — only during the active collapse phase
+      if (t > 0.1 && t < 0.85) {
+        const distT = (t - 0.1) / 0.75;
+        for (let r = 0; r < 5; r++) {
+          const radius = (1 - distT * 0.7) * (160 + r * 120);
+          const alpha = Math.sin(distT * Math.PI) * 0.06 * (1 - r / 5);
+          ctx.beginPath();
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(237,238,241,${alpha})`;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+      }
 
-      for (const line of lines) {
-        const dist = line.baseDist + accel * line.speedMult * line.maxDist;
-        const len = 4 + accel * line.speedMult * 120;
-        const x1 = cx + Math.cos(line.angle) * dist;
-        const y1 = cy + Math.sin(line.angle) * dist;
-        const x2 = cx + Math.cos(line.angle) * (dist - len);
-        const y2 = cy + Math.sin(line.angle) * (dist - len);
+      for (const p of particles) {
+        const pull = collapse * p.speed;
+        const px = p.origX * (1 - pull);
+        const py = p.origY * (1 - pull);
+        const sx = cx + px;
+        const sy = cy + py;
 
-        let r: number;
-        let g: number;
-        let b: number;
-        if (line.isAmber) {
-          r = Math.round(251 - coolMix * 82);
-          g = Math.round(185 - coolMix * 16);
-          b = Math.round(49 + coolMix * 120);
-        } else {
-          r = Math.round(169 - coolMix * 20);
-          g = Math.round(169 - coolMix * 15);
-          b = Math.round(169 + coolMix * 10);
+        if (collapse > 0.2) {
+          const tx = cx + px * (1 + collapse * 0.08);
+          const ty = cy + py * (1 + collapse * 0.08);
+          ctx.beginPath();
+          ctx.moveTo(sx, sy);
+          ctx.lineTo(tx, ty);
+          ctx.strokeStyle = p.isAmber
+            ? `rgba(251,185,49,${p.brightness * 0.3 * Math.min(collapse, 0.8)})`
+            : `rgba(138,143,154,${p.brightness * 0.3 * Math.min(collapse, 0.8)})`;
+          ctx.lineWidth = p.size * 0.5;
+          ctx.stroke();
         }
 
         ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.strokeStyle = `rgba(${r},${g},${b},${lineAlpha * line.brightness * 0.6})`;
-        ctx.lineWidth = line.thickness;
-        ctx.stroke();
+        ctx.arc(sx, sy, p.size * (1 - collapse * 0.6), 0, Math.PI * 2);
+        ctx.fillStyle = p.isAmber
+          ? `rgba(251,185,49,${p.brightness * (1 - collapse * 0.5)})`
+          : `rgba(169,169,175,${p.brightness * (1 - collapse * 0.5)})`;
+        ctx.fill();
       }
 
-      if (t > 0.9) {
-        const flashAlpha = ((t - 0.9) / 0.1) ** 3;
+      if (t > 0.82) {
+        const flashAlpha = ((t - 0.82) / 0.18) ** 2;
         ctx.fillStyle = `rgba(249,249,249,${flashAlpha * 0.95})`;
         ctx.fillRect(0, 0, W, H);
       }
@@ -377,7 +373,7 @@ export default function Step5Section3Transition({ isActive, onComplete }: StepPr
   return (
     <div
       data-step-5
-      onClick={phase === 'ready' ? startWarp : undefined}
+      onClick={phase === 'ready' ? startCollapse : undefined}
       role="button"
       tabIndex={0}
       style={{
@@ -402,12 +398,12 @@ export default function Step5Section3Transition({ isActive, onComplete }: StepPr
         }
       `}</style>
 
-      {(phase === 'ready' || phase === 'warping') && (
+      {(phase === 'ready' || phase === 'collapsing') && (
         <div
           style={{
             position: 'absolute',
             inset: 0,
-            opacity: phase === 'warping' ? 0 : 1,
+            opacity: phase === 'collapsing' ? 0 : 1,
             transition: `opacity ${GHOST_FADE_MS}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
           }}
         >

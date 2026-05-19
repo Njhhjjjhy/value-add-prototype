@@ -39,6 +39,8 @@ Read the relevant doc before working on any section. Do not load all of them at 
 - `docs/visual-identity.md` -- locked design system. Colors, surfaces, typography, spacing, motion, act-by-act backgrounds. Single source of truth for full specifications.
 - `docs/prototype-workflow.md` -- the 9-step process for converting an approved prototype into a production component.
 - `docs/showcase-prompt.md` -- showcase folder generation instructions. Read only after a commit.
+- `docs/gktk-value-add-prototype-pain-points.md` -- authoritative spec for step 10 pain points. Locked copy for all 8 items, GSAP requirements (`gentle`/`settle` eases, pre-mount with `visibility: hidden`).
+- `docs/step-20-section-10-exit-strategy-flow.md` -- **misnamed.** Filename says "exit-strategy-flow" but the contents are the locked copy for step 26 (section 13: parallel timeline). The exit-strategy content lives in step 24's production code. Read the file body, not the filename, when sourcing copy.
 
 ---
 
@@ -407,6 +409,8 @@ When the dev server throws an error, read the full error message and fix the roo
 
 After building a step, run `pnpm build`. Zero errors before reporting done. Zero warnings in the step's own files (pre-existing warnings in other files are not your concern).
 
+Do not `rm -rf .next` while `pnpm dev` is running. The dev server holds open handles in that directory; deleting it mid-session corrupts hot reload and forces a noisy restart. If you genuinely need a clean build cache, stop the dev server first, then `rm -rf .next`, then start dev again.
+
 ---
 
 ## Git workflow
@@ -494,6 +498,7 @@ showcase/                             -- regenerated after every commit (gitigno
 - After every commit, update the `showcase/` folder. This is mandatory.
 - Never delete the `showcase/` folder.
 - Never put prototype files, HTML mockups, or reference files in the repo. Only production code enters the repo. **Exception:** the playground (see "Playground" section below) is the one place where raw prototype files are permitted — `src/playground/prototypes/` for `.jsx` and `public/playground/prototypes/` for `.html`. Nowhere else.
+- `src/data/painPoints.ts` is the authoritative source for all pain-point copy (8 items, 4 physical + 4 mental). Production components, PDF pages, and playground prototypes for step 10 must read from here. Do not inline alternate strings. The schema and ordering are locked by `docs/gktk-value-add-prototype-pain-points.md`.
 
 ### Map embed sync
 
@@ -525,6 +530,8 @@ The playground is a sealed-off testing room inside this repo where raw prototype
 6. **Status.** Every step has one status: `locked`, `blocked`, or `in-progress`. Updated in `manifest.ts` when the user reports a change.
 7. **Promotion.** When the user says "promote step N", read the playground prototype, follow `docs/prototype-workflow.md` (strip the device frame, translate animations to GSAP/Framer Motion, adapt per the iPad-first Responsive breakpoints table above using iPadOS HIG), write into `src/components/steps/step-N-…/`. **The playground file is never touched or deleted during promotion** — it stays as reference.
 8. **Visual language of the playground chrome itself** follows iPadOS HIG: flat surfaces on `#F9F9F9`, thin borders, subtle shadows, left-aligned text, amber accents only. No frosted glass on the chrome (that contradicts the visual identity above).
+9. **3-prototype convention for new step slots.** When a brand-new step slot is introduced (no prior prototype exists), the first build delivers 3 distinct prototype variants for the product owner to choose from. Variants may be 3 separate `.jsx` files OR a single file with an internal `variant` prop and 3 `variants:` entries in the manifest — both are acceptable. Keep the v0 placeholder in the drawer until the user explicitly removes it.
+10. **Animation library by step.** Most production steps use Framer Motion for mount/unmount and GSAP for sequenced reveals. Step 10 (pain points) **must** use GSAP per its authoritative spec (`docs/gktk-value-add-prototype-pain-points.md`) — pre-mount all 8 items with `visibility: hidden`, register `gentle` + `settle` custom eases, reveal physical first then mental with a 300ms+ pause between groups. This is a locked exception, not a stylistic choice.
 
 ---
 
