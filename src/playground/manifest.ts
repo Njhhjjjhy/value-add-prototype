@@ -286,6 +286,55 @@ const Step22DownloadPdfReveal = dynamic(
   { ssr: false }
 );
 
+// New step placeholder drawers (Phase 1 scaffolds; Phase 2 will add real variants).
+const Step7Section4TransitionPlaceholder = dynamic(
+  () =>
+    import(
+      "./prototypes/step-7-section-4-transition/step-7-section-4-transition-v0-placeholder.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step8ParallelHookPlaceholder = dynamic(
+  () =>
+    import(
+      "./prototypes/step-8-section-4-parallel-hook/step-8-section-4-parallel-hook-v0-placeholder.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step9Section5TransitionPlaceholder = dynamic(
+  () =>
+    import(
+      "./prototypes/step-9-section-5-transition/step-9-section-5-transition-v0-placeholder.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step10PainPointsPlaceholder = dynamic(
+  () =>
+    import(
+      "./prototypes/step-10-section-5-pain-points/step-10-section-5-pain-points-v0-placeholder.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step25Section13TransitionPlaceholder = dynamic(
+  () =>
+    import(
+      "./prototypes/step-25-section-13-transition/step-25-section-13-transition-v0-placeholder.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step26ParallelTimelinePlaceholder = dynamic(
+  () =>
+    import(
+      "./prototypes/step-26-section-13-parallel-timeline/step-26-section-13-parallel-timeline-v0-placeholder.jsx"
+    ),
+  { ssr: false }
+);
+
 export const STEPS: StepDrawer[] = [
   {
     index: 1,
@@ -398,8 +447,60 @@ export const STEPS: StepDrawer[] = [
   },
   {
     index: 7,
-    id: "step-11-section-6-transition",
+    id: "step-7-section-4-transition",
     label: "Section 4 — transition",
+    status: "in-progress",
+    prototypes: [
+      {
+        filename: "step-7-section-4-transition-v0-placeholder.jsx",
+        kind: "jsx",
+        component: Step7Section4TransitionPlaceholder,
+      },
+    ],
+  },
+  {
+    index: 8,
+    id: "step-8-section-4-parallel-hook",
+    label: "Section 4 — parallel hook",
+    status: "in-progress",
+    prototypes: [
+      {
+        filename: "step-8-section-4-parallel-hook-v0-placeholder.jsx",
+        kind: "jsx",
+        component: Step8ParallelHookPlaceholder,
+      },
+    ],
+  },
+  {
+    index: 9,
+    id: "step-9-section-5-transition",
+    label: "Section 5 — transition",
+    status: "in-progress",
+    prototypes: [
+      {
+        filename: "step-9-section-5-transition-v0-placeholder.jsx",
+        kind: "jsx",
+        component: Step9Section5TransitionPlaceholder,
+      },
+    ],
+  },
+  {
+    index: 10,
+    id: "step-10-section-5-pain-points",
+    label: "Section 5 — pain points",
+    status: "in-progress",
+    prototypes: [
+      {
+        filename: "step-10-section-5-pain-points-v0-placeholder.jsx",
+        kind: "jsx",
+        component: Step10PainPointsPlaceholder,
+      },
+    ],
+  },
+  {
+    index: 11,
+    id: "step-11-section-6-transition",
+    label: "Section 6 — transition",
     status: "locked",
     prototypes: [
       {
@@ -414,9 +515,9 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 8,
+    index: 12,
     id: "step-12-section-6-persona",
-    label: "Section 4 — persona",
+    label: "Section 6 — persona",
     status: "in-progress",
     prototypes: [
       {
@@ -437,9 +538,9 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 9,
+    index: 13,
     id: "step-13-section-7-transition",
-    label: "Section 5 — transition",
+    label: "Section 7 — transition",
     status: "locked",
     prototypes: [
       {
@@ -450,9 +551,9 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 10,
+    index: 14,
     id: "step-14-section-7-current-options",
-    label: "Section 5 — current options",
+    label: "Section 7 — current options",
     status: "locked",
     prototypes: [
       {
@@ -478,9 +579,9 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 11,
+    index: 15,
     id: "step-15-section-8-transition",
-    label: "Section 6 — transition",
+    label: "Section 8 — transition",
     status: "locked",
     prototypes: [
       {
@@ -495,9 +596,9 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 12,
+    index: 16,
     id: "step-16-section-8-product-hardware",
-    label: "Section 6 — product hardware",
+    label: "Section 8 — product hardware",
     status: "locked",
     prototypes: [
       {
@@ -509,9 +610,9 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 13,
+    index: 17,
     id: "step-17-section-9-transition",
-    label: "Section 7 — transition",
+    label: "Section 9 — transition",
     status: "locked",
     prototypes: [
       {
@@ -526,9 +627,9 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 14,
+    index: 18,
     id: "step-18-section-9-product-software",
-    label: "Section 7 — product software",
+    label: "Section 9 — product software",
     status: "locked",
     prototypes: [
       {
@@ -543,9 +644,9 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 15,
+    index: 19,
     id: "step-19-section-10-transition",
-    label: "Section 8 — transition",
+    label: "Section 10 — transition",
     status: "locked",
     prototypes: [
       {
@@ -561,9 +662,9 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 16,
+    index: 20,
     id: "step-20-section-10-financials",
-    label: "Section 8 — financials",
+    label: "Section 10 — financials",
     status: "locked",
     prototypes: [
       {
@@ -578,9 +679,9 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 17,
+    index: 21,
     id: "step-21-section-11-transition",
-    label: "Section 9 — transition",
+    label: "Section 11 — transition",
     status: "locked",
     prototypes: [
       {
@@ -595,9 +696,9 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 18,
+    index: 22,
     id: "step-22-section-11-risk-factors",
-    label: "Section 9 — risk factors",
+    label: "Section 11 — risk factors",
     status: "locked",
     prototypes: [
       {
@@ -612,9 +713,9 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 19,
+    index: 23,
     id: "step-23-section-12-transition",
-    label: "Section 10 — transition",
+    label: "Section 12 — transition",
     status: "locked",
     prototypes: [
       {
@@ -629,9 +730,9 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 20,
+    index: 24,
     id: "step-24-section-12-exit-strategy",
-    label: "Section 10 — exit strategy",
+    label: "Section 12 — exit strategy",
     status: "locked",
     prototypes: [
       {
@@ -646,7 +747,33 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 21,
+    index: 25,
+    id: "step-25-section-13-transition",
+    label: "Section 13 — transition",
+    status: "in-progress",
+    prototypes: [
+      {
+        filename: "step-25-section-13-transition-v0-placeholder.jsx",
+        kind: "jsx",
+        component: Step25Section13TransitionPlaceholder,
+      },
+    ],
+  },
+  {
+    index: 26,
+    id: "step-26-section-13-parallel-timeline",
+    label: "Section 13 — parallel timeline",
+    status: "in-progress",
+    prototypes: [
+      {
+        filename: "step-26-section-13-parallel-timeline-v0-placeholder.jsx",
+        kind: "jsx",
+        component: Step26ParallelTimelinePlaceholder,
+      },
+    ],
+  },
+  {
+    index: 27,
     id: "step-27-pdf-transition",
     label: "PDF transition (handoff)",
     status: "in-progress",
@@ -669,7 +796,7 @@ export const STEPS: StepDrawer[] = [
     ],
   },
   {
-    index: 22,
+    index: 28,
     id: "step-28-download-pdf",
     label: "Download PDF",
     status: "in-progress",
