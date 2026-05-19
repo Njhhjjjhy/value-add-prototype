@@ -496,7 +496,7 @@ export const STEPS: StepDrawer[] = [
   },
   {
     index: 12,
-    id: "step-12-section-6-product-hardware",
+    id: "step-16-section-8-product-hardware",
     label: "Section 6 — product hardware",
     status: "locked",
     prototypes: [
