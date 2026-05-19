@@ -153,7 +153,7 @@ const Step13Transition = dynamic(
 const Step14ProductSoftware = dynamic(
   () =>
     import(
-      "./prototypes/step-14-section-7-product-software/gktk-step14-product-software-v3.jsx"
+      "./prototypes/step-18-section-9-product-software/gktk-step14-product-software-v3.jsx"
     ),
   { ssr: false }
 );
@@ -527,7 +527,7 @@ export const STEPS: StepDrawer[] = [
   },
   {
     index: 14,
-    id: "step-14-section-7-product-software",
+    id: "step-18-section-9-product-software",
     label: "Section 7 — product software",
     status: "locked",
     prototypes: [
