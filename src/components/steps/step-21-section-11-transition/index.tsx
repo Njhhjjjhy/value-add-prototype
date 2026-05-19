@@ -188,7 +188,7 @@ function ResolvePanel({
           marginBottom: 20,
         }}
       >
-        SECTION 9
+        Section 11
       </div>
       <div
         style={{

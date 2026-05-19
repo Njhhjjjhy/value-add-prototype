@@ -317,7 +317,7 @@ export default function Step19Section10Transition({
                   marginBottom: 16,
                 }}
               >
-                Section 10
+                Section 12
               </div>
               <div
                 style={{

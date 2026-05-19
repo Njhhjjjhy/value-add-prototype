@@ -209,7 +209,7 @@ export default function Step13Section7Transition({
               textAlign: 'left',
             }}
           >
-            SECTION 7 — PRODUCT, SOFTWARE
+            Section 9 · Product, software
           </div>
           <div
             className="step13-body"

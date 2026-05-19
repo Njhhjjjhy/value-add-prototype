@@ -380,7 +380,7 @@ function renderB0(s: RefSetter) {
             marginBottom: 28,
           }}
         >
-          SECTION 5
+          Section 7
         </span>
         <h1
           ref={s('q') as (el: HTMLHeadingElement | null) => void}

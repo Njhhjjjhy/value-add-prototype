@@ -694,7 +694,7 @@ export default function Step16Section8Financials({
               letterSpacing: '0.18em',
             }}
           >
-            SECTION 8
+            Section 10
           </div>
           <h1
             style={{
