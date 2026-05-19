@@ -241,7 +241,7 @@ const Step8PersonaGrid = dynamic(
 const Step21PdfTransitionThreshold = dynamic(
   () =>
     import(
-      "./prototypes/step-21-pdf-transition/step-21-pdf-transition-v1-threshold.jsx"
+      "./prototypes/step-27-pdf-transition/step-21-pdf-transition-v1-threshold.jsx"
     ),
   { ssr: false }
 );
@@ -249,7 +249,7 @@ const Step21PdfTransitionThreshold = dynamic(
 const Step21PdfTransitionMemo = dynamic(
   () =>
     import(
-      "./prototypes/step-21-pdf-transition/step-21-pdf-transition-v2-memo.jsx"
+      "./prototypes/step-27-pdf-transition/step-21-pdf-transition-v2-memo.jsx"
     ),
   { ssr: false }
 );
@@ -257,7 +257,7 @@ const Step21PdfTransitionMemo = dynamic(
 const Step21PdfTransitionReveal = dynamic(
   () =>
     import(
-      "./prototypes/step-21-pdf-transition/step-21-pdf-transition-v3-reveal.jsx"
+      "./prototypes/step-27-pdf-transition/step-21-pdf-transition-v3-reveal.jsx"
     ),
   { ssr: false }
 );
@@ -647,7 +647,7 @@ export const STEPS: StepDrawer[] = [
   },
   {
     index: 21,
-    id: "step-21-pdf-transition",
+    id: "step-27-pdf-transition",
     label: "PDF transition (handoff)",
     status: "in-progress",
     prototypes: [
