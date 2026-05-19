@@ -110,6 +110,14 @@ const Step7Transition = dynamic(
   { ssr: false }
 );
 
+const Step11Section6TransitionV1 = dynamic(
+  () =>
+    import(
+      "./prototypes/step-11-section-6-transition/step-11-section-6-transition-v1.jsx"
+    ),
+  { ssr: false }
+);
+
 const Step9Transition = dynamic(
   () =>
     import(
@@ -295,10 +303,26 @@ const Step7Section4TransitionPlaceholder = dynamic(
   { ssr: false }
 );
 
+const Step7Section4TransitionV1 = dynamic(
+  () =>
+    import(
+      "./prototypes/step-7-section-4-transition/step-7-section-4-transition-v1.jsx"
+    ),
+  { ssr: false }
+);
+
 const Step8ParallelHookPlaceholder = dynamic(
   () =>
     import(
       "./prototypes/step-8-section-4-parallel-hook/step-8-section-4-parallel-hook-v0-placeholder.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step8ParallelHookV1 = dynamic(
+  () =>
+    import(
+      "./prototypes/step-8-section-4-parallel-hook/step-8-section-4-parallel-hook-v1.jsx"
     ),
   { ssr: false }
 );
@@ -311,10 +335,26 @@ const Step9Section5TransitionPlaceholder = dynamic(
   { ssr: false }
 );
 
+const Step9Section5TransitionV1 = dynamic(
+  () =>
+    import(
+      "./prototypes/step-9-section-5-transition/step-9-section-5-transition-v1.jsx"
+    ),
+  { ssr: false }
+);
+
 const Step10PainPointsPlaceholder = dynamic(
   () =>
     import(
       "./prototypes/step-10-section-5-pain-points/step-10-section-5-pain-points-v0-placeholder.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step10PainPointsV1 = dynamic(
+  () =>
+    import(
+      "./prototypes/step-10-section-5-pain-points/step-10-section-5-pain-points-v1.jsx"
     ),
   { ssr: false }
 );
@@ -327,10 +367,26 @@ const Step25Section13TransitionPlaceholder = dynamic(
   { ssr: false }
 );
 
+const Step25Section13TransitionV1 = dynamic(
+  () =>
+    import(
+      "./prototypes/step-25-section-13-transition/step-25-section-13-transition-v1.jsx"
+    ),
+  { ssr: false }
+);
+
 const Step26ParallelTimelinePlaceholder = dynamic(
   () =>
     import(
       "./prototypes/step-26-section-13-parallel-timeline/step-26-section-13-parallel-timeline-v0-placeholder.jsx"
+    ),
+  { ssr: false }
+);
+
+const Step26ParallelTimelineV1 = dynamic(
+  () =>
+    import(
+      "./prototypes/step-26-section-13-parallel-timeline/step-26-section-13-parallel-timeline-v1.jsx"
     ),
   { ssr: false }
 );
@@ -452,6 +508,16 @@ export const STEPS: StepDrawer[] = [
     status: "in-progress",
     prototypes: [
       {
+        filename: "step-7-section-4-transition-v1.jsx",
+        kind: "jsx",
+        component: Step7Section4TransitionV1,
+        variants: [
+          { id: "A", label: "A: titlecard" },
+          { id: "B", label: "B: shutter" },
+          { id: "C", label: "C: timeline" },
+        ],
+      },
+      {
         filename: "step-7-section-4-transition-v0-placeholder.jsx",
         kind: "jsx",
         component: Step7Section4TransitionPlaceholder,
@@ -464,6 +530,16 @@ export const STEPS: StepDrawer[] = [
     label: "Section 4 — parallel hook",
     status: "in-progress",
     prototypes: [
+      {
+        filename: "step-8-section-4-parallel-hook-v1.jsx",
+        kind: "jsx",
+        component: Step8ParallelHookV1,
+        variants: [
+          { id: "A", label: "A: mockup mirror" },
+          { id: "B", label: "B: B&W treatment" },
+          { id: "C", label: "C: stacked" },
+        ],
+      },
       {
         filename: "step-8-section-4-parallel-hook-v0-placeholder.jsx",
         kind: "jsx",
@@ -478,6 +554,16 @@ export const STEPS: StepDrawer[] = [
     status: "in-progress",
     prototypes: [
       {
+        filename: "step-9-section-5-transition-v1.jsx",
+        kind: "jsx",
+        component: Step9Section5TransitionV1,
+        variants: [
+          { id: "A", label: "A: gravity" },
+          { id: "B", label: "B: fade" },
+          { id: "C", label: "C: slide" },
+        ],
+      },
+      {
         filename: "step-9-section-5-transition-v0-placeholder.jsx",
         kind: "jsx",
         component: Step9Section5TransitionPlaceholder,
@@ -491,6 +577,16 @@ export const STEPS: StepDrawer[] = [
     status: "in-progress",
     prototypes: [
       {
+        filename: "step-10-section-5-pain-points-v1.jsx",
+        kind: "jsx",
+        component: Step10PainPointsV1,
+        variants: [
+          { id: "A", label: "A: grid" },
+          { id: "B", label: "B: narrative" },
+          { id: "C", label: "C: stacked evidence" },
+        ],
+      },
+      {
         filename: "step-10-section-5-pain-points-v0-placeholder.jsx",
         kind: "jsx",
         component: Step10PainPointsPlaceholder,
@@ -501,8 +597,18 @@ export const STEPS: StepDrawer[] = [
     index: 11,
     id: "step-11-section-6-transition",
     label: "Section 6 — transition",
-    status: "locked",
+    status: "in-progress",
     prototypes: [
+      {
+        filename: "step-11-section-6-transition-v1.jsx",
+        kind: "jsx",
+        component: Step11Section6TransitionV1,
+        variants: [
+          { id: "A", label: "A: descent" },
+          { id: "B", label: "B: focuspull" },
+          { id: "C", label: "C: cut" },
+        ],
+      },
       {
         filename: "gktk-step7-transition-v6.jsx",
         kind: "jsx",
@@ -753,6 +859,16 @@ export const STEPS: StepDrawer[] = [
     status: "in-progress",
     prototypes: [
       {
+        filename: "step-25-section-13-transition-v1.jsx",
+        kind: "jsx",
+        component: Step25Section13TransitionV1,
+        variants: [
+          { id: "A", label: "A: callback" },
+          { id: "B", label: "B: sweep" },
+          { id: "C", label: "C: anchor" },
+        ],
+      },
+      {
         filename: "step-25-section-13-transition-v0-placeholder.jsx",
         kind: "jsx",
         component: Step25Section13TransitionPlaceholder,
@@ -765,6 +881,16 @@ export const STEPS: StepDrawer[] = [
     label: "Section 13 — parallel timeline",
     status: "in-progress",
     prototypes: [
+      {
+        filename: "step-26-section-13-parallel-timeline-v1.jsx",
+        kind: "jsx",
+        component: Step26ParallelTimelineV1,
+        variants: [
+          { id: "A", label: "A: vertical rail" },
+          { id: "B", label: "B: horizontal arc" },
+          { id: "C", label: "C: card grid" },
+        ],
+      },
       {
         filename: "step-26-section-13-parallel-timeline-v0-placeholder.jsx",
         kind: "jsx",
