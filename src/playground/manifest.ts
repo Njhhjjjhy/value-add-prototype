@@ -161,7 +161,7 @@ const Step14ProductSoftware = dynamic(
 const Step15Transition = dynamic(
   () =>
     import(
-      "./prototypes/step-15-section-8-transition/gktk-step15-transition.jsx"
+      "./prototypes/step-19-section-10-transition/gktk-step15-transition.jsx"
     ),
   { ssr: false }
 );
@@ -169,7 +169,7 @@ const Step15Transition = dynamic(
 const Step15TransitionV2 = dynamic(
   () =>
     import(
-      "./prototypes/step-15-section-8-transition/gktk-step15-transition-v2.jsx"
+      "./prototypes/step-19-section-10-transition/gktk-step15-transition-v2.jsx"
     ),
   { ssr: false }
 );
@@ -544,7 +544,7 @@ export const STEPS: StepDrawer[] = [
   },
   {
     index: 15,
-    id: "step-15-section-8-transition",
+    id: "step-19-section-10-transition",
     label: "Section 8 — transition",
     status: "locked",
     prototypes: [
