@@ -121,7 +121,7 @@ const Step9Transition = dynamic(
 const Step10CurrentOptions = dynamic(
   () =>
     import(
-      "./prototypes/step-10-section-5-current-options/gktk-step10-current-options-v6.jsx"
+      "./prototypes/step-14-section-7-current-options/gktk-step10-current-options-v6.jsx"
     ),
   { ssr: false }
 );
@@ -129,7 +129,7 @@ const Step10CurrentOptions = dynamic(
 const Step10CurrentOptionsV19 = dynamic(
   () =>
     import(
-      "./prototypes/step-10-section-5-current-options/gktk-step10-current-options-v19.jsx"
+      "./prototypes/step-14-section-7-current-options/gktk-step10-current-options-v19.jsx"
     ),
   { ssr: false }
 );
@@ -451,7 +451,7 @@ export const STEPS: StepDrawer[] = [
   },
   {
     index: 10,
-    id: "step-10-section-5-current-options",
+    id: "step-14-section-7-current-options",
     label: "Section 5 — current options",
     status: "locked",
     prototypes: [
