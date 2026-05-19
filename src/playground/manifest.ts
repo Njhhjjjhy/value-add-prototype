@@ -201,7 +201,7 @@ const Step19Transition = dynamic(
 const Step20ExitStrategy = dynamic(
   () =>
     import(
-      "./prototypes/step-20-section-10-exit-strategy/gktk-step20-exit-strategy-v9.jsx"
+      "./prototypes/step-24-section-12-exit-strategy/gktk-step20-exit-strategy-v9.jsx"
     ),
   { ssr: false }
 );
@@ -630,7 +630,7 @@ export const STEPS: StepDrawer[] = [
   },
   {
     index: 20,
-    id: "step-20-section-10-exit-strategy",
+    id: "step-24-section-12-exit-strategy",
     label: "Section 10 — exit strategy",
     status: "locked",
     prototypes: [
