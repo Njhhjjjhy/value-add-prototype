@@ -123,7 +123,7 @@ Central component in `src/components/orchestrator/index.tsx` (with sibling files
 - Renders only the active step. Optionally preloads next step offscreen.
 - Advances on `onComplete`.
 - Lazy loads via `next/dynamic`. Never load all 20 steps at mount.
-- Dev-only nav bar (hidden in production) for jumping to any step.
+- QA chrome (breakpoint toolbar + iframe stage) and floating step nav render in **both** local and production builds. The deployed Vercel site must be testable identically to local, so do not gate either behind `process.env.NODE_ENV` or any other dev-only check. Hide on demand via the toolbar close button or Ctrl+Shift+B.
 
 ### Step exit pattern
 

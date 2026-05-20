@@ -39,8 +39,6 @@ const stepComponents = [
   dynamic(() => import('../steps/step-28-download-pdf')),
 ];
 
-const IS_DEV = process.env.NODE_ENV !== 'production';
-
 export default function Orchestrator() {
   const { currentStep, totalSteps, goToNext, goToPrev, goToStep, goToPrevContent } =
     useStepNavigation();
@@ -88,21 +86,6 @@ export default function Orchestrator() {
     currentStep === 6 || currentStep === 16
       ? ({ pointerEvents: 'none' } as const)
       : undefined;
-
-  if (!IS_DEV) {
-    return (
-      <MapHostProvider visible={mapVisible}>
-        <PropertyMapHostProvider visible={propertyMapVisible}>
-          <div
-            className="relative w-screen h-screen overflow-hidden"
-            style={wrapperStyle}
-          >
-            {stepEl}
-          </div>
-        </PropertyMapHostProvider>
-      </MapHostProvider>
-    );
-  }
 
   if (mode === 'loading') return null;
 
