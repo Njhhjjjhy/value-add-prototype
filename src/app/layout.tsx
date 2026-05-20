@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -35,16 +36,14 @@ export default function RootLayout({
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "";
   return (
     <html lang="en">
-      <head>
+      <body className="antialiased">
         {mapboxToken && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `window.__GKTK_MAPBOX_ACCESS_TOKEN = ${JSON.stringify(mapboxToken)};`,
-            }}
-          />
+          <Script id="gktk-mapbox-token" strategy="beforeInteractive">
+            {`window.__GKTK_MAPBOX_ACCESS_TOKEN = ${JSON.stringify(mapboxToken)};`}
+          </Script>
         )}
-      </head>
-      <body className="antialiased">{children}</body>
+        {children}
+      </body>
     </html>
   );
 }
