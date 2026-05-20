@@ -23,18 +23,66 @@ const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
 type Phase = 'hsinchu' | 'kumamoto';
 
-const HSINCHU_PERIODS = [
-  '2004 – 2006 · TSMC 12-inch fab expansion',
-  '2007 – 2009 · Acute residential supply gap',
-  '2010 – 2012 · Institutional developers enter',
-  '2013 – 2018 · Market maturity, rental premium locks in',
+type Period = {
+  header: string;
+  title: string;
+  detail: string;
+  callout?: string;
+};
+
+const HSINCHU_PERIODS: Period[] = [
+  {
+    header: '2004 – 2006',
+    title: 'TSMC 12-inch fab expansion',
+    detail:
+      'Engineer population surpassed 100,000; inbound migration accelerated across Hsinchu County',
+  },
+  {
+    header: '2007 – 2009',
+    title: 'Acute residential supply gap',
+    detail:
+      'Zhubei land prices rose over 60% in 3 years; senior engineers housed in hotels for lack of alternatives',
+  },
+  {
+    header: '2010 – 2012',
+    title: 'Institutional developers enter',
+    detail:
+      'Far Glory, Cathay Real Estate begin land acquisition; early movers had already locked the best sites',
+  },
+  {
+    header: '2013 – 2018',
+    title: 'Market maturity · rental premium locks in',
+    detail:
+      "Premium apartments sustain 2–3× rental premium; Zhubei established as Taiwan's benchmark tech cluster",
+  },
 ];
 
-const KUMAMOTO_PERIODS = [
-  '2024 – 2025 · JASM Fab 1 opens, Taiwanese engineers arrive',
-  '2026 – 2028 · Fab 2 confirmed, supply chain clusters form',
-  '2029 – 2032 · Developer competition, land price peak',
-  '2033 – 2035 · J-REIT exit window opens',
+const KUMAMOTO_PERIODS: Period[] = [
+  {
+    header: '2024 – 2025',
+    title: 'JASM Fab 1 opens · Taiwanese engineers arrive',
+    detail:
+      '3,000–5,000 TSMC-dispatched engineers relocating; Kikuyo-cho land prices already up 40–80%',
+    callout: 'Now: residential supply gap, no premium developer has entered',
+  },
+  {
+    header: '2026 – 2028',
+    title: 'Fab 2 confirmed · supply chain clusters form',
+    detail:
+      'Tier-2 suppliers land nearby; engineer families settle long-term, driving demand for family housing',
+  },
+  {
+    header: '2029 – 2032',
+    title: 'Developer competition · land price peak',
+    detail:
+      'Major Japanese developers enter; early-mover land cost advantage becomes unreplicable',
+  },
+  {
+    header: '2033 – 2035',
+    title: 'J-REIT exit window opens',
+    detail:
+      'Portfolio reaches REIT threshold; institutional acquisition or listed-vehicle exit',
+  },
 ];
 
 export default function Step26Section13ParallelTimeline({ onComplete }: StepProps) {
@@ -47,6 +95,73 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
       onComplete();
     }
   };
+
+  const renderPeriods = (periods: Period[]) => (
+    <ul style={{ marginBottom: 48, listStyle: 'none', padding: 0 }}>
+      {periods.map((p, i) => (
+        <li
+          key={p.header}
+          style={{
+            paddingTop: i === 0 ? 0 : 20,
+            paddingBottom: 20,
+            borderTop: i === 0 ? 'none' : `1px solid ${C.border}`,
+          }}
+        >
+          <div
+            style={{
+              fontFamily: FONT_BODY,
+              fontWeight: 500,
+              fontSize: 13,
+              letterSpacing: '0.01em',
+              color: C.caption,
+              marginBottom: 4,
+            }}
+          >
+            {p.header}
+          </div>
+          <div
+            style={{
+              fontFamily: FONT_HEADING,
+              fontWeight: 600,
+              fontSize: 22,
+              lineHeight: 1.25,
+              letterSpacing: '-0.01em',
+              color: C.sub,
+              marginBottom: 6,
+            }}
+          >
+            {p.title}
+          </div>
+          <div
+            style={{
+              fontFamily: FONT_BODY,
+              fontSize: 15,
+              lineHeight: 1.6,
+              color: C.body,
+              maxWidth: 880,
+            }}
+          >
+            {p.detail}
+          </div>
+          {p.callout && (
+            <div
+              style={{
+                marginTop: 8,
+                fontFamily: FONT_BODY,
+                fontSize: 15,
+                lineHeight: 1.5,
+                fontWeight: 600,
+                color: C.heading,
+              }}
+            >
+              {'→ '}
+              {p.callout}
+            </div>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
 
   return (
     <button
@@ -108,23 +223,7 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
               2005 — 2018 · Verified outcome
             </div>
 
-            <ul className="space-y-4" style={{ marginBottom: 48 }}>
-              {HSINCHU_PERIODS.map((p) => (
-                <li
-                  key={p}
-                  style={{
-                    fontFamily: FONT_HEADING,
-                    fontWeight: 600,
-                    fontSize: 22,
-                    lineHeight: 1.25,
-                    letterSpacing: '-0.01em',
-                    color: C.sub,
-                  }}
-                >
-                  {p}
-                </li>
-              ))}
-            </ul>
+            {renderPeriods(HSINCHU_PERIODS)}
 
             <div className="grid grid-cols-2 gap-6">
               <div
@@ -221,23 +320,7 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
               2024 — 2035 · In progress
             </div>
 
-            <ul className="space-y-4" style={{ marginBottom: 48 }}>
-              {KUMAMOTO_PERIODS.map((p) => (
-                <li
-                  key={p}
-                  style={{
-                    fontFamily: FONT_HEADING,
-                    fontWeight: 600,
-                    fontSize: 22,
-                    lineHeight: 1.25,
-                    letterSpacing: '-0.01em',
-                    color: C.sub,
-                  }}
-                >
-                  {p}
-                </li>
-              ))}
-            </ul>
+            {renderPeriods(KUMAMOTO_PERIODS)}
 
             <div className="grid grid-cols-2 gap-6" style={{ marginBottom: 32 }}>
               <div
@@ -292,10 +375,10 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
                   0
                 </div>
                 <div style={{ fontSize: 15, color: C.body, marginBottom: 4 }}>
-                  Existing Taiwan-grade premium
+                  Existing Taiwan-grade premium residential supply in market
                 </div>
                 <div style={{ fontSize: 13, color: C.caption }}>
-                  residential supply in market
+                  MoreHarvest
                 </div>
               </div>
             </div>

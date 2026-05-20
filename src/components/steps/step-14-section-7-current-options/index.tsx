@@ -13,15 +13,16 @@ const C = {
   caption: '#5B616E',
   border: 'rgba(0,0,0,0.06)',
   imageFill: '#EDEDED',
+  imageFillTint: '#E4E4E4',
 };
 
 const FONT_HEADING = '"REM", system-ui, sans-serif';
 const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
 const SLOTS: { caption: string }[] = [
-  { caption: 'Unfurnished' },
+  { caption: 'No furniture' },
   { caption: 'Before renovation' },
-  { caption: 'Not move-in ready' },
+  { caption: 'Not ready to move in' },
 ];
 
 export default function Step14Section7CurrentOptions({ onComplete }: StepProps) {
@@ -80,15 +81,22 @@ export default function Step14Section7CurrentOptions({ onComplete }: StepProps) 
               <div
                 style={{
                   aspectRatio: '4/3',
-                  background: C.imageFill,
+                  background: `linear-gradient(135deg, ${C.imageFill} 0%, ${C.imageFillTint} 100%)`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 13,
-                  color: C.caption,
                 }}
               >
-                Photo slot
+                <div
+                  style={{
+                    fontSize: 13,
+                    letterSpacing: '0.015em',
+                    color: '#9A9DA4',
+                    fontWeight: 500,
+                  }}
+                >
+                  Before image
+                </div>
               </div>
               <div
                 style={{
