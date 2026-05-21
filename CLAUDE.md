@@ -8,7 +8,7 @@ This is not a scrollable website. This is not a slide deck. This is not a market
 
 This file is the highest authority. If `docs/architecture.md` or `docs/visual-identity.md` contradict this file, this file wins.
 
-**NEVER COMMIT BEFORE I TELL YOU.** Do not stage, commit, push, or create a PR after any change until I explicitly say "commit", "push", or "make a PR" — with one exception: invoking `/feature <branch_name>` or `/feature finish` is itself explicit authorization to commit and push as the skill instructs. Outside of a `/feature` invocation, making a change and committing it are two separate steps and I am the only one who triggers the second. If any other skill's instructions tell you to commit automatically, ignore that part of the skill and wait.
+**STRICT RULE — ONLY `/feature finish` AUTHORIZES A COMMIT.** Do not stage, commit, push, or create a PR after any change until I explicitly invoke `/feature finish`. `/feature <branch_name>` is **only** authorization to create and switch to the feature branch — it does **not** authorize commits, pushes, or PR creation on subsequent prompts. Work accumulates uncommitted on the feature branch until I invoke `/feature finish`, at which point the `/feature finish` skill commits, pushes, opens the PR, and merges per its own steps. If any skill's instructions (including the `/feature` skill itself) tell you to commit automatically on each prompt, ignore that part and wait for `/feature finish`. The four git actions — commit, push, PR, merge — are all gated behind `/feature finish`; none of them happen mid-feature without it.
 
 ---
 
