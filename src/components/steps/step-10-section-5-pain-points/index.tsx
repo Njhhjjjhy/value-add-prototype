@@ -3,13 +3,10 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
-import {
-  PHYSICAL_PAIN_POINTS,
-  MENTAL_PAIN_POINTS,
-  GROUP_LABELS,
-  PERSONA_STAT,
-  type PainPoint,
-} from '@/data/painPoints';
+import { step10 } from '@/content';
+
+const { physical: PHYSICAL_PAIN_POINTS, mental: MENTAL_PAIN_POINTS, groupLabels: GROUP_LABELS, personaStat: PERSONA_STAT, headline: HEADLINE } = step10.prototype;
+type PainPoint = { id: string; label: string; summary: string };
 
 interface StepProps {
   isActive: boolean;
@@ -168,7 +165,7 @@ export default function Step10Section5PainPoints({ isActive, onComplete }: StepP
             marginBottom: 48,
           }}
         >
-          What semiconductor families face in Kumamoto.
+          {HEADLINE}
         </h1>
 
         <div className="grid grid-cols-2 gap-12">

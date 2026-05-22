@@ -4,9 +4,9 @@ import { shared, C } from '../page-styles';
 import { step10, step12 } from '@/content';
 
 const personaStat = step10.prototype.personaStat;
-const persona = step12.pdfReserved;
-const physical = step10.pdfReserved.physical;
-const mental = step10.pdfReserved.mental;
+const persona = step12.pdf;
+const physical = step10.pdf.physical;
+const mental = step10.pdf.mental;
 
 const s = StyleSheet.create({
   ...shared,

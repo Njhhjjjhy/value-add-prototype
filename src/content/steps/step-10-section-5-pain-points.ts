@@ -1,17 +1,11 @@
 // Step 10 · Section 5 pain points
 // Source: value-add-source-of-truth.md
-// Heals cleanup item #2: headline reads "What semiconductor families
-// actually face in Kumamoto." (was missing the word "actually" in
-// src/components/steps/step-10-section-5-pain-points/index.tsx line 171).
 //
 // The 8 pain points are the authoritative spec from
 // docs/gktk-value-add-prototype-pain-points.md (4 physical, then 4 mental).
 // Each carries an `expanded` paragraph, a `cause` line, and a `companies`
-// list. The source of truth marks these as PDF-reserved (lines 247-251):
-// they are not rendered on screen in the prototype, but the PDF target-tenant
-// page reads them. Values here are migrated verbatim from
-// src/data/painPoints.ts so the PDF wiring in Phase 4 can switch sources
-// without a copy regression.
+// list. The on-screen prototype renders id/label/summary only; the PDF
+// target-tenant page reads the full expanded/cause/companies fields.
 
 import type { Step } from '../types';
 
@@ -122,10 +116,5 @@ export const step10 = {
         'estimated replacement cost per engineer who repatriates early due to family maladjustment.',
     },
   },
-  pdf: 'tbd',
-  // PDF-reserved expanded copy. Source of truth lines 247-251 acknowledge
-  // these fields exist but has not yet canonicalized them. Phase 4 PDF
-  // wiring reads from here. When source-of-truth gets the expanded copy,
-  // move this block into the `pdf` track above.
-  pdfReserved: { physical, mental },
+  pdf: { physical, mental },
 } as const satisfies Step;
