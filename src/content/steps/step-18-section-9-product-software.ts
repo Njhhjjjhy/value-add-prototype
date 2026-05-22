@@ -130,4 +130,61 @@ export const step18 = {
     nextAriaLabel: 'Continue to next step',
   },
   pdf: 'tbd',
+  // PDF-reserved copy for the product-software page. The on-screen
+  // prototype.deck.tiers above is a compressed format (one `items` string per
+  // tier); the PDF needs the full granular services list plus the
+  // vaccination-scenario phone frames. Migrated verbatim from
+  // src/data/productSpecs.ts (SERVICE_TIERS / PHONE_FRAMES). Move into the
+  // `pdf` track above when the source of truth canonicalizes this content.
+  pdfReserved: {
+    serviceTiers: [
+      {
+        year: 'Year 1',
+        label: 'Essential landing services',
+        pricing: 'Included in base fees',
+        services: [
+          'Chinese-speaking property secretary',
+          'Administrative accompaniment (bank, phone, registration)',
+          'Hardware maintenance (Hanke, Delta)',
+        ],
+      },
+      {
+        year: 'Year 2',
+        label: 'Family stability services',
+        pricing: 'Subscription add-on',
+        services: [
+          'Medical navigation (24/7 Chinese-language booking, accompanied interpretation)',
+          'Education support (KIS school bus, after-school tutoring)',
+          'Spouse community events',
+        ],
+      },
+      {
+        year: 'Year 3+',
+        label: 'Lifestyle and wellness services',
+        pricing: 'Premium membership',
+        services: [
+          'Mental wellness (counseling, psychiatry referrals in Chinese)',
+          'Health management (environmental data, nutritionist)',
+          'Golf and onsen concierge',
+          'Deep Kumamoto cultural experiences',
+        ],
+      },
+      {
+        year: 'Beyond',
+        label: 'Continuous upgrades',
+        pricing: '',
+        services: [
+          'Digital platform pushes new service modules without modifying buildings',
+          'Roadmap expands based on tenant feedback and operational data',
+        ],
+      },
+    ],
+    phoneFrames: [
+      { id: 1, type: 'notification', content: "Reminder: your child's vaccination appointment is tomorrow at 9:00 AM." },
+      { id: 2, type: 'chat', content: 'Hi! I will accompany you tomorrow. I have confirmed the appointment with Dr. Tanaka at the clinic. I will meet you in the lobby at 8:30.' },
+      { id: 3, type: 'card', content: "Translation card: child's medical history (Japanese translation prepared by secretary)." },
+      { id: 4, type: 'chat', content: 'Dr. Tanaka says everything looks great. Next appointment is in 3 months. I will remind you then.' },
+      { id: 5, type: 'final', content: 'One scenario. Zero friction. That is SDRE.' },
+    ],
+  },
 } as const satisfies Step;

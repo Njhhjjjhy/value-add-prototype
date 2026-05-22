@@ -20,4 +20,31 @@ export const step16 = {
     iframeTitle: 'Kumamoto property map',
   },
   pdf: 'tbd',
+  // PDF-reserved copy for the product-hardware page. Not part of the
+  // on-screen iframe spec. Migrated from src/data/productSpecs.ts
+  // (HARDWARE_SPECS / INVESTMENT_PROPERTIES / VIRTUAL_TOUR_ROOMS) with one
+  // canonical-name correction: the stale "Site 1...Site 5" list is replaced
+  // by the single canonical property "Ozu-1" per CLAUDE.md. Move into the
+  // `pdf` track above when the source of truth canonicalizes this content.
+  pdfReserved: {
+    hardwareSpecs: [
+      { label: 'Target location', value: 'JASM corridor, within 15 min of fab' },
+      { label: 'Total units', value: '100 units' },
+      { label: 'Site size', value: 'Approximately 1,000 tsubo' },
+      { label: 'Unit type', value: '3LDK, family-oriented' },
+      { label: 'Air quality', value: 'Hanke HEPA filtration system' },
+      { label: 'Water', value: 'Soft water plumbing throughout' },
+      { label: 'EV charging', value: 'Delta EV charging stations' },
+      { label: 'Lease model', value: 'B2B bulk lease to semiconductor companies' },
+    ],
+    investmentProperties: ['Ozu-1'],
+    virtualTourRooms: [
+      { id: 1, name: 'Building exterior', note: null },
+      { id: 2, name: 'Lobby / common area', note: null },
+      { id: 3, name: 'Living room', note: 'Hanke HEPA air filtration system' },
+      { id: 4, name: 'Kitchen', note: null },
+      { id: 5, name: 'Bedroom', note: null },
+      { id: 6, name: 'Bathroom', note: 'Soft water plumbing throughout' },
+    ],
+  },
 } as const satisfies Step;
