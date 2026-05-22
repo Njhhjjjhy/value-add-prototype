@@ -1,73 +1,159 @@
 import { View, Text, StyleSheet } from '@react-pdf/renderer';
 import { PageHeader, PageFooter } from '../page-chrome';
 import { shared, C } from '../page-styles';
-import { FINANCIAL_DATA, DEAL_STRUCTURE, FUND_TERMS, type Scenario, type ExitYear } from '@/data/financials';
+import { step20 } from '@/content';
 
-function formatYen(n: number): string {
-  return '¥' + n.toLocaleString('en-US');
-}
+const p = step20.prototype;
 
 const s = StyleSheet.create({
   ...shared,
   heading: { ...shared.heading, marginBottom: 4 },
-  subheading: { fontFamily: 'Noto Sans JP', fontSize: 8, color: C.caption, marginBottom: 12 },
-  twoCol: { flexDirection: 'row', gap: 30 },
-  // Table
-  tHeader: { flexDirection: 'row', backgroundColor: C.amber, borderTopLeftRadius: 3, borderTopRightRadius: 3 },
-  tHeaderCell: { fontFamily: 'REM', fontWeight: 600, fontSize: 7, color: C.black, padding: 4 },
-  tRow: { flexDirection: 'row', borderBottomWidth: 0.5, borderBottomColor: C.neutral100 },
-  tRowHL: { flexDirection: 'row', backgroundColor: C.amber50, borderBottomWidth: 0.5, borderBottomColor: C.amber100 },
-  tCell: { fontFamily: 'Noto Sans JP', fontSize: 7, color: C.body, padding: 4 },
-  tCellBold: { fontFamily: 'REM', fontWeight: 600, fontSize: 7, color: C.heading, padding: 4 },
-  // Deal structure
-  dsHeading: { fontFamily: 'REM', fontWeight: 600, fontSize: 12, color: C.heading, marginBottom: 8 },
-  dsRow: { flexDirection: 'row', borderBottomWidth: 0.5, borderBottomColor: C.neutral100, paddingVertical: 4 },
-  dsLabel: { fontFamily: 'Noto Sans JP', fontSize: 8, color: C.body, width: '55%' },
-  dsValue: { fontFamily: 'REM', fontWeight: 600, fontSize: 8, color: C.heading, width: '45%', textAlign: 'right' },
-  dsValueNormal: { fontFamily: 'Noto Sans JP', fontSize: 8, color: C.body, width: '45%', textAlign: 'right' },
-  footer: { fontFamily: 'Noto Sans JP', fontSize: 7, color: C.caption, marginTop: 8 },
+  subheading: { fontFamily: 'Noto Sans JP', fontSize: 8, color: C.caption, marginBottom: 16 },
+
+  threeCol: { flexDirection: 'row', gap: 16 },
+  card: {
+    flex: 1,
+    backgroundColor: C.background,
+    borderWidth: 0.5,
+    borderColor: C.neutral100,
+    borderRadius: 6,
+    padding: 12,
+  },
+  cardTitle: {
+    fontFamily: 'REM',
+    fontWeight: 600,
+    fontSize: 9,
+    color: C.heading,
+    marginBottom: 10,
+  },
+  miniRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingVertical: 5,
+    borderTopWidth: 0.5,
+    borderTopColor: C.neutral100,
+  },
+  miniRowFirst: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingVertical: 5,
+  },
+  miniLabel: { fontFamily: 'Noto Sans JP', fontSize: 7, color: C.body, flex: 1, paddingRight: 6 },
+  miniNote: { fontFamily: 'Noto Sans JP', fontSize: 6, color: C.caption, marginTop: 1, lineHeight: 1.35 },
+  miniValue: { fontFamily: 'REM', fontWeight: 600, fontSize: 9, color: C.heading, textAlign: 'right' },
+
+  // Sales phase rows
+  groupHeading: {
+    fontFamily: 'Noto Sans JP',
+    fontSize: 7,
+    color: C.caption,
+    marginTop: 10,
+    marginBottom: 4,
+    letterSpacing: 0.3,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingVertical: 4,
+    borderBottomWidth: 0.5,
+    borderBottomColor: C.neutral100,
+  },
+  rowSubtotal: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingVertical: 5,
+    borderBottomWidth: 0.5,
+    borderBottomColor: C.neutral200,
+    backgroundColor: C.amber50,
+    paddingHorizontal: 4,
+    borderRadius: 3,
+  },
+  rowTotal: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingVertical: 6,
+    backgroundColor: C.amber50,
+    paddingHorizontal: 4,
+    borderRadius: 3,
+    marginTop: 4,
+  },
+  label: { fontFamily: 'Noto Sans JP', fontSize: 8, color: C.body, flex: 1, paddingRight: 8 },
+  labelEmphasis: { fontFamily: 'REM', fontWeight: 600, fontSize: 9, color: C.heading, flex: 1, paddingRight: 8 },
+  note: { fontFamily: 'Noto Sans JP', fontSize: 7, color: C.caption, marginTop: 1, lineHeight: 1.35 },
+  party: { fontFamily: 'Noto Sans JP', fontSize: 7, color: C.caption, fontStyle: 'italic' },
+  value: { fontFamily: 'REM', fontWeight: 600, fontSize: 9, color: C.heading, textAlign: 'right', minWidth: 80 },
+  valueSubtotal: { fontFamily: 'REM', fontWeight: 600, fontSize: 11, color: C.heading, textAlign: 'right', minWidth: 80 },
+  valueTotal: { fontFamily: 'REM', fontWeight: 600, fontSize: 13, color: C.heading, textAlign: 'right', minWidth: 80 },
+
+  closing: {
+    fontFamily: 'Noto Sans JP',
+    fontSize: 8,
+    color: C.body,
+    lineHeight: 1.55,
+    marginTop: 8,
+  },
 });
 
-const scenarios: Scenario[] = ['bull', 'normal', 'bear'];
-const years: ExitYear[] = ['3Y', '4Y', '5Y', '6Y'];
-const cw = { s: '9%', y: '7%', rPre: '15%', rPost: '15%', emPre: '9%', emPost: '9%', iPre: '11%', iPost: '11%' };
+function MetaLine({ note, party }: { note?: string | null; party?: string | null }) {
+  if (!note && !party) return null;
+  return (
+    <Text style={s.note}>
+      {note ?? ''}
+      {note && party ? ' · ' : ''}
+      {party ? <Text style={s.party}>{party}</Text> : null}
+    </Text>
+  );
+}
 
 export function FinancialsPage1() {
   return (
     <View style={s.page}>
       <PageHeader sectionLabel="07 | Financial projections" />
       <View style={s.content}>
-        <Text style={s.heading}>Return projections</Text>
-        <Text style={s.subheading}>Based on 1 billion yen equity investment in a 2 billion yen project (50/50 debt-equity structure).</Text>
-        <View>
-          <View style={s.tHeader}>
-            <Text style={[s.tHeaderCell, { width: cw.s }]}>Scenario</Text>
-            <Text style={[s.tHeaderCell, { width: cw.y }]}>Exit</Text>
-            <Text style={[s.tHeaderCell, { width: cw.rPre, textAlign: 'right' }]}>Return (pre)</Text>
-            <Text style={[s.tHeaderCell, { width: cw.rPost, textAlign: 'right' }]}>Return (post)</Text>
-            <Text style={[s.tHeaderCell, { width: cw.emPre, textAlign: 'right' }]}>EM (pre)</Text>
-            <Text style={[s.tHeaderCell, { width: cw.emPost, textAlign: 'right' }]}>EM (post)</Text>
-            <Text style={[s.tHeaderCell, { width: cw.iPre, textAlign: 'right' }]}>IRR (pre)</Text>
-            <Text style={[s.tHeaderCell, { width: cw.iPost, textAlign: 'right' }]}>IRR (post)</Text>
-          </View>
-          {scenarios.map((sc) =>
-            years.map((yr, yi) => {
-              const d = FINANCIAL_DATA[sc][yr];
-              const isHL = sc === 'normal' && yr === '5Y';
-              return (
-                <View key={`${sc}-${yr}`} style={isHL ? s.tRowHL : s.tRow}>
-                  <Text style={[s.tCellBold, { width: cw.s }]}>{yi === 0 ? sc : ''}</Text>
-                  <Text style={[s.tCell, { width: cw.y }]}>{yr}</Text>
-                  <Text style={[s.tCell, { width: cw.rPre, textAlign: 'right' }]}>{formatYen(d.return_pre)}</Text>
-                  <Text style={[s.tCell, { width: cw.rPost, textAlign: 'right' }]}>{formatYen(d.return_post)}</Text>
-                  <Text style={[s.tCell, { width: cw.emPre, textAlign: 'right' }]}>{d.em_pre.toFixed(2)}x</Text>
-                  <Text style={[s.tCell, { width: cw.emPost, textAlign: 'right' }]}>{d.em_post.toFixed(2)}x</Text>
-                  <Text style={[s.tCellBold, { width: cw.iPre, textAlign: 'right' }]}>{d.irr_pre}</Text>
-                  <Text style={[s.tCellBold, { width: cw.iPost, textAlign: 'right' }]}>{d.irr_post}</Text>
+        <Text style={s.heading}>The numbers.</Text>
+        <Text style={s.subheading}>{p.sectionLabel}</Text>
+
+        <View style={s.threeCol}>
+          {/* Development phase */}
+          <View style={s.card}>
+            <Text style={s.cardTitle}>Development phase</Text>
+            {p.development.map((row, i) => (
+              <View key={row.row} style={i === 0 ? s.miniRowFirst : s.miniRow}>
+                <View style={{ flex: 1, paddingRight: 6 }}>
+                  <Text style={s.miniLabel}>{row.row}</Text>
+                  <MetaLine note={row.note} party={row.party} />
                 </View>
-              );
-            })
-          )}
+                <Text style={s.miniValue}>{row.value}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Return on investment */}
+          <View style={s.card}>
+            <Text style={s.cardTitle}>Return on investment</Text>
+            {p.returnOnInvestment.map((row, i) => (
+              <View key={row.scenario} style={i === 0 ? s.miniRowFirst : s.miniRow}>
+                <Text style={s.miniLabel}>{row.scenario}</Text>
+                <Text style={s.miniValue}>{row.return}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Rental yield */}
+          <View style={s.card}>
+            <Text style={s.cardTitle}>Rental yield</Text>
+            {p.rentalYield.map((row, i) => (
+              <View key={row.scenario} style={i === 0 ? s.miniRowFirst : s.miniRow}>
+                <Text style={s.miniLabel}>{row.scenario}</Text>
+                <Text style={s.miniValue}>{row.yield}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       </View>
       <PageFooter pageNumber={16} />
@@ -78,47 +164,60 @@ export function FinancialsPage1() {
 export function FinancialsPage2() {
   return (
     <View style={s.page}>
-      <PageHeader sectionLabel="07 | Deal structure and fund terms" />
+      <PageHeader sectionLabel="07 | Sales phase" />
       <View style={s.content}>
-        <View style={s.twoCol}>
-          <View style={s.col}>
-            <Text style={s.dsHeading}>Deal structure</Text>
-            <View style={s.dsRow}>
-              <Text style={s.dsLabel}>Total project</Text>
-              <Text style={s.dsValue}>{formatYen(DEAL_STRUCTURE.totalProject)}</Text>
-            </View>
-            <View style={s.dsRow}>
-              <Text style={s.dsLabel}>Debt / equity</Text>
-              <Text style={s.dsValueNormal}>{DEAL_STRUCTURE.debtEquityRatio}</Text>
-            </View>
-            {DEAL_STRUCTURE.equitySplit.map((split, i) => (
-              <View key={i} style={s.dsRow}>
-                <Text style={s.dsLabel}>{split.investor} ({split.percentage}%)</Text>
-                <Text style={s.dsValue}>{formatYen(split.amount)}</Text>
+        <Text style={s.heading}>Sales phase.</Text>
+        <Text style={s.subheading}>Revenue, costs, and net result on one cycle.</Text>
+
+        <View style={shared.twoCol}>
+          {/* Left column: Revenue + Costs */}
+          <View style={shared.col}>
+            <Text style={s.groupHeading}>Revenue</Text>
+            {p.salesRevenue.map((row) => (
+              <View key={row.row} style={s.row}>
+                <View style={{ flex: 1, paddingRight: 8 }}>
+                  <Text style={s.label}>{row.row}</Text>
+                  <MetaLine note={row.note} />
+                </View>
+                <Text style={s.value}>{row.value}</Text>
               </View>
             ))}
-            <View style={s.dsRow}>
-              <Text style={s.dsLabel}>Preferred return</Text>
-              <Text style={s.dsValueNormal}>{DEAL_STRUCTURE.preferredReturn}</Text>
-            </View>
-            <View style={s.dsRow}>
-              <Text style={s.dsLabel}>GP promote</Text>
-              <Text style={s.dsValueNormal}>{DEAL_STRUCTURE.gpPromote}</Text>
-            </View>
-            <View style={[s.dsRow, { backgroundColor: C.amber50 }]}>
-              <Text style={s.dsLabel}>Effective tax rate</Text>
-              <Text style={s.dsValue}>{DEAL_STRUCTURE.taxRate}</Text>
-            </View>
+
+            <Text style={s.groupHeading}>Costs</Text>
+            {p.salesCosts.map((row) => (
+              <View key={row.row} style={s.row}>
+                <View style={{ flex: 1, paddingRight: 8 }}>
+                  <Text style={s.label}>{row.row}</Text>
+                  <MetaLine note={row.note} party={row.party} />
+                </View>
+                <Text style={s.value}>{row.value}</Text>
+              </View>
+            ))}
           </View>
-          <View style={s.col}>
-            <Text style={s.dsHeading}>Indicative fund terms (Oakwater)</Text>
-            {Object.entries(FUND_TERMS).map(([key, val]) => (
-              <View key={key} style={s.dsRow}>
-                <Text style={s.dsLabel}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase())}</Text>
-                <Text style={s.dsValueNormal}>{val}</Text>
-              </View>
+
+          {/* Right column: Net result + closing */}
+          <View style={shared.col}>
+            <Text style={s.groupHeading}>Net result</Text>
+            {p.netResult.map((row) => {
+              const isSubtotal = row.row === 'Profit (pre-tax)';
+              const isTotal = row.row === 'Net profit';
+              const rowStyle = isTotal ? s.rowTotal : isSubtotal ? s.rowSubtotal : s.row;
+              const labelStyle = isSubtotal || isTotal ? s.labelEmphasis : s.label;
+              const valueStyle = isTotal ? s.valueTotal : isSubtotal ? s.valueSubtotal : s.value;
+              return (
+                <View key={row.row} style={rowStyle}>
+                  <View style={{ flex: 1, paddingRight: 8 }}>
+                    <Text style={labelStyle}>{row.row}</Text>
+                    <MetaLine note={row.note} party={row.party} />
+                  </View>
+                  <Text style={valueStyle}>{row.value}</Text>
+                </View>
+              );
+            })}
+
+            {p.irrClosing.map((para, i) => (
+              <Text key={i} style={s.closing}>{para}</Text>
             ))}
-            <Text style={s.footer}>Indicative only. Terms are subject to change and final investor agreement.</Text>
           </View>
         </View>
       </View>
