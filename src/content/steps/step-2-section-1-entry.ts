@@ -22,4 +22,19 @@ export const step2 = {
     holdPrompt: { ariaLabel: 'Hold to enter' },
   },
   pdf: 'tbd',
+  pdfReserved: {
+    executiveSummary: {
+      heading: 'Why Kumamoto, why now?',
+      subheading: "Japan's fastest-rising property market",
+      bodyShort:
+        "High-yield serviced apartments in Kumamoto's TSMC / JASM semiconductor hub, housing Taiwanese engineers, targeting 12-15% IRR in 4-5 years.",
+      bodyLong:
+        'The COVID-era chip shortage exposed a hard truth: semiconductor security is national security. Now, Japan is investing over 10 trillion yen to rebuild its chip industry. With over 47,000 jobs being created, Kumamoto is set to attract waves of high-income engineers, fueling real estate growth for decades.',
+      stats: [
+        { value: '10T+ yen', label: 'Government semiconductor subsidy' },
+        { value: '47,000+', label: 'New jobs in the corridor' },
+        { value: '12-15%', label: 'Target IRR' },
+      ],
+    },
+  },
 } as const satisfies Step;

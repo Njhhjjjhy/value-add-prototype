@@ -1,6 +1,15 @@
 import { View, Text, StyleSheet } from '@react-pdf/renderer';
 import { PageHeader, PageFooter } from '../page-chrome';
 import { shared, C } from '../page-styles';
+import { step2 } from '@/content';
+
+const exec = step2.pdfReserved!.executiveSummary as {
+  heading: string;
+  subheading: string;
+  bodyShort: string;
+  bodyLong: string;
+  stats: ReadonlyArray<{ value: string; label: string }>;
+};
 
 const s = StyleSheet.create({
   ...shared,
@@ -19,39 +28,25 @@ export default function ExecutiveSummaryPage() {
       <PageHeader sectionLabel="01 | Executive summary" />
 
       <View style={s.content}>
-        <Text style={s.heading}>Why Kumamoto, why now?</Text>
-        <Text style={s.subheading}>Japan{"'"}s fastest-rising property market</Text>
+        <Text style={s.heading}>{exec.heading}</Text>
+        <Text style={s.subheading}>{exec.subheading}</Text>
 
         <View style={s.bodyCol}>
           <View style={s.col}>
-            <Text style={s.body}>
-              High-yield serviced apartments in Kumamoto{"'"}s TSMC / JASM semiconductor hub, housing Taiwanese engineers, targeting 12-15% IRR in 4-5 years.
-            </Text>
+            <Text style={s.body}>{exec.bodyShort}</Text>
           </View>
           <View style={s.col}>
-            <Text style={s.body}>
-              The COVID-era chip shortage exposed a hard truth: semiconductor security is national security. Now, Japan is investing over 10 trillion yen to rebuild its chip industry. With over 47,000 jobs being created, Kumamoto is set to attract waves of high-income engineers, fueling real estate growth for decades.
-            </Text>
+            <Text style={s.body}>{exec.bodyLong}</Text>
           </View>
         </View>
 
         <View style={s.statsRow}>
-          <View style={s.statBox}>
-            <Text style={s.statValue}>10T+ yen</Text>
-            <Text style={s.statLabel}>Government semiconductor subsidy</Text>
-          </View>
-          <View style={s.statBox}>
-            <Text style={s.statValue}>47,000+</Text>
-            <Text style={s.statLabel}>New jobs in the corridor</Text>
-          </View>
-          <View style={s.statBox}>
-            <Text style={s.statValue}>12-15%</Text>
-            <Text style={s.statLabel}>Target IRR</Text>
-          </View>
-          <View style={s.statBox}>
-            <Text style={s.statValue}>100 units</Text>
-            <Text style={s.statLabel}>Serviced apartments</Text>
-          </View>
+          {exec.stats.map((stat) => (
+            <View key={stat.value} style={s.statBox}>
+              <Text style={s.statValue}>{stat.value}</Text>
+              <Text style={s.statLabel}>{stat.label}</Text>
+            </View>
+          ))}
         </View>
       </View>
 

@@ -23,7 +23,7 @@ This file is the highest authority. If `docs/architecture.md` or `docs/visual-id
 1. This file (`CLAUDE.md`) for process, copy rules, design principles, and prohibited behaviors.
 2. The uploaded prototype file (when present in the chat) for layout, styling values, animation specifics, and visual details.
 3. `docs/` reference files for full specifications.
-4. `reference/content.md` for copy.
+4. `value-add-source-of-truth.md` at the repo root for the canonical copy of every step. `src/content/` is the type-safe mirror that the running app reads from.
 
 If the prototype contradicts a process rule, copy rule, or design principle in this file, stop and ask.
 If the prototype uses a value not in the defined scales (e.g., a radius not in the radius scale, a color not in the palette), use the prototype value and flag it to the product owner.
@@ -462,7 +462,7 @@ src/
       step-1-opening-transition/index.tsx
       step-2-section-1-entry/index.tsx
       ... (one folder per step, each with a single index.tsx)
-  data/                               -- typed step content (financials.ts, painPoints.ts, riskPanels.ts, ...)
+  content/                            -- single source of truth for all deck and PDF copy (one file per step + types.ts, cast.ts, citations.ts, index.ts barrel)
   playground/
     manifest.ts                       -- single source of truth: every step's status + prototype registrations
     prototypes/<step-folder>/<filename>.jsx -- JSX prototypes (each carries its own device frame)
@@ -486,19 +486,18 @@ docs/                                 -- read-only reference (never modify)
   agents/                             -- agent skill docs (issue-tracker, triage-labels, domain)
   ipad-research/                      -- iPad-first research dump (HIG + iPadOS platform spec, two parts each)
 
-reference/                            -- read-only content contract (never modify)
-  content.md
+value-add-source-of-truth.md         -- canonical copy for every step (deck + PDF). Edit here first; `src/content/` mirrors it in code.
 
 showcase/                             -- regenerated after every commit (gitignored locally; never delete)
 ```
 
 ## File rules
 
-- Never modify files in `docs/` or `reference/`. They are read-only. **Exception:** when an authoritative domain spec (such as `docs/gktk-value-add-prototype-pain-points.md`) explicitly declares itself "the single authoritative source", it may override file rules within its domain. Such overrides must be narrow (smallest possible change surface) and flagged to the user before execution.
+- Never modify files in `docs/`. They are read-only. **Exception:** when an authoritative domain spec (such as `docs/gktk-value-add-prototype-pain-points.md`) explicitly declares itself "the single authoritative source", it may override file rules within its domain. Such overrides must be narrow (smallest possible change surface) and flagged to the user before execution.
 - After every commit, update the `showcase/` folder. This is mandatory.
 - Never delete the `showcase/` folder.
 - Never put prototype files, HTML mockups, or reference files in the repo. Only production code enters the repo. **Exception:** the playground (see "Playground" section below) is the one place where raw prototype files are permitted — `src/playground/prototypes/` for `.jsx` and `public/playground/prototypes/` for `.html`. Nowhere else.
-- `src/data/painPoints.ts` is the authoritative source for all pain-point copy (8 items, 4 physical + 4 mental). Production components, PDF pages, and playground prototypes for step 10 must read from here. Do not inline alternate strings. The schema and ordering are locked by `docs/gktk-value-add-prototype-pain-points.md`.
+- **Copy lockdown.** `src/content/` and `value-add-source-of-truth.md` are the **only** places where deck or PDF copy may live. Every step component under `src/components/steps/` and every PDF page under `src/components/pdf/pages/` reads its visible strings from `@/content`. Do not re-introduce inline string literals into step components or PDF pages. When copy needs to change, edit `value-add-source-of-truth.md` first, then mirror the change into `src/content/`. The `pdfReserved` field on a Step is the home for draft PDF copy that exists in code ahead of being canonicalized in the source of truth; promote it to the `pdf` track once written. CODEOWNERS protects both locations.
 
 ### Map embed sync
 
@@ -560,7 +559,7 @@ When you first open this project and it has not been scaffolded yet:
 4. Load Google Fonts via `next/font/google`: REM (weight 600) and Noto Sans JP (weights 400, 500, 600).
 5. Set `viewport-fit=cover` in the viewport meta tag in `layout.tsx`.
 6. Check if `docs/` exists with `visual-identity.md`, `architecture.md`, `prototype-workflow.md`, and `showcase-prompt.md`. If any are missing, ask the user to provide them.
-7. Check if `reference/content.md` exists. If not, ask the user to provide the content contract. If the user provides an HTML wireframe instead of markdown, extract the text content into a structured markdown file with section markers before saving.
+7. Check if `value-add-source-of-truth.md` exists at the repo root. If not, ask the user to provide it. The canonical copy for every step lives there; `src/content/` is the type-safe mirror.
 8. Stop and ask which section to build first.
 
 If the project is already scaffolded, skip to "Session start" below.
@@ -574,7 +573,7 @@ For each step:
 1. Stop and ask the user which step to build next.
 2. Read `docs/architecture.md` for that step's structure.
 3. Read `docs/visual-identity.md` for the relevant act's surface and background spec.
-4. Read `reference/content.md` for that step's approved copy.
+4. Read the step's entry in `value-add-source-of-truth.md` (canonical) and `src/content/steps/step-N-…ts` (typed mirror) for approved copy.
 5. If the user uploads a prototype file, follow `docs/prototype-workflow.md`.
 6. Stop and ask the user any clarifying questions about design, layout, or interaction before writing code.
 7. Build the step.

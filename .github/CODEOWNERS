@@ -1,0 +1,6 @@
+# Copy lockdown: every change to the canonical source of truth or its
+# type-safe mirror in src/content/ requires Riaan's review. See CLAUDE.md
+# "Copy lockdown" rule.
+
+/value-add-source-of-truth.md   @RiaanMOHA
+/src/content/                   @RiaanMOHA

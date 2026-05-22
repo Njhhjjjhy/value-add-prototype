@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet } from '@react-pdf/renderer';
 import LogoPDF from '../logo-pdf';
 import { BRAND } from '../brand';
+import { pdfChrome } from '@/content';
 
 const W = BRAND.page.width;
 const H = BRAND.page.height;
@@ -79,9 +80,7 @@ export default function CoverPage() {
       <View style={s.rule} />
 
       {/* Headline */}
-      <Text style={s.headline}>
-        Kumamoto{'\n'}semiconductor corridor{'\n'}serviced apartments.
-      </Text>
+      <Text style={s.headline}>{pdfChrome.cover.headlineLines.join('\n')}</Text>
 
       {/* Circular image placeholder */}
       <View style={s.circle} />
