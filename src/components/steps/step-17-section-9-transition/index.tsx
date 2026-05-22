@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { step17 } from '@/content';
 import { usePropertyMapHost } from '../../shared/PropertyMapHost';
+
+const COPY = step17.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -209,7 +212,7 @@ export default function Step13Section7Transition({
               textAlign: 'left',
             }}
           >
-            Section 9 · Product, software
+            {COPY.sectionLabel}
           </div>
           <div
             className="step13-body"
@@ -223,7 +226,7 @@ export default function Step13Section7Transition({
               textAlign: 'left',
             }}
           >
-            Software-defined real estate
+            {COPY.headline}
           </div>
         </div>
       </div>
@@ -248,7 +251,7 @@ export default function Step13Section7Transition({
             letterSpacing: '0.02em',
           }}
         >
-          Tap to continue
+          {COPY.continuePrompt}
         </div>
       </div>
     </div>

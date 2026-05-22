@@ -1,5 +1,9 @@
 'use client';
 
+import { step25 } from '@/content';
+
+const COPY = step25.prototype;
+
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
@@ -16,8 +20,8 @@ const C = {
 const FONT_HEADING = '"REM", system-ui, sans-serif';
 const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
-const CALLBACK = "We said we'd come back to this.";
-const HEADLINE = 'Parallel timeline';
+const CALLBACK = COPY.callback;
+const HEADLINE = COPY.headline;
 
 export default function Step25Section13Transition({ isActive, onComplete }: StepProps) {
   return (
@@ -109,7 +113,7 @@ export default function Step25Section13Transition({ isActive, onComplete }: Step
                 color: C.caption,
               }}
             >
-              SECTION 13
+              {COPY.sectionLabel}
             </span>
           </div>
 

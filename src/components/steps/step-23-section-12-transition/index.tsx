@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { step23 } from '@/content';
+
+const COPY = step23.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -34,14 +37,7 @@ const PANEL_LEVEL_2 = {
   borderRadius: 28,
 } as const;
 
-const FAQ_GHOST = [
-  'What if TSMC slows down or pulls out?',
-  'JPY volatility and rising rates?',
-  'Construction over budget or delayed?',
-  'How is GK-TK structure tax-efficient?',
-  'What stops major hotel chains?',
-  'What governance rights do TK investors have?',
-];
+const RISK_GHOST = COPY.riskGhosts;
 
 const LABEL_FADE_MS = 300;
 const PRE_CARDS_DELAY_MS = 200;
@@ -109,7 +105,7 @@ export default function Step19Section10Transition({
       if (cancelledRef.current) return;
 
       // Cards rise upward in reverse order (5 → 0), last in first out
-      for (let i = FAQ_GHOST.length - 1; i >= 0; i--) {
+      for (let i = RISK_GHOST.length - 1; i >= 0; i--) {
         const card = cards[i];
         if (!card) continue;
         card.animate(
@@ -188,7 +184,7 @@ export default function Step19Section10Transition({
       onClick={tapVisible ? onComplete : undefined}
       role="button"
       tabIndex={0}
-      aria-label="Tap to continue"
+      aria-label={COPY.continueAriaLabel}
       onKeyDown={(e) => {
         if ((e.key === 'Enter' || e.key === ' ') && tapVisible) {
           e.preventDefault();
@@ -241,10 +237,10 @@ export default function Step19Section10Transition({
               marginBottom: 24,
             }}
           >
-            Risk factors
+            {COPY.sectionGhostCaption}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {FAQ_GHOST.map((q, i) => (
+            {RISK_GHOST.map((q, i) => (
               <div
                 key={q}
                 ref={(el) => {
@@ -317,7 +313,7 @@ export default function Step19Section10Transition({
                   marginBottom: 16,
                 }}
               >
-                Section 12
+                {COPY.resolve.sectionLabel}
               </div>
               <div
                 style={{
@@ -329,7 +325,7 @@ export default function Step19Section10Transition({
                   color: C.n950,
                 }}
               >
-                Exit strategy
+                {COPY.resolve.headline}
               </div>
               <div
                 style={{
@@ -372,7 +368,7 @@ export default function Step19Section10Transition({
             color: C.n600,
           }}
         >
-          Tap to continue
+          {COPY.continuePrompt}
         </span>
       </div>
     </div>

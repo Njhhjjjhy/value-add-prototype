@@ -669,12 +669,11 @@ The data file `src/data/painPoints.ts` contains additional fields per pain point
 
 - Continue aria-label: `Tap to continue`
 - Section ghost caption: `Risk factors`
-- FAQ ghost (echo of Step 22): `What if TSMC slows down or pulls out?`
-- FAQ ghost: `JPY volatility and rising rates?`
-- FAQ ghost: `Construction over budget or delayed?`
-- FAQ ghost: `How is GK-TK structure tax-efficient?`
-- FAQ ghost: `What stops major hotel chains?`
-- FAQ ghost: `What governance rights do TK investors have?`
+- Risk ghost (echo of Step 22): `Liquidity and exit (exit liquidity)`
+- Risk ghost: `Demand concentration`
+- Risk ghost: `Infrastructure timing`
+- Risk ghost: `Tenant concentration`
+- Risk ghost: `Renovation and cost control (execution risk)`
 - Resolve panel section label: `Section 12`
 - Resolve panel headline: `Exit strategy`
 - Continue prompt: `Tap to continue`
@@ -843,12 +842,12 @@ All eight conflicts from the original inventory have been resolved by Riaan. Dec
 
 # Downstream cleanup needed in the prototype code
 
-These items are not yet reflected in `src/`. They are tracked here so the next coder pass can clean them up:
+All seven cleanup items have been healed in the deployed deck.
 
-1. **Step 5.** Update `47,000 new jobs projected by 2027` to `47,000 new jobs projected by 2030`.
-2. **Step 10.** Update headline `What semiconductor families face in Kumamoto.` to `What semiconductor families actually face in Kumamoto.`.
-3. **Step 11.** Remove vestigial `${count10}` descent aria-label template literals.
-4. **Step 21.** Remove the placeholder ghost financials block (`Financial projections`, 18.4% IRR, 2.1x multiple, 8.7% cash-on-cash, 5.2 yrs payback, 4.8% exit cap rate, 48.2M JPY NOI).
-5. **Step 22 beat 5.** Replace the 6 FAQ Q&A pairs with the 5-risk framework above.
-6. **Step 23.** The transition currently echoes the 6 FAQ ghost lines from Step 22; once Step 22's FAQs are removed these ghost echoes will need to be replaced with ghosts of the new 5-risk framework, or dropped.
-7. **Step 26.** Trim closing paragraph to the core callback line only; move the longer Moha Intel sentence to the PDF.
+1. ~~**Step 5.** Update `47,000 new jobs projected by 2027` to `47,000 new jobs projected by 2030`.~~ Done.
+2. ~~**Step 10.** Update headline `What semiconductor families face in Kumamoto.` to `What semiconductor families actually face in Kumamoto.`.~~ Done.
+3. ~~**Step 11.** Remove vestigial `${count10}` descent aria-label template literals.~~ Done.
+4. ~~**Step 21.** Remove the placeholder ghost financials block (`Financial projections`, 18.4% IRR, 2.1x multiple, 8.7% cash-on-cash, 5.2 yrs payback, 4.8% exit cap rate, 48.2M JPY NOI).~~ Done.
+5. ~~**Step 22 beat 5.** Replace the 6 FAQ Q&A pairs with the 5-risk framework above.~~ Done.
+6. ~~**Step 23.** The transition currently echoes the 6 FAQ ghost lines from Step 22; once Step 22's FAQs are removed these ghost echoes will need to be replaced with ghosts of the new 5-risk framework, or dropped.~~ Done — ghosts now show the 5-risk names.
+7. ~~**Step 26.** Trim closing paragraph to the core callback line only; move the longer Moha Intel sentence to the PDF.~~ Done.

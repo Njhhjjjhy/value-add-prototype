@@ -16,6 +16,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { step16 } from '@/content';
 
 const C = {
   bg: '#F9F9F9',
@@ -146,7 +147,7 @@ export function PropertyMapHostProvider({
           <iframe
             ref={iframeRef}
             src={MAP_URL}
-            title="Kumamoto property map"
+            title={step16.prototype.iframeTitle}
             style={{
               position: 'absolute',
               inset: 0,

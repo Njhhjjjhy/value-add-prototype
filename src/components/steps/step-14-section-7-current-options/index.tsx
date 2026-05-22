@@ -1,5 +1,9 @@
 'use client';
 
+import { step14 } from '@/content';
+
+const COPY = step14.prototype;
+
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
@@ -18,12 +22,6 @@ const C = {
 
 const FONT_HEADING = '"REM", system-ui, sans-serif';
 const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
-
-const SLOTS: { caption: string }[] = [
-  { caption: 'No furniture' },
-  { caption: 'Before renovation' },
-  { caption: 'Not ready to move in' },
-];
 
 export default function Step14Section7CurrentOptions({ onComplete }: StepProps) {
   return (
@@ -49,7 +47,7 @@ export default function Step14Section7CurrentOptions({ onComplete }: StepProps) 
             marginBottom: 16,
           }}
         >
-          Section 7 · What you would find today
+          {COPY.sectionLabel}
         </div>
 
         <h1
@@ -63,11 +61,11 @@ export default function Step14Section7CurrentOptions({ onComplete }: StepProps) 
             marginBottom: 48,
           }}
         >
-          Nothing on the market is ready.
+          {COPY.headline}
         </h1>
 
         <div className="grid grid-cols-3 gap-6">
-          {SLOTS.map((s) => (
+          {COPY.slots.map((s) => (
             <div
               key={s.caption}
               style={{
@@ -95,7 +93,7 @@ export default function Step14Section7CurrentOptions({ onComplete }: StepProps) 
                     fontWeight: 500,
                   }}
                 >
-                  Before image
+                  {COPY.imagePlaceholder}
                 </div>
               </div>
               <div

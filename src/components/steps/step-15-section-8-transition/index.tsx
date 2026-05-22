@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { step15 } from '@/content';
 import { usePropertyMapHost } from '../../shared/PropertyMapHost';
+
+const COPY = step15.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -174,7 +177,7 @@ function GhostBridge() {
             textAlign: 'left',
           }}
         >
-          THE INVESTMENT
+          {COPY.caption}
         </div>
         <div
           style={{
@@ -189,7 +192,7 @@ function GhostBridge() {
         >
           <div
             role="group"
-            aria-label="10 trillion yen. Total semiconductor investment committed to Kumamoto prefecture."
+            aria-label={COPY.stats[0].ariaLabel}
           >
             <div
               style={{
@@ -202,7 +205,7 @@ function GhostBridge() {
                 textAlign: 'left',
               }}
             >
-              10 trillion yen
+              {COPY.stats[0].value}
             </div>
             <div
               style={{
@@ -214,7 +217,7 @@ function GhostBridge() {
                 textAlign: 'left',
               }}
             >
-              Total semiconductor investment committed to Kumamoto prefecture
+              {COPY.stats[0].body}
             </div>
           </div>
         </div>
@@ -230,7 +233,7 @@ function GhostBridge() {
         >
           <div
             role="group"
-            aria-label="47,000 jobs. New positions projected by 2030."
+            aria-label={COPY.stats[1].ariaLabel}
           >
             <div
               style={{
@@ -243,7 +246,7 @@ function GhostBridge() {
                 textAlign: 'left',
               }}
             >
-              47,000 jobs
+              {COPY.stats[1].value}
             </div>
             <div
               style={{
@@ -255,7 +258,7 @@ function GhostBridge() {
                 textAlign: 'left',
               }}
             >
-              New positions projected by 2030
+              {COPY.stats[1].body}
             </div>
           </div>
         </div>

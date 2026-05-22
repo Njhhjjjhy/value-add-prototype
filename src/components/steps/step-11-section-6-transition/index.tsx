@@ -1,7 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { step11 } from '@/content';
 import { useMapHost } from '../../shared/MapHost';
+
+const COPY = step11.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -168,7 +171,7 @@ export default function Step7Section4Transition({
       onClick={phase === 'resolve' ? handleTap : undefined}
       role={phase === 'resolve' ? 'button' : undefined}
       tabIndex={phase === 'resolve' ? 0 : undefined}
-      aria-label={phase === 'resolve' ? 'Continue' : undefined}
+      aria-label={phase === 'resolve' ? COPY.continueAriaLabel : undefined}
       onKeyDown={(e) => {
         if (phase !== 'resolve') return;
         if (e.key === 'Enter' || e.key === ' ') {
@@ -266,7 +269,7 @@ export default function Step7Section4Transition({
                 opacity: 0,
               }}
             >
-              3 to 5 million yen
+              {COPY.resolve.headline}
             </div>
             <div
               ref={bodyRef}
@@ -280,8 +283,7 @@ export default function Step7Section4Transition({
                 opacity: 0,
               }}
             >
-              Estimated replacement cost per engineer who repatriates early
-              due to family maladjustment.
+              {COPY.resolve.body}
             </div>
           </div>
         </div>
@@ -310,7 +312,7 @@ export default function Step7Section4Transition({
             opacity: 0.72,
           }}
         >
-          Tap to continue
+          {COPY.continuePrompt}
         </div>
       </div>
     </div>

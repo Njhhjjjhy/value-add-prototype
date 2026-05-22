@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { step26 } from '@/content';
+
+const COPY = step26.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -30,60 +33,32 @@ type Period = {
   callout?: string;
 };
 
-const HSINCHU_PERIODS: Period[] = [
-  {
-    header: '2004 – 2006',
-    title: 'TSMC 12-inch fab expansion',
-    detail:
-      'Engineer population surpassed 100,000; inbound migration accelerated across Hsinchu County',
-  },
-  {
-    header: '2007 – 2009',
-    title: 'Acute residential supply gap',
-    detail:
-      'Zhubei land prices rose over 60% in 3 years; senior engineers housed in hotels for lack of alternatives',
-  },
-  {
-    header: '2010 – 2012',
-    title: 'Institutional developers enter',
-    detail:
-      'Far Glory, Cathay Real Estate begin land acquisition; early movers had already locked the best sites',
-  },
-  {
-    header: '2013 – 2018',
-    title: 'Market maturity · rental premium locks in',
-    detail:
-      "Premium apartments sustain 2–3× rental premium; Zhubei established as Taiwan's benchmark tech cluster",
-  },
-];
+type TimelineEntry = {
+  readonly years: string | null;
+  readonly title: string | null;
+  readonly detail: string;
+  readonly isCallout?: boolean;
+};
 
-const KUMAMOTO_PERIODS: Period[] = [
-  {
-    header: '2024 – 2025',
-    title: 'JASM Fab 1 opens · Taiwanese engineers arrive',
-    detail:
-      '3,000–5,000 TSMC-dispatched engineers relocating; Kikuyo-cho land prices already up 40–80%',
-    callout: 'Now: residential supply gap, no premium developer has entered',
-  },
-  {
-    header: '2026 – 2028',
-    title: 'Fab 2 confirmed · supply chain clusters form',
-    detail:
-      'Tier-2 suppliers land nearby; engineer families settle long-term, driving demand for family housing',
-  },
-  {
-    header: '2029 – 2032',
-    title: 'Developer competition · land price peak',
-    detail:
-      'Major Japanese developers enter; early-mover land cost advantage becomes unreplicable',
-  },
-  {
-    header: '2033 – 2035',
-    title: 'J-REIT exit window opens',
-    detail:
-      'Portfolio reaches REIT threshold; institutional acquisition or listed-vehicle exit',
-  },
-];
+function buildPeriods(timeline: readonly TimelineEntry[]): Period[] {
+  const out: Period[] = [];
+  for (const t of timeline) {
+    if (t.isCallout) {
+      if (out.length > 0) {
+        const callout = t.detail.startsWith('→ ')
+          ? t.detail.slice(2)
+          : t.detail;
+        out[out.length - 1] = { ...out[out.length - 1], callout };
+      }
+    } else if (t.years && t.title) {
+      out.push({ header: t.years, title: t.title, detail: t.detail });
+    }
+  }
+  return out;
+}
+
+const HSINCHU_PERIODS: Period[] = buildPeriods(COPY.hsinchu.timeline);
+const KUMAMOTO_PERIODS: Period[] = buildPeriods(COPY.kumamoto.timeline);
 
 export default function Step26Section13ParallelTimeline({ onComplete }: StepProps) {
   const [phase, setPhase] = useState<Phase>('hsinchu');
@@ -186,7 +161,7 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
             marginBottom: 16,
           }}
         >
-          Section 13 · Parallel timeline
+          {COPY.sectionLabel}
         </div>
 
         {phase === 'hsinchu' ? (
@@ -202,10 +177,10 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
                 marginBottom: 8,
               }}
             >
-              Hsinchu Science Park
+              {COPY.hsinchu.headline}
             </h1>
             <div style={{ fontSize: 15, color: C.caption, marginBottom: 4 }}>
-              Zhubei · Hsinchu Corridor
+              {COPY.hsinchu.caption}
             </div>
             <div
               style={{
@@ -220,7 +195,7 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
                 marginBottom: 48,
               }}
             >
-              2005 — 2018 · Verified outcome
+              {COPY.hsinchu.badge}
             </div>
 
             {renderPeriods(HSINCHU_PERIODS)}
@@ -246,13 +221,13 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
                     marginBottom: 8,
                   }}
                 >
-                  +180%
+                  {COPY.hsinchu.metrics[0].stat}
                 </div>
                 <div style={{ fontSize: 15, color: C.body, marginBottom: 4 }}>
-                  Zhubei premium rent growth
+                  {COPY.hsinchu.metrics[0].label}
                 </div>
                 <div style={{ fontSize: 13, color: C.caption }}>
-                  2006–2015 cumulative
+                  {COPY.hsinchu.metrics[0].sub}
                 </div>
               </div>
               <div
@@ -275,13 +250,13 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
                     marginBottom: 8,
                   }}
                 >
-                  +60%
+                  {COPY.hsinchu.metrics[1].stat}
                 </div>
                 <div style={{ fontSize: 15, color: C.body, marginBottom: 4 }}>
-                  Zhubei land price appreciation
+                  {COPY.hsinchu.metrics[1].label}
                 </div>
                 <div style={{ fontSize: 13, color: C.caption }}>
-                  2007–2010 · 3-year window
+                  {COPY.hsinchu.metrics[1].sub}
                 </div>
               </div>
             </div>
@@ -299,10 +274,10 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
                 marginBottom: 8,
               }}
             >
-              Kumamoto Semiconductor Corridor
+              {COPY.kumamoto.headline}
             </h1>
             <div style={{ fontSize: 15, color: C.caption, marginBottom: 4 }}>
-              Kikuyo · Ozu · Kumamoto City
+              {COPY.kumamoto.caption}
             </div>
             <div
               style={{
@@ -317,7 +292,7 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
                 marginBottom: 48,
               }}
             >
-              2024 — 2035 · In progress
+              {COPY.kumamoto.badge}
             </div>
 
             {renderPeriods(KUMAMOTO_PERIODS)}
@@ -343,13 +318,13 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
                     marginBottom: 8,
                   }}
                 >
-                  +40–80%
+                  {COPY.kumamoto.metrics[0].stat}
                 </div>
                 <div style={{ fontSize: 15, color: C.body, marginBottom: 4 }}>
-                  Kikuyo-cho land appreciation
+                  {COPY.kumamoto.metrics[0].label}
                 </div>
                 <div style={{ fontSize: 13, color: C.caption }}>
-                  2022–2024
+                  {COPY.kumamoto.metrics[0].sub}
                 </div>
               </div>
               <div
@@ -372,13 +347,13 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
                     marginBottom: 8,
                   }}
                 >
-                  0
+                  {COPY.kumamoto.metrics[1].stat}
                 </div>
                 <div style={{ fontSize: 15, color: C.body, marginBottom: 4 }}>
-                  Existing Taiwan-grade premium residential supply in market
+                  {COPY.kumamoto.metrics[1].label}
                 </div>
                 <div style={{ fontSize: 13, color: C.caption }}>
-                  MoreHarvest
+                  {COPY.kumamoto.metrics[1].sub}
                 </div>
               </div>
             </div>
@@ -392,10 +367,7 @@ export default function Step26Section13ParallelTimeline({ onComplete }: StepProp
                 maxWidth: 880,
               }}
             >
-              Entering in 2025 is the equivalent of acquiring land in Zhubei in 2007.
-              We bring what no developer brought to Hsinchu then: an AI-native platform
-              — Moha — that turns every asset into a data-generating node, compounding
-              both NOI and proprietary intelligence across the portfolio.
+              {COPY.closingLine}
             </p>
           </>
         )}

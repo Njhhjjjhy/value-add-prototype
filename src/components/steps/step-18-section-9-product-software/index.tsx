@@ -2,6 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import NextButton from '@/components/shared/NextButton';
+import { step18 } from '@/content';
+
+const COPY = step18.prototype;
+const DECK = COPY.deck;
+const DEVICE = COPY.device;
+const ALL_YEARS = DEVICE.years;
 
 interface StepProps {
   isActive: boolean;
@@ -31,110 +37,11 @@ const EASE_SETTLE = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)';
 const EXIT_DELAY_MS = 150;
 const EXIT_DURATION_MS = 350;
 
-const TIERS = [
-  {
-    year: 'Year 1',
-    name: 'Landing',
-    tag: 'Included',
-    items: 'Property secretary. Admin accompaniment. Maintenance.',
-  },
-  {
-    year: 'Year 2',
-    name: 'Family',
-    tag: 'Add-on',
-    items: 'Medical navigation. Education support. Community events.',
-  },
-  {
-    year: 'Year 3+',
-    name: 'Wellness',
-    tag: 'Premium',
-    items: 'Mental health. Health management. Golf, onsen, culture.',
-  },
-];
-
 type Notification = {
   from: string;
-  msg: string;
+  message: string;
   time: string;
 };
-
-type Year = {
-  label: string;
-  sub: string;
-  tag: string;
-  notifications: Notification[];
-};
-
-const YEAR_1: Year = {
-  label: 'Year 1',
-  sub: 'Landing',
-  tag: 'Included',
-  notifications: [
-    {
-      from: 'Lin Wei-Chen',
-      msg: 'Your SoftBank appointment is confirmed for Thursday, 2:00 PM. I will meet you at the entrance.',
-      time: '9:41 AM',
-    },
-    {
-      from: 'Maintenance',
-      msg: 'Delta AC unit in 4F serviced. Everything is running normally.',
-      time: '2:15 PM',
-    },
-    {
-      from: 'MoreHarvest',
-      msg: 'Your residence guide is ready. Available in Chinese and Japanese.',
-      time: '10:00 AM',
-    },
-  ],
-};
-
-const YEAR_2: Year = {
-  label: 'Year 2',
-  sub: 'Family',
-  tag: 'Add-on',
-  notifications: [
-    {
-      from: 'Medical nav',
-      msg: 'Dr. Tanaka appointment confirmed. Chinese interpreter arranged for 10:30 AM.',
-      time: '8:20 AM',
-    },
-    {
-      from: 'Education',
-      msg: 'KIS school bus: Monday pickup at Building A, 7:45 AM. Driver is Mr. Oda.',
-      time: '7:00 PM',
-    },
-    {
-      from: 'Community',
-      msg: 'Lunar New Year dinner at the residents lounge, January 25. RSVP open.',
-      time: '3:30 PM',
-    },
-  ],
-};
-
-const YEAR_3: Year = {
-  label: 'Year 3+',
-  sub: 'Wellness',
-  tag: 'Premium',
-  notifications: [
-    {
-      from: 'Wellness',
-      msg: 'Your wellness check-in is Tuesday at 3:00 PM. Counselor Chen is available in Chinese.',
-      time: '11:00 AM',
-    },
-    {
-      from: 'Concierge',
-      msg: 'Golf reservation confirmed. Aso Grand Vrio, Saturday 7:30 AM. Shuttle arranged.',
-      time: '6:45 PM',
-    },
-    {
-      from: 'Culture',
-      msg: 'New: Kumamoto pottery workshop series. 4 sessions starting March 8.',
-      time: '9:15 AM',
-    },
-  ],
-};
-
-const ALL_YEARS: Year[] = [YEAR_1, YEAR_2, YEAR_3];
 
 type FlatNotif = Notification & {
   yearIdx: number;
@@ -204,9 +111,9 @@ function DarkStatusBar() {
         fontFamily: 'var(--font-body)',
       }}
     >
-      <span>9:41</span>
+      <span>{DEVICE.statusBar.time}</span>
       <span style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-        <span style={{ fontSize: 13 }}>5G</span>
+        <span style={{ fontSize: 13 }}>{DEVICE.statusBar.signal}</span>
         <svg width="18" height="13" viewBox="0 0 16 12">
           <rect x="0" y="4" width="3" height="8" rx="0.5" fill="currentColor" />
           <rect
@@ -254,7 +161,7 @@ function DeviceScreenCard({ children }: { children: React.ReactNode }) {
   );
 }
 
-function NotifCard({ from, msg, time }: Notification) {
+function NotifCard({ from, message, time }: Notification) {
   const ref = useRef<HTMLDivElement>(null);
   useNotifEntrance(ref);
   return (
@@ -304,7 +211,7 @@ function NotifCard({ from, msg, time }: Notification) {
             lineHeight: 1.55,
           }}
         >
-          {msg}
+          {message}
         </p>
       </div>
     </div>
@@ -450,7 +357,7 @@ function LockScreen({
             letterSpacing: '-0.01em',
           }}
         >
-          Software-defined real estate
+          {DEVICE.lockScreen.heading}
         </h3>
         <p
           style={{
@@ -461,7 +368,7 @@ function LockScreen({
             lineHeight: 1.45,
           }}
         >
-          What your phone looks like as a MoreHarvest resident.
+          {DEVICE.lockScreen.body}
         </p>
       </div>
       <div
@@ -482,7 +389,7 @@ function LockScreen({
             {item.type === 'year' ? (
               <YearHeader label={item.label} sub={item.sub} tag={item.tag} />
             ) : (
-              <NotifCard from={item.from} msg={item.msg} time={item.time} />
+              <NotifCard from={item.from} message={item.message} time={item.time} />
             )}
           </div>
         ))}
@@ -511,7 +418,7 @@ function IntroColumn({ onContinue }: { onContinue: () => void }) {
           letterSpacing: '0.18em',
         }}
       >
-        Section 9 · Product, software
+        {DECK.sectionLabel}
       </div>
       <h2
         style={{
@@ -524,7 +431,7 @@ function IntroColumn({ onContinue }: { onContinue: () => void }) {
           letterSpacing: '-0.025em',
         }}
       >
-        Software-defined real estate
+        {DECK.headline}
       </h2>
       <p
         style={{
@@ -535,8 +442,7 @@ function IntroColumn({ onContinue }: { onContinue: () => void }) {
           lineHeight: 1.6,
         }}
       >
-        Taiwanese staff solve all problems, from daily logistics to language
-        barriers. Nothing affects expected quality of life.
+        {DECK.leadBody}
       </p>
 
       <div
@@ -547,7 +453,7 @@ function IntroColumn({ onContinue }: { onContinue: () => void }) {
           marginTop: 8,
         }}
       >
-        {TIERS.map((tier, i) => (
+        {DECK.tiers.map((tier, i) => (
           <div
             key={i}
             style={{
@@ -628,8 +534,7 @@ function IntroColumn({ onContinue }: { onContinue: () => void }) {
           lineHeight: 1.55,
         }}
       >
-        The software layer keeps growing. New modules pushed without modifying
-        buildings.
+        {DECK.closingBody}
       </p>
 
       <button
@@ -650,7 +555,7 @@ function IntroColumn({ onContinue }: { onContinue: () => void }) {
           marginTop: 8,
         }}
       >
-        See it in action
+        {DECK.button}
       </button>
     </div>
   );
@@ -783,7 +688,7 @@ export default function Step14Section7ProductSoftware({
                     lineHeight: 1.5,
                   }}
                 >
-                  Tap &ldquo;See it in action&rdquo; to begin
+                  {DEVICE.introBody}
                 </div>
               </div>
             )}
