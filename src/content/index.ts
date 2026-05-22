@@ -4,6 +4,7 @@
 export * from './types';
 export { cast } from './cast';
 export { citations } from './citations';
+export { pdfChrome } from './pdf-chrome';
 
 export { step1 } from './steps/step-1-opening-transition';
 export { step2 } from './steps/step-2-section-1-entry';

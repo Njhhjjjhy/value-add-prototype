@@ -2,6 +2,7 @@ import { View, Text, StyleSheet } from '@react-pdf/renderer';
 import LogoPDF from '../logo-pdf';
 import LogoMarkPDF from '../logo-mark-pdf';
 import { BRAND } from '../brand';
+import { pdfChrome } from '@/content';
 
 const s = StyleSheet.create({
   page: {
@@ -95,12 +96,12 @@ export default function BackPage() {
       </View>
 
       <View style={s.contact}>
-        <Text style={s.companyName}>MoreHarvest</Text>
-        <Text style={s.contactLine}>Hello@moreharvest.com</Text>
-        <Text style={s.contactLine}>www.moreharvest.com</Text>
+        <Text style={s.companyName}>{pdfChrome.backPage.companyName}</Text>
+        <Text style={s.contactLine}>{pdfChrome.backPage.email}</Text>
+        <Text style={s.contactLine}>{pdfChrome.backPage.website}</Text>
       </View>
 
-      <Text style={s.disclaimer}>Confidential. For qualified investors only.</Text>
+      <Text style={s.disclaimer}>{pdfChrome.backPage.disclaimer}</Text>
     </View>
   );
 }

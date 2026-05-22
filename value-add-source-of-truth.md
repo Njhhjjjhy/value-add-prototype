@@ -1,5 +1,11 @@
 # Value-add prototype + PDF: source of truth
 
+## Project-level notes
+
+**Chinese localization (deferred to end of project):**
+
+By has the implementation method. This is end-of-project work. No Chinese copy is added to the source-of-truth until then.
+
 ## What this file is
 
 The single source of truth for all copy in the value-add-prototype project and the accompanying PDF.
@@ -775,6 +781,14 @@ The data file `src/data/painPoints.ts` contains additional fields per pain point
 
 **PDF copy:** tbd. The PDF closing should include both the callback line and the longer Moha Intel sentence above, plus the full timeline and source citations (see citations table at the bottom of this file).
 
+**Proposed update from meeting 4 (2026-05-22):**
+
+1. Hsinchu historical timeline alongside projected growth.
+2. Visual effect showing continuous line extending into future.
+3. Demonstrate market growth and investment opportunities for exit strategy.
+
+Status: proposed. Awaiting Riaan's review.
+
 ---
 
 # Act 10 — The ask
@@ -801,13 +815,46 @@ The data file `src/data/painPoints.ts` contains additional fields per pain point
 
 ---
 
+# PDF book parts
+
+PDF-only copy that is not tied to any of the 28 deck steps. Lives in `src/content/pdf-chrome.ts`. When this copy changes, change it here first.
+
+**Cover page headline** (rendered as three stacked lines):
+
+1. `Kumamoto`
+2. `semiconductor corridor`
+3. `serviced apartments.`
+
+**Back page** (last page of the PDF):
+
+- Company name: `MoreHarvest`
+- Email: `Hello@moreharvest.com`
+- Website: `www.moreharvest.com`
+- Disclaimer: `Confidential. For qualified investors only.`
+
+**Section divider tab pages** (9 total — match the 9 PDF sections, not the 28 deck steps):
+
+| Number | Title |
+|---|---|
+| `01` | `Executive summary` |
+| `02` | `Market context` |
+| `03` | `Target tenant` |
+| `04` | `Current options` |
+| `05` | `Product: hardware` |
+| `06` | `Product: software` |
+| `07` | `Financial projections` |
+| `08` | `Risk factors` |
+| `09` | `Exit strategy` |
+
+---
+
 # What's still missing from this file
 
 This source of truth covers every string captured in the project inventory. It does not yet cover:
 
 1. **Map iframe copy (Step 6).** Lives in `/playground/prototypes/step-6-section-3-map/map-prototype-v1/index.html`. Needs a separate inventory pass.
 2. **Property map iframe copy (Step 16).** Lives in `/playground/prototypes/step-12-section-6-product-hardware/map-prototype-v1/index.html`. Needs a separate inventory pass.
-3. **Pain points expanded fields (Step 10 → PDF).** The `cause`, `expanded`, and `companies` fields in `src/data/painPoints.ts` are not rendered in the prototype but are reserved for the PDF. Need to be extracted.
+3. **Pain points expanded fields (Step 10 → PDF).** The `cause`, `expanded`, and `companies` fields are reserved in `src/content/steps/step-10-section-5-pain-points.ts` under `pdfReserved`. They are not yet promoted to the canonical `pdf` track and are still flagged as not formally written here.
 4. **PDF copy for every step.** Most PDF tracks above are marked `tbd`.
 
 ---

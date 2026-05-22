@@ -2,9 +2,7 @@
 
 ## How to use this file
 
-This document tracks an in-progress, multi-branch migration. When Riaan creates the next feature branch in this sequence, **the new Claude session must read this file first**, find the next unchecked task, and resume from there. Each phase has an approval gate from Riaan — do not skip ahead.
-
-When the entire migration is complete (every box below ticked, plus the lockdown branch landed), **delete this file**.
+This document is the historical record of the multi-branch copy migration. The migration has now completed — all 7 phases are ticked below. The file is kept in the repo (not deleted) as a permanent reference for what was done, why, and where the canonical sources live. New Claude sessions should treat this as background context; day-to-day copy work happens in `value-add-source-of-truth.md` (canonical) and `src/content/` (typed mirror), with the CLAUDE.md "Copy lockdown" rule as the active guardrail.
 
 ---
 
@@ -19,10 +17,10 @@ Consolidate every piece of copy in the value-add-prototype project into one phys
 - [x] **Phase 1 — Inventory.** Read every step component, PDF page, `src/data/` file, `reference/content.md`, and `value-add-source-of-truth.md`. Record where `src/` diverges from the source of truth.
 - [x] **Phase 2 — Design the shape.** Propose folder structure for `src/content/`. Approved structure: one file per step under `src/content/steps/`, plus `types.ts`, `cast.ts`, `citations.ts`, and `index.ts` barrel.
 - [x] **Phase 3 — Build the content folder.** Create `src/content/` and populate from `value-add-source-of-truth.md` (NOT from current `src/` values where they differ). This bakes the canonical copy into the codebase ahead of any wiring.
-- [ ] **Phase 4 — Wire up the PDF.** One section at a time. Switch each PDF page from `src/data/*.ts` to `src/content/`. Verify visually after each.
-- [ ] **Phase 5 — Wire up the prototype.** Same as Phase 4 but for the 28 steps. Verify on iPad layout after each batch.
-- [ ] **Phase 6 — Lock it down.** Add a CLAUDE.md read-only rule on `src/content/` and `value-add-source-of-truth.md`. Add CODEOWNERS protection on both.
-- [ ] **Phase 7 — Clean up.** Delete the orphaned `src/data/` files. Decide what to do with `reference/content.md`. Update CLAUDE.md file rules. Delete this migration plan file.
+- [x] **Phase 4 — Wire up the PDF.** All 8 PDF pages now read from `src/content/`. Wired in branches `feature/pdf-financials`, `feature/pdf-risk-factors`, and `feature/content-lockdown` (executive-summary, which had been missed earlier, used `step2.pdfReserved.executiveSummary`).
+- [x] **Phase 5 — Wire up the prototype.** All 28 step components read from `src/content/`. Wired in branches `feature/step-5-content-source` (steps 1–9, excluding 6 which is the map iframe) and `feature/step-11-content-source` (steps 11–28). The 7 cleanup heals from the source of truth landed alongside the wiring.
+- [x] **Phase 6 — Lock it down.** Landed in `feature/content-lockdown`: CLAUDE.md "Copy lockdown" rule under "File rules" (only `src/content/` and `value-add-source-of-truth.md` may hold deck or PDF copy; no inline string literals in step components or PDF pages), CLAUDE.md "Authority chain" and file-tree updated, plus `.github/CODEOWNERS` requiring `@RiaanMOHA` review on `/value-add-source-of-truth.md` and `/src/content/`. CODEOWNERS only blocks merges if branch protection on `main` has "Require review from Code Owners" enabled in the GitHub web UI — flip that switch to activate enforcement.
+- [x] **Phase 7 — Clean up.** `src/data/` (9 files) was deleted in `feature/pdf-risk-factors` once orphaned. `reference/content.md` was deleted in `feature/content-lockdown` (superseded by `value-add-source-of-truth.md`). CLAUDE.md file rules updated. This migration plan file is **kept** (not deleted) as the permanent record.
 
 ---
 
@@ -97,16 +95,18 @@ Wire prototype step components 21 through 28.
 
 After this branch, every prototype step component reads its visible copy from `src/content/` and the 7 known cleanup items in `value-add-source-of-truth.md` are all healed.
 
-### `feature/content-lockdown`
+### `feature/content-lockdown` ✅ landed
 
-Final structural pass:
+Final structural pass. All items done in this branch:
 
-1. Add to CLAUDE.md the rule: "`src/content/` and `value-add-source-of-truth.md` are the only places where deck copy may live. Step components and PDF pages may only READ from `src/content/`. Never re-introduce inline string literals into step components or PDF pages."
-2. Update CLAUDE.md's "File rules" section: drop the "`src/data/painPoints.ts` is the authoritative source" line and replace it with the new `src/content/` rule above.
-3. Set up CODEOWNERS protection on both `src/content/` and `value-add-source-of-truth.md` so changes require review.
-4. Delete the now-orphaned `src/data/` folder: `dealStructure.ts`, `exitStrategy.ts`, `financials.ts`, `fundTerms.ts`, `mapSteps.ts`, `painPoints.ts`, `productSpecs.ts`, `riskPanels.ts`, `timeline.ts`. All nine files. Verify nothing else imports them first.
-5. Decide what to do with `reference/content.md`: either delete it (it's now obsolete; the canonical source is `value-add-source-of-truth.md`) or move it to `archive/` with a note.
-6. Delete `value-add-content-migration-plan.md` — this file. The migration is complete.
+1. ✅ Added to CLAUDE.md under "File rules" a "Copy lockdown" bullet stating `src/content/` and `value-add-source-of-truth.md` are the only homes for deck or PDF copy, and that step components and PDF pages may only READ from `@/content`.
+2. ✅ Dropped the legacy "`src/data/painPoints.ts` is the authoritative source" line. CLAUDE.md "Authority chain" and the file-tree block also updated to point at `value-add-source-of-truth.md` and `src/content/` instead of the retired `reference/content.md`.
+3. ✅ Added `.github/CODEOWNERS` requiring `@RiaanMOHA` review on `/value-add-source-of-truth.md` and `/src/content/`. Enforcement requires GitHub branch protection on `main` with "Require review from Code Owners" enabled — flip that switch in the GitHub web UI to activate.
+4. ✅ `src/data/` folder was already deleted in the earlier `feature/pdf-risk-factors` branch once the last PDF page stopped importing from it. Verified zero importers remain.
+5. ✅ Deleted `reference/content.md` (orphaned; superseded by `value-add-source-of-truth.md`). No code imported from it.
+6. ✅ This branch also wired the previously-missed PDF executive-summary page to `step2.pdfReserved.executiveSummary` (heading, subheading, two body paragraphs, three stats — the retired Ozu-1-era "100 units" stat box was dropped).
+7. ✅ This branch ALSO closed the audit gap on "PDF book parts" (cover, back page, 9 section dividers) that Phase 3 decision #4 had previously left as chrome. A new `src/content/pdf-chrome.ts` module owns all three; `cover.tsx`, `back-page.tsx`, and `InvestmentMemo.tsx` now read from it. Source-of-truth has a new "PDF book parts" section documenting them. Phase 3 decision #4 is therefore superseded: nothing in the codebase outside of `src/content/` holds user-visible copy now.
+7. ↔️ **Migration plan file kept, not deleted** (Riaan decision, 2026-05-22). This file stays in the repo as the permanent record of the migration. Future sessions reading this file should treat it as historical context, not an active task list.
 
 ---
 
