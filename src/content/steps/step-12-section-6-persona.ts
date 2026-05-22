@@ -42,13 +42,9 @@ export const step12 = {
     closingLine:
       'A hotel room is a compromise. A studio apartment is a compromise. A 4LDK shared home is the format this tenant has been waiting for.',
   },
-  pdf: 'tbd',
-  // PDF-reserved copy for the target-tenant page 1. These three blocks are
-  // not shown on screen but appear on the PDF persona page. Migrated verbatim
-  // from src/data/painPoints.ts (PERSONA_HEADING / PERSONA_CONCEPT /
-  // PERSONA_MESSAGE). Move into the `pdf` track above when the source of
-  // truth canonicalizes this content.
-  pdfReserved: {
+  // The on-screen prototype shows the constraint cards above. The PDF
+  // target-tenant page 1 reads the three persona copy blocks below.
+  pdf: {
     personaHeading: '47,000 engineers need a home',
     personaConcept:
       "Semiconductor companies need housing solutions for relocated staff. An ideal solution goes beyond location and must be fully move-in ready. Our property management team includes Taiwanese staff, effectively reducing language barriers and day-to-day friction. We tailor our services to engineers' working schedules, helping them quickly adapt to living abroad.",
