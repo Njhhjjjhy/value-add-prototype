@@ -1,6 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { step5 } from '@/content';
+
+const COPY = step5.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -93,7 +96,7 @@ function GhostBridge() {
               letterSpacing: '0.18em',
             }}
           >
-            SEMICONDUCTOR INVESTMENT CORRIDOR
+            {COPY.ghost.caption}
           </p>
           <p
             style={{
@@ -106,7 +109,7 @@ function GhostBridge() {
               lineHeight: 1,
             }}
           >
-            10T
+            {COPY.ghost.stats[0].value}
           </p>
           <p
             style={{
@@ -117,7 +120,7 @@ function GhostBridge() {
               margin: 0,
             }}
           >
-            yen in confirmed investment
+            {COPY.ghost.stats[0].label}
           </p>
         </GlassPanel>
         <GlassPanel
@@ -140,7 +143,7 @@ function GhostBridge() {
               lineHeight: 1,
             }}
           >
-            47,000
+            {COPY.ghost.stats[1].value}
           </p>
           <p
             style={{
@@ -151,7 +154,7 @@ function GhostBridge() {
               margin: 0,
             }}
           >
-            new jobs projected by 2027
+            {COPY.ghost.stats[1].label}
           </p>
         </GlassPanel>
       </div>
@@ -163,11 +166,7 @@ function GhostBridge() {
           maxWidth: 880,
         }}
       >
-        {[
-          'TSMC / JASM fab complex',
-          'Sony semiconductor expansion',
-          'Government infrastructure program',
-        ].map((t, i) => (
+        {COPY.ghost.body.map((t, i) => (
           <GlassPanel
             key={i}
             level={1}
@@ -225,7 +224,7 @@ function ReadyPrompt() {
           color: C.n600,
         }}
       >
-        Tap to continue
+        {COPY.continuePrompt}
       </span>
     </div>
   );

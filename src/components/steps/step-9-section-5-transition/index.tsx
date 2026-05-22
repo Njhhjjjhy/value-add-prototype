@@ -1,5 +1,9 @@
 'use client';
 
+import { step9 } from '@/content';
+
+const COPY = step9.prototype;
+
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
@@ -98,7 +102,7 @@ export default function Step9Section5Transition({ isActive, onComplete }: StepPr
                   color: C.caption,
                 }}
               >
-                SECTION 5
+                {COPY.sectionLabel}
               </span>
             </div>
 
@@ -117,7 +121,7 @@ export default function Step9Section5Transition({ isActive, onComplete }: StepPr
                 animationDelay: '420ms',
               }}
             >
-              Pain points
+              {COPY.headline}
             </h1>
 
             <p
@@ -133,7 +137,7 @@ export default function Step9Section5Transition({ isActive, onComplete }: StepPr
                 animationDelay: '680ms',
               }}
             >
-              What semiconductor families actually face in Kumamoto.
+              {COPY.body}
             </p>
           </div>
 
@@ -158,7 +162,7 @@ export default function Step9Section5Transition({ isActive, onComplete }: StepPr
                 animationDelay: '1400ms',
               }}
             >
-              Physical · Mental
+              {COPY.caption}
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
               {Array.from({ length: DOT_COUNT }).map((_, i) => (

@@ -1,6 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { step4 } from '@/content';
+
+const COPY = step4.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -313,13 +316,13 @@ export default function Step4Section2Bridge({ isActive, onComplete }: StepProps)
             <div
               role="group"
               aria-live="polite"
-              aria-label={`${count10} trillion yen. Japan is rebuilding its chip industry.`}
+              aria-label={`${count10} ${COPY.counters[0].bodySuffix}`}
             >
               <DNum arrived={beat >= 1} z={55}>
                 {count10 > 0 ? `${count10}` : '0'}
               </DNum>
               <Cap vis={beat >= 1} delay={0.2} z={12} style={{ marginTop: 12 }}>
-                trillion yen. Japan is rebuilding its chip industry.
+                {COPY.counters[0].bodySuffix}
               </Cap>
             </div>
           </Glass>
@@ -327,13 +330,13 @@ export default function Step4Section2Bridge({ isActive, onComplete }: StepProps)
             <div
               role="group"
               aria-live="polite"
-              aria-label={`${count47.toLocaleString()} jobs being created. Kumamoto is set to attract waves of high-income engineers.`}
+              aria-label={`${count47.toLocaleString()} ${COPY.counters[1].bodySuffix}`}
             >
               <DNum arrived={beat >= 3} z={50}>
                 {count47.toLocaleString()}
               </DNum>
               <Cap vis={beat >= 3} delay={0.15} z={10} style={{ marginTop: 12 }}>
-                jobs being created. Kumamoto is set to attract waves of high-income engineers.
+                {COPY.counters[1].bodySuffix}
               </Cap>
             </div>
           </Glass>
@@ -348,7 +351,7 @@ export default function Step4Section2Bridge({ isActive, onComplete }: StepProps)
             >
               <ALine progress={lineP} width="60%" z={5} />
               <Cap vis={beat >= 4} delay={0.3} z={5} style={{ marginTop: 16 }}>
-                High-income engineers are arriving. Housing demand will follow.
+                {COPY.closingBody}
               </Cap>
             </div>
           </ZLayer>

@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { step3 } from '@/content';
+
+const COPY = step3.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -164,9 +167,9 @@ export default function Step3Section2Transition({ isActive, onComplete }: StepPr
               margin: '0 0 24px 0',
             }}
           >
-            Why Kumamoto,
+            {COPY.headline.line1}
             <br />
-            Why Now?
+            {COPY.headline.line2}
           </h1>
           <p
             style={{
@@ -177,7 +180,7 @@ export default function Step3Section2Transition({ isActive, onComplete }: StepPr
               margin: 0,
             }}
           >
-            {"Japan's fastest-rising property market"}
+            {COPY.subheadline}
           </p>
         </div>
       </div>

@@ -1,6 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { step1 } from '@/content';
+
+const COPY = step1.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -142,7 +145,7 @@ export default function Step1OpeningTransition({ isActive, onComplete }: StepPro
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logos-and-icons/favicon.svg"
-            alt="MoreHarvest"
+            alt={COPY.altText}
             width={200}
             height={200}
             style={{ display: 'block' }}
@@ -158,7 +161,7 @@ export default function Step1OpeningTransition({ isActive, onComplete }: StepPro
               textAlign: 'center',
             }}
           >
-            Enter MoreHarvest world
+            {COPY.headline}
           </h1>
         </div>
 
@@ -185,7 +188,7 @@ export default function Step1OpeningTransition({ isActive, onComplete }: StepPro
             onTouchEnd={endPress}
             onTouchCancel={endPress}
             role="button"
-            aria-label="Hold to enter MoreHarvest world"
+            aria-label={COPY.ariaLabel}
             style={{
               position: 'relative',
               width: RING_SIZE,
@@ -274,7 +277,7 @@ export default function Step1OpeningTransition({ isActive, onComplete }: StepPro
               letterSpacing: '0.02em',
             }}
           >
-            Hold to enter
+            {COPY.holdCaption}
           </p>
         </div>
       </div>

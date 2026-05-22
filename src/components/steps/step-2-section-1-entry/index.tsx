@@ -1,6 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { step2 } from '@/content';
+
+const COPY = step2.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -252,9 +255,9 @@ export default function Step2Section1Entry({ isActive, onComplete }: StepProps) 
               'opacity 600ms cubic-bezier(0,0,0.2,1) 150ms, transform 600ms cubic-bezier(0,0,0.2,1) 150ms',
           }}
         >
-          Why Kumamoto,
+          {COPY.headline.line1}
           <br />
-          Why Now?
+          {COPY.headline.line2}
         </h1>
         <p
           className="entry-sub"
@@ -266,22 +269,17 @@ export default function Step2Section1Entry({ isActive, onComplete }: StepProps) 
               'opacity 600ms cubic-bezier(0,0,0.2,1) 320ms, transform 600ms cubic-bezier(0,0,0.2,1) 320ms',
           }}
         >
-          {"Japan's fastest-rising property market"}
+          {COPY.subheadline}
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-          {[
-            { label: 'Serviced apartments', bold: false, delay: 480 },
-            { label: 'TSMC / JASM hub', bold: false, delay: 560 },
-            { label: 'Taiwanese engineers', bold: false, delay: 640 },
-            { label: '12-15% IRR', bold: true, delay: 720 },
-          ].map((chip) => (
+          {COPY.chips.map((chip, i) => (
             <span
               key={chip.label}
-              className={`fact-chip${chip.bold ? ' bold' : ''}`}
+              className={`fact-chip${'emphasis' in chip && chip.emphasis ? ' bold' : ''}`}
               style={{
                 opacity: mounted ? 1 : 0,
                 transform: mounted ? 'translateY(0)' : 'translateY(12px)',
-                transition: `opacity 500ms cubic-bezier(0,0,0.2,1) ${chip.delay}ms, transform 500ms cubic-bezier(0,0,0.2,1) ${chip.delay}ms`,
+                transition: `opacity 500ms cubic-bezier(0,0,0.2,1) ${480 + i * 80}ms, transform 500ms cubic-bezier(0,0,0.2,1) ${480 + i * 80}ms`,
               }}
             >
               {chip.label}
@@ -312,7 +310,7 @@ export default function Step2Section1Entry({ isActive, onComplete }: StepProps) 
         onPointerLeave={onHoldEnd}
         onPointerCancel={onHoldEnd}
         role="button"
-        aria-label="Hold to enter"
+        aria-label={COPY.holdPrompt.ariaLabel}
       >
         <div
           style={{
