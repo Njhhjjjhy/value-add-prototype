@@ -1,7 +1,9 @@
 import { View, Text, StyleSheet } from '@react-pdf/renderer';
 import { PageHeader, PageFooter } from '../page-chrome';
 import { shared, C } from '../page-styles';
-import { HARDWARE_SPECS, INVESTMENT_PROPERTIES, VIRTUAL_TOUR_ROOMS } from '@/data/productSpecs';
+import { step16 } from '@/content';
+
+const { hardwareSpecs: HARDWARE_SPECS, investmentProperties: INVESTMENT_PROPERTIES, virtualTourRooms: VIRTUAL_TOUR_ROOMS } = step16.pdfReserved;
 
 const s = StyleSheet.create({
   ...shared,

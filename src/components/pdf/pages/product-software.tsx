@@ -1,7 +1,9 @@
 import { View, Text, StyleSheet } from '@react-pdf/renderer';
 import { PageHeader, PageFooter } from '../page-chrome';
 import { shared, C } from '../page-styles';
-import { SERVICE_TIERS, PHONE_FRAMES } from '@/data/productSpecs';
+import { step18 } from '@/content';
+
+const { serviceTiers: SERVICE_TIERS, phoneFrames: PHONE_FRAMES } = step18.pdfReserved;
 
 const s = StyleSheet.create({
   ...shared,

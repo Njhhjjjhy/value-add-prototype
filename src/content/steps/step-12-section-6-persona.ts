@@ -43,4 +43,16 @@ export const step12 = {
       'A hotel room is a compromise. A studio apartment is a compromise. A 4LDK shared home is the format this tenant has been waiting for.',
   },
   pdf: 'tbd',
+  // PDF-reserved copy for the target-tenant page 1. These three blocks are
+  // not shown on screen but appear on the PDF persona page. Migrated verbatim
+  // from src/data/painPoints.ts (PERSONA_HEADING / PERSONA_CONCEPT /
+  // PERSONA_MESSAGE). Move into the `pdf` track above when the source of
+  // truth canonicalizes this content.
+  pdfReserved: {
+    personaHeading: '47,000 engineers need a home',
+    personaConcept:
+      "Semiconductor companies need housing solutions for relocated staff. An ideal solution goes beyond location and must be fully move-in ready. Our property management team includes Taiwanese staff, effectively reducing language barriers and day-to-day friction. We tailor our services to engineers' working schedules, helping them quickly adapt to living abroad.",
+    personaMessage:
+      'Tenants are employees from semiconductor companies on short- to long-term assignments. They need to settle in quickly and need move-in-ready accommodations to adapt to a new environment. This includes fully furnished units, reliable property management, and local support to minimize inconveniences caused by language and cultural differences. An ideal home allows them to focus on work without being distracted by day-to-day matters.',
+  },
 } as const satisfies Step;

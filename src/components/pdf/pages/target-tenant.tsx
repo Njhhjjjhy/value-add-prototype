@@ -1,7 +1,12 @@
 import { View, Text, StyleSheet } from '@react-pdf/renderer';
 import { PageHeader, PageFooter } from '../page-chrome';
 import { shared, C } from '../page-styles';
-import { PAIN_POINTS, PERSONA_STAT, PERSONA_HEADING, PERSONA_CONCEPT, PERSONA_MESSAGE } from '@/data/painPoints';
+import { step10, step12 } from '@/content';
+
+const personaStat = step10.prototype.personaStat;
+const persona = step12.pdfReserved;
+const physical = step10.pdfReserved.physical;
+const mental = step10.pdfReserved.mental;
 
 const s = StyleSheet.create({
   ...shared,
@@ -18,16 +23,16 @@ export function TargetTenantPage1() {
       <PageHeader sectionLabel="03 | Target tenant" />
       <View style={s.content}>
         <View style={s.statBox}>
-          <Text style={s.statValue}>{PERSONA_STAT.value}</Text>
-          <Text style={s.statLabel}>{PERSONA_STAT.label}</Text>
+          <Text style={s.statValue}>{personaStat.value}</Text>
+          <Text style={s.statLabel}>{personaStat.label}</Text>
         </View>
-        <Text style={s.heading}>{PERSONA_HEADING}</Text>
+        <Text style={s.heading}>{persona.personaHeading}</Text>
         <View style={s.twoCol}>
           <View style={s.col}>
-            <Text style={s.body}>{PERSONA_CONCEPT}</Text>
+            <Text style={s.body}>{persona.personaConcept}</Text>
           </View>
           <View style={s.col}>
-            <Text style={s.body}>{PERSONA_MESSAGE}</Text>
+            <Text style={s.body}>{persona.personaMessage}</Text>
           </View>
         </View>
       </View>
@@ -37,9 +42,6 @@ export function TargetTenantPage1() {
 }
 
 export function TargetTenantPage2() {
-  const physical = PAIN_POINTS.filter((p) => p.group === 'physical');
-  const mental = PAIN_POINTS.filter((p) => p.group === 'mental');
-
   return (
     <View style={s.page}>
       <PageHeader sectionLabel="03 | Target tenant - pain points" />

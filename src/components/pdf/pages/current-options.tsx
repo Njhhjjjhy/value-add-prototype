@@ -1,7 +1,9 @@
 import { View, Text, StyleSheet } from '@react-pdf/renderer';
 import { PageHeader, PageFooter } from '../page-chrome';
 import { shared, C } from '../page-styles';
-import { CURRENT_OPTIONS } from '@/data/dealStructure';
+import { step14 } from '@/content';
+
+const CURRENT_OPTIONS = step14.pdfReserved;
 
 const s = StyleSheet.create({
   ...shared,
