@@ -1,10 +1,8 @@
 // Step 23 · Section 12 transition — risk to exit
 // Source: value-add-source-of-truth.md
-// The FAQ ghost lines below are the current canonical state in the source
-// of truth. They echo Step 22's OLD 6-FAQ list. Once Step 22 is migrated to
-// the new 5-risk framework (cleanup item #5), Step 23's ghost echoes need
-// to be replaced with ghosts of the new 5-risk framework, or dropped. This
-// is cleanup item #6 — tracked, will be revisited after Phase 5.
+// Heals cleanup item #6: the ghost echoes are now the 5-risk framework
+// names from Step 22 (matching the new beat 5 content), replacing the
+// retired 6-FAQ ghost echoes.
 
 import type { Step } from '../types';
 
@@ -16,13 +14,12 @@ export const step23 = {
   prototype: {
     continueAriaLabel: 'Tap to continue',
     sectionGhostCaption: 'Risk factors',
-    faqGhosts: [
-      'What if TSMC slows down or pulls out?',
-      'JPY volatility and rising rates?',
-      'Construction over budget or delayed?',
-      'How is GK-TK structure tax-efficient?',
-      'What stops major hotel chains?',
-      'What governance rights do TK investors have?',
+    riskGhosts: [
+      'Liquidity and exit (exit liquidity)',
+      'Demand concentration',
+      'Infrastructure timing',
+      'Tenant concentration',
+      'Renovation and cost control (execution risk)',
     ],
     resolve: {
       sectionLabel: 'Section 12',

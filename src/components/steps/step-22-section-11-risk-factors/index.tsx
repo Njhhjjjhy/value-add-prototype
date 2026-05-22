@@ -9,6 +9,9 @@ import {
 } from 'react';
 import BackButton from '@/components/shared/BackButton';
 import NextButton from '@/components/shared/NextButton';
+import { step22 } from '@/content';
+
+const COPY = step22.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -44,73 +47,26 @@ const EASE = {
   spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
 };
 
-const THESIS =
-  'Entering in 2025 is the equivalent of acquiring land in Zhubei in 2007.';
-
-const THESIS_2 =
-  'We bring what no developer brought to Hsinchu then: Moha Intel, an AI-native platform that turns every asset into a data-generating node, compounding both NOI and proprietary market intelligence across the portfolio.';
-
 type Stat = { value: string; label: string; sub: string };
-const STATS: Stat[] = [
-  { value: '1.7x', label: 'Land prices since 2020', sub: 'Prefecture-wide' },
-  { value: '33.3%', label: 'Annual gain, #1 in Japan', sub: 'Site 1, 2024' },
-  { value: '$20B+', label: 'Combined fab investment', sub: 'JASM Fab 1 and Fab 2' },
-  { value: '4T', label: 'Yen economic impact', sub: '10-year estimate' },
-  { value: '44', label: 'Companies drawn', sub: 'By TSMC to Kumamoto' },
-  { value: '~2x', label: 'Zhubei 5-year growth', sub: 'Hsinchu precedent' },
-];
+const STATS: Stat[] = COPY.beat2.stats.map((s) => ({
+  value: s.stat,
+  label: s.label,
+  sub: s.sub,
+}));
 
 type TimelineEntry = { y: string; t: string; d: string };
-const TIMELINE: TimelineEntry[] = [
-  {
-    y: '2024-2025',
-    t: 'Fab 1 opens',
-    d: 'Engineers arrive. Supply gap. No premium developer.',
-  },
-  {
-    y: '2026-2028',
-    t: 'Fab 2 operational',
-    d: 'Supply chain clusters. Investment exceeds $20B.',
-  },
-  {
-    y: '2029-2032',
-    t: 'Developer competition',
-    d: 'Major developers enter. Early-mover advantage locks.',
-  },
-  {
-    y: '2033-2035',
-    t: 'Exit window',
-    d: 'REIT threshold. Institutional acquisition.',
-  },
-];
+const TIMELINE: TimelineEntry[] = COPY.beat3.timeline.map((t) => ({
+  y: t.year,
+  t: t.title,
+  d: t.detail,
+}));
 
-type FaqEntry = { q: string; a: string };
-const FAQ: FaqEntry[] = [
-  {
-    q: 'What if TSMC slows down or pulls out?',
-    a: '44+ companies independently committed. Ecosystem is self-sustaining. 5 to 10 year master leases protect income.',
-  },
-  {
-    q: 'JPY volatility and rising rates?',
-    a: 'All debt is local JPY, natural currency hedge. Rent escalation clauses offset rate increases.',
-  },
-  {
-    q: 'Construction over budget or delayed?',
-    a: 'Fixed-price contracts with penalty clauses. Chateau Life, 20 years Kumamoto experience. Modular construction.',
-  },
-  {
-    q: 'How is GK-TK structure tax-efficient?',
-    a: 'Profits pass through as fees, not dividends. Effective rate: 20.42% versus 30%+ standard corporate.',
-  },
-  {
-    q: 'What stops major hotel chains?',
-    a: 'Semiconductor-specific service layer. First-mover tenant relationships. Lower cost basis than hotel conversions.',
-  },
-  {
-    q: 'What governance rights do TK investors have?',
-    a: 'Veto rights on asset sales, refinancing, major capex, business plan changes. CapitaLand co-investment as firewall.',
-  },
-];
+type RiskEntry = { name: string; risk: string; hedges: readonly string[] };
+const RISKS: RiskEntry[] = COPY.beat5.risks.map((r) => ({
+  name: r.name,
+  risk: r.risk,
+  hedges: r.hedges,
+}));
 
 const EXIT_DELAY_MS = 150;
 const EXIT_DURATION_MS = 350;
@@ -211,7 +167,7 @@ function Beat1Thesis({ landscape }: { landscape: boolean }) {
           marginBottom: 32,
         }}
       >
-        Kumamoto semiconductor corridor, 2024 to 2035
+        {COPY.beat1.caption}
       </div>
       <h2
         style={{
@@ -225,7 +181,7 @@ function Beat1Thesis({ landscape }: { landscape: boolean }) {
           margin: 0,
         }}
       >
-        {THESIS}
+        {COPY.beat1.headline}
       </h2>
     </div>
   );
@@ -249,7 +205,7 @@ function Beat2Stats({
           'calc(96px + var(--safe-top)) var(--content-margin) calc(96px + var(--safe-bottom))',
       }}
     >
-      <BeatLabel>Key data points</BeatLabel>
+      <BeatLabel>{COPY.beat2.captionLabel}</BeatLabel>
       <div
         style={{
           display: 'grid',
@@ -339,7 +295,7 @@ function Beat3Timeline({
           'calc(96px + var(--safe-top)) var(--content-margin) calc(96px + var(--safe-bottom))',
       }}
     >
-      <BeatLabel>Strategic timing</BeatLabel>
+      <BeatLabel>{COPY.beat3.captionLabel}</BeatLabel>
       <div
         style={{
           ...PANEL_LEVEL_1,
@@ -536,7 +492,7 @@ function Beat4MohaIntel({ landscape }: { landscape: boolean }) {
             letterSpacing: '-0.02em',
           }}
         >
-          Moha Intel
+          {COPY.beat4.heading}
         </div>
         <p
           style={{
@@ -548,14 +504,14 @@ function Beat4MohaIntel({ landscape }: { landscape: boolean }) {
             margin: 0,
           }}
         >
-          {THESIS_2}
+          {COPY.beat4.body}
         </p>
       </div>
     </div>
   );
 }
 
-function Beat5Faq({
+function Beat5Risks({
   openIdx,
   setOpenIdx,
   landscape,
@@ -576,7 +532,7 @@ function Beat5Faq({
           'calc(88px + var(--safe-top)) var(--content-margin) calc(96px + var(--safe-bottom))',
       }}
     >
-      <BeatLabel>Risk factors</BeatLabel>
+      <BeatLabel>{COPY.beat5.caption}</BeatLabel>
       <div
         style={{
           display: 'grid',
@@ -587,16 +543,16 @@ function Beat5Faq({
           alignContent: 'start',
         }}
       >
-        {FAQ.map((f, i) => {
+        {RISKS.map((r, i) => {
           const open = openIdx === i;
           const toggle = () => setOpenIdx(open ? -1 : i);
           return (
             <div
-              key={f.q}
+              key={r.name}
               role="button"
               tabIndex={0}
               aria-expanded={open}
-              aria-label={f.q}
+              aria-label={r.name}
               onClick={(e) => {
                 e.stopPropagation();
                 toggle();
@@ -632,11 +588,11 @@ function Beat5Faq({
                       color: C.n950,
                     }}
                   >
-                    {f.q}
+                    {r.name}
                   </div>
                   <div
                     style={{
-                      maxHeight: open ? 240 : 0,
+                      maxHeight: open ? 360 : 0,
                       overflow: 'hidden',
                       transition: `max-height 320ms ${EASE.smooth}, opacity 320ms ${EASE.smooth}`,
                       opacity: open ? 1 : 0,
@@ -651,8 +607,46 @@ function Beat5Faq({
                         marginTop: 12,
                       }}
                     >
-                      {f.a}
+                      {r.risk}
                     </div>
+                    <ul
+                      style={{
+                        margin: '10px 0 0',
+                        padding: 0,
+                        listStyle: 'none',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 6,
+                      }}
+                    >
+                      {r.hedges.map((h, hi) => (
+                        <li
+                          key={hi}
+                          style={{
+                            fontFamily: 'var(--font-body)',
+                            fontSize: 15,
+                            lineHeight: 1.55,
+                            color: C.n800,
+                            paddingLeft: 14,
+                            position: 'relative',
+                          }}
+                        >
+                          <span
+                            aria-hidden
+                            style={{
+                              position: 'absolute',
+                              left: 0,
+                              top: 8,
+                              width: 6,
+                              height: 2,
+                              background: C.amber,
+                              borderRadius: 1,
+                            }}
+                          />
+                          {h}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
                 <div
@@ -684,7 +678,7 @@ export default function Step18Section9RiskFactors({
 }: StepProps) {
   const landscape = useLandscape();
   const [beat, setBeat] = useState(0);
-  const [openFaq, setOpenFaq] = useState(-1);
+  const [openRisk, setOpenRisk] = useState(-1);
   const [exiting, setExiting] = useState(false);
 
   const busy = useRef(false);
@@ -839,7 +833,7 @@ export default function Step18Section9RiskFactors({
       cancelledRef.current = true;
       busy.current = false;
       setBeat(0);
-      setOpenFaq(-1);
+      setOpenRisk(-1);
       setExiting(false);
       return;
     }
@@ -882,7 +876,7 @@ export default function Step18Section9RiskFactors({
       return;
     }
     busy.current = true;
-    setOpenFaq(-1);
+    setOpenRisk(-1);
     const current = beat;
     const prev = current - 1;
     await exitBeat(current);
@@ -940,7 +934,7 @@ export default function Step18Section9RiskFactors({
       }}
       role={beat < 5 ? 'button' : undefined}
       tabIndex={beat < 5 ? 0 : -1}
-      aria-label={beat < 5 ? 'Tap to continue' : undefined}
+      aria-label={beat < 5 ? COPY.continueAriaLabel : undefined}
       onClick={() => {
         if (beat < 5) advanceBeat();
       }}
@@ -989,9 +983,9 @@ export default function Step18Section9RiskFactors({
         }}
         visible={beat === 5}
       >
-        <Beat5Faq
-          openIdx={openFaq}
-          setOpenIdx={setOpenFaq}
+        <Beat5Risks
+          openIdx={openRisk}
+          setOpenIdx={setOpenRisk}
           landscape={landscape}
         />
       </BeatShell>

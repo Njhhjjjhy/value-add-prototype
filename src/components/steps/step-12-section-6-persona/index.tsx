@@ -1,6 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { step12 } from '@/content';
+
+const COPY = step12.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -16,35 +19,6 @@ const C = {
   bg: '#F9F9F9',
   hairline: 'rgba(0,0,0,0.08)',
   hairlineSoft: 'rgba(0,0,0,0.06)',
-};
-
-const SECTION = {
-  eyebrow: 'Section 6 · Demand',
-  headline: 'Who lives here.',
-  persona: {
-    title: 'The semiconductor engineer',
-    subtitle: 'JASM / TSMC supply chain · rotational deployment',
-  },
-  constraints: [
-    {
-      label: 'Proximity',
-      body: '10-minute drive to the fab. Non-negotiable for shift-based and emergency call-ins.',
-    },
-    {
-      label: 'Stay length',
-      body: 'Short business stays to mid- and long-term assignments. Months, not nights.',
-    },
-    {
-      label: 'Group size',
-      body: 'Small teams of 3 to 4. Travel together, work together, prefer to live together.',
-    },
-    {
-      label: 'Logistics',
-      body: 'Multiple cars per household. Parking is a hard requirement, not a perk.',
-    },
-  ],
-  closing:
-    'A hotel room is a compromise. A studio apartment is a compromise. A 4LDK shared home is the format this tenant has been waiting for.',
 };
 
 const ENTER_DELAY_MS = 80;
@@ -207,7 +181,7 @@ export default function Step8Section4Persona({ isActive, onComplete }: StepProps
                 transition: 'opacity 500ms cubic-bezier(0,0,0.2,1) 50ms',
               }}
             >
-              {SECTION.eyebrow}
+              {COPY.sectionLabel}
             </p>
             <div
               style={{
@@ -237,7 +211,7 @@ export default function Step8Section4Persona({ isActive, onComplete }: StepProps
                   'opacity 600ms cubic-bezier(0,0,0.2,1) 200ms, transform 600ms cubic-bezier(0,0,0.2,1) 200ms',
               }}
             >
-              {SECTION.headline}
+              {COPY.headline}
             </h1>
           </div>
 
@@ -256,7 +230,7 @@ export default function Step8Section4Persona({ isActive, onComplete }: StepProps
                 'opacity 600ms cubic-bezier(0,0,0.2,1) 900ms, transform 600ms cubic-bezier(0,0,0.2,1) 900ms',
             }}
           >
-            {SECTION.closing}
+            {COPY.closingLine}
           </p>
         </section>
 
@@ -295,7 +269,7 @@ export default function Step8Section4Persona({ isActive, onComplete }: StepProps
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/playground/3d/persona-front-base.png"
-                alt="The semiconductor engineer — JASM / TSMC supply chain"
+                alt={COPY.personaAlt}
                 style={{
                   position: 'absolute',
                   inset: 0,
@@ -342,7 +316,7 @@ export default function Step8Section4Persona({ isActive, onComplete }: StepProps
                       margin: 0,
                     }}
                   >
-                    TENANT PROFILE
+                    {COPY.sectionSubtitle}
                   </p>
                   <h2
                     style={{
@@ -355,7 +329,7 @@ export default function Step8Section4Persona({ isActive, onComplete }: StepProps
                       margin: '6px 0 4px',
                     }}
                   >
-                    {SECTION.persona.title}
+                    {COPY.personaTitle}
                   </h2>
                   <p
                     style={{
@@ -366,14 +340,14 @@ export default function Step8Section4Persona({ isActive, onComplete }: StepProps
                       lineHeight: 1.45,
                     }}
                   >
-                    {SECTION.persona.subtitle}
+                    {COPY.personaSubtitle}
                   </p>
                 </div>
               </div>
 
               {/* Constraints */}
               <div style={{ paddingTop: 8 }}>
-                {SECTION.constraints.map((c, i) => (
+                {COPY.constraints.map((c, i) => (
                   <ConstraintRow
                     key={c.label}
                     index={i}

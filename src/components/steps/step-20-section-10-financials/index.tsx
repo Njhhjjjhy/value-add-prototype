@@ -1,5 +1,9 @@
 'use client';
 
+import { step20 } from '@/content';
+
+const COPY = step20.prototype;
+
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
@@ -30,129 +34,62 @@ type Row = {
 
 type Group = { heading?: string; rows: Row[] };
 
-const DEVELOPMENT: Row[] = [
-  {
-    label: 'Initial capital',
-    value: '¥35,000,000',
-    note: 'Land, building, renovation, furniture, appliances and related costs',
-    party: 'J Estate Co. Ltd.',
-  },
-];
+const DEVELOPMENT: Row[] = COPY.development.map((r) => ({
+  label: r.row,
+  value: r.value,
+  note: r.note,
+  party: r.party,
+}));
+
+const RETURNS: Row[] = COPY.returnOnInvestment.map((r) => ({
+  label: r.scenario,
+  value: r.return,
+}));
+
+const RENTAL: Row[] = COPY.rentalYield.map((r) => ({
+  label: r.scenario,
+  value: r.yield,
+}));
 
 const SALES_GROUPS: Group[] = [
   {
     heading: 'Revenue',
-    rows: [
-      {
-        label: 'Sale price',
-        value: '¥45,600,000',
-        note: 'Consumption tax included',
-      },
-    ],
+    rows: COPY.salesRevenue.map((r) => ({
+      label: r.row,
+      value: r.value,
+      note: r.note,
+    })),
   },
   {
     heading: 'Costs',
-    rows: [
-      {
-        label: 'Guaranteed investor interest income',
-        value: '¥1,750,000',
-        note: '5% per annum',
-      },
-      {
-        label: 'Agency commission',
-        value: '¥1,368,000',
-        note: '3% of sale price, excl. consumption tax',
-        party: 'MasterHouse Real Estate',
-      },
-      {
-        label: 'Travel expenses — sales team',
-        value: '¥300,000',
-        note: '3 trips (property introduction, contract signing, handover) · ¥100,000 per trip',
-        party: 'J Estate Co. Ltd.',
-      },
-      {
-        label: 'Travel expenses — MoreHarvest',
-        value: '¥120,000',
-        note: '1 trip (property introduction) · flights and hotel',
-        party: 'MoreHarvest',
-      },
-      {
-        label: 'Entertainment — sales team',
-        value: '¥150,000',
-        note: 'Sales-related hospitality',
-        party: 'J Estate Co. Ltd.',
-      },
-      {
-        label: 'Entertainment — MoreHarvest',
-        value: '¥150,000',
-        note: 'Sales-related hospitality',
-        party: 'MoreHarvest',
-      },
-      {
-        label: 'Sales-related expenses',
-        value: '¥800,000',
-        note: 'Leasing agent fees, advertising, transportation and other actual costs',
-        party: 'J Estate Co. Ltd.',
-      },
-      {
-        label: 'Sales support — Taiwan',
-        value: '¥456,000',
-        note: 'Briefings and backend data system · 1% of sale price',
-        party: 'MoreHarvest',
-      },
-      {
-        label: 'Sales support — Japan',
-        value: '¥501,600',
-        note: 'Kumamoto-side property tours and briefings · 1% of sale price',
-        party: 'J Estate Co. Ltd.',
-      },
-    ],
+    rows: COPY.salesCosts.map((r) => ({
+      label: r.row,
+      value: r.value,
+      note: r.note ?? undefined,
+      party: r.party ?? undefined,
+    })),
   },
   {
     heading: 'Net result',
-    rows: [
-      {
-        label: 'Profit (pre-tax)',
-        value: '¥5,004,400',
-        emphasis: 'subtotal',
-      },
-      {
-        label: 'Corporate tax',
-        value: '¥1,751,540',
-        note: 'Japan corporate tax',
-      },
-      {
-        label: 'Property warranty',
-        value: '¥1,368,000',
-        note: '10-year property warranty · 3% of base price',
-        party: 'J Estate Co. Ltd.',
-      },
-      {
-        label: 'Net profit',
-        value: '¥1,884,860',
-        note: 'Shared between J Estate Co. Ltd. and MoreHarvest',
-        emphasis: 'total',
-      },
-    ],
+    rows: COPY.netResult.map((r) => {
+      const emphasis: Row['emphasis'] =
+        r.row === 'Profit (pre-tax)'
+          ? 'subtotal'
+          : r.row === 'Net profit'
+            ? 'total'
+            : undefined;
+      return {
+        label: r.row,
+        value: r.value,
+        note: r.note ?? undefined,
+        party: r.party ?? undefined,
+        emphasis,
+      };
+    }),
   },
 ];
 
-const RETURNS: Row[] = [
-  { label: '1 unit per year', value: '5.00%' },
-  { label: '1.5 units per year', value: '7.50%' },
-  { label: '2 units per year', value: '10.00%' },
-];
-
-const RENTAL: Row[] = [
-  { label: 'Rent (high) · ¥190,000 / month', value: '5.00%' },
-  { label: 'Rent (average) · ¥160,000 / month', value: '4.21%' },
-];
-
-const IRR_PARAGRAPHS = [
-  'This strategy focuses on acquiring existing properties for renovation, with a typical construction period of 1 to 2 months. Sales can be initiated during the renovation phase, effectively shortening capital deployment time.',
-  'Compared to ground-up development projects, the investment cycle is significantly shorter. Under normal conditions, two full cycles (acquisition, renovation, sale) can be completed within a year, enhancing capital efficiency.',
-  'Overall, this is a short-cycle, lower-risk, and high-efficiency investment model.',
-];
+const IRR_PARAGRAPHS = COPY.irrClosing;
 
 function RowItem({
   row,
@@ -340,7 +277,7 @@ export default function Step20Section10Financials({ onComplete }: StepProps) {
             marginBottom: 16,
           }}
         >
-          Section 10 · Underwriting
+          {COPY.sectionLabel}
         </div>
 
         <h1
@@ -354,7 +291,7 @@ export default function Step20Section10Financials({ onComplete }: StepProps) {
             marginBottom: 32,
           }}
         >
-          The numbers.
+          {COPY.headline}
         </h1>
 
         <div

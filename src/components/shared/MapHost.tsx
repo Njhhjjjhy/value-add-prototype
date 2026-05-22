@@ -20,6 +20,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { step6 } from '@/content';
 
 const C = {
   bg: '#F9F9F9',
@@ -255,7 +256,7 @@ export function MapHostProvider({ visible, children }: MapHostProviderProps) {
               <iframe
                 ref={iframeRef}
                 src={mapUrl}
-                title="Kumamoto map"
+                title={step6.prototype.iframeTitle}
                 style={{
                   position: 'absolute',
                   inset: 0,

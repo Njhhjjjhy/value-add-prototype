@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { step28 } from '@/content';
+
+const COPY = step28.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -92,7 +95,7 @@ export default function Step22DownloadPdf({ isActive, onComplete }: StepProps) {
             lineHeight: 1.1,
           }}
         >
-          The full picture.
+          {COPY.headline}
         </h1>
         <p
           style={{
@@ -104,9 +107,7 @@ export default function Step22DownloadPdf({ isActive, onComplete }: StepProps) {
             lineHeight: 1.6,
           }}
         >
-          The memo behind everything you just saw. Per-unit
-          underwriting, comparables, exit analysis, and the
-          parallel timeline in detail.
+          {COPY.body}
         </p>
       </div>
 
@@ -140,7 +141,7 @@ export default function Step22DownloadPdf({ isActive, onComplete }: StepProps) {
           WebkitUserSelect: 'none',
         }}
       >
-        Download PDF
+        {COPY.button}
       </button>
     </div>
   );

@@ -2,6 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import NextButton from '@/components/shared/NextButton';
+import { step19 } from '@/content';
+
+const COPY = step19.prototype;
+const SERVICES = COPY.serviceRowGhosts;
+const HEADING = COPY.headline;
 
 interface StepProps {
   isActive: boolean;
@@ -23,17 +28,6 @@ const EASE = {
   smooth: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
   spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
 };
-
-const SERVICES = [
-  'Property secretary',
-  'Medical navigation',
-  'Education support',
-  'Admin support',
-  'Mental wellness',
-  'Cultural program',
-];
-
-const HEADING = 'The investment case.';
 
 const EXIT_DELAY_MS = 150;
 const EXIT_DURATION_MS = 350;

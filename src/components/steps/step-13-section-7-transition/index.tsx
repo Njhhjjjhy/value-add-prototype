@@ -1,6 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { step13 } from '@/content';
+
+const COPY = step13.prototype;
 
 interface StepProps {
   isActive: boolean;
@@ -71,7 +74,7 @@ export default function Step9Section5Transition({ isActive, onComplete }: StepPr
       data-step-9
       role="button"
       tabIndex={0}
-      aria-label="Tap to continue"
+      aria-label={COPY.continueAriaLabel}
       onClick={advance}
       onKeyDown={handleKeyDown}
       style={{
@@ -137,7 +140,7 @@ export default function Step9Section5Transition({ isActive, onComplete }: StepPr
                 'opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
             }}
           >
-            So what does a real solution look like?
+            {COPY.headline}
           </h1>
         </div>
 
@@ -172,7 +175,7 @@ export default function Step9Section5Transition({ isActive, onComplete }: StepPr
               color: C.disabled,
             }}
           >
-            Tap to continue
+            {COPY.continuePrompt}
           </span>
         </div>
       </div>

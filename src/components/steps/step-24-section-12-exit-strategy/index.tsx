@@ -1,5 +1,9 @@
 'use client';
 
+import { step24 } from '@/content';
+
+const COPY = step24.prototype;
+
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
@@ -41,7 +45,7 @@ export default function Step24Section12ExitStrategy({ onComplete }: StepProps) {
             marginBottom: 16,
           }}
         >
-          Section 12 · Exit strategy
+          {COPY.sectionLabel}
         </div>
 
         <h1
@@ -55,7 +59,7 @@ export default function Step24Section12ExitStrategy({ onComplete }: StepProps) {
             marginBottom: 24,
           }}
         >
-          One door.
+          {COPY.headline}
         </h1>
 
         <div
@@ -70,7 +74,7 @@ export default function Step24Section12ExitStrategy({ onComplete }: StepProps) {
             maxWidth: 880,
           }}
         >
-          Sell to other buyers with the master lease in place.
+          {COPY.subheadline}
         </div>
 
         <p
@@ -81,11 +85,7 @@ export default function Step24Section12ExitStrategy({ onComplete }: StepProps) {
             maxWidth: 880,
           }}
         >
-          Kumamoto&apos;s housing demand is structural, not cyclical. The same
-          engineer migration that drove Hsinchu for two decades is just
-          starting here. When the time comes to exit, the buyers are there:
-          owner-occupiers, yield investors, or institutional vehicles taking
-          on a portfolio with a stable lease already attached.
+          {COPY.body}
         </p>
       </div>
     </button>
