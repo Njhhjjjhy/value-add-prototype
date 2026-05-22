@@ -1,5 +1,9 @@
 'use client';
 
+import { step7 } from '@/content';
+
+const COPY = step7.prototype;
+
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
@@ -18,8 +22,6 @@ const C = {
 
 const FONT_HEADING = '"REM", system-ui, sans-serif';
 const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
-
-const HEADLINE = "You've seen this movie before.";
 
 export default function Step7Section4Transition({ isActive, onComplete }: StepProps) {
   return (
@@ -102,7 +104,7 @@ export default function Step7Section4Transition({ isActive, onComplete }: StepPr
                 color: C.caption,
               }}
             >
-              SECTION 4
+              {COPY.sectionLabel}
             </span>
           </div>
 
@@ -144,7 +146,7 @@ export default function Step7Section4Transition({ isActive, onComplete }: StepPr
                   color: C.sub,
                 }}
               >
-                2005
+                {COPY.stats[0]}
               </span>
               <div
                 style={{
@@ -179,7 +181,7 @@ export default function Step7Section4Transition({ isActive, onComplete }: StepPr
                   color: C.heading,
                 }}
               >
-                2025
+                {COPY.stats[1]}
               </span>
               <div
                 style={{
@@ -210,7 +212,7 @@ export default function Step7Section4Transition({ isActive, onComplete }: StepPr
               animationDelay: '1500ms',
             }}
           >
-            {HEADLINE}
+            {COPY.headline}
           </h1>
         </div>
       )}

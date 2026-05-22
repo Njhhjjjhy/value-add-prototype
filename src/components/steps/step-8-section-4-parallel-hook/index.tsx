@@ -1,5 +1,9 @@
 'use client';
 
+import { step8 } from '@/content';
+
+const COPY = step8.prototype;
+
 interface StepProps {
   isActive: boolean;
   onComplete: () => void;
@@ -42,7 +46,7 @@ export default function Step8Section4ParallelHook({ onComplete }: StepProps) {
             marginBottom: 16,
           }}
         >
-          Section 4 · The macro thesis
+          {COPY.sectionLabel}
         </div>
 
         <h1
@@ -56,7 +60,7 @@ export default function Step8Section4ParallelHook({ onComplete }: StepProps) {
             marginBottom: 48,
           }}
         >
-          You&apos;ve seen this movie before.
+          {COPY.headline}
         </h1>
 
         <div
@@ -87,10 +91,10 @@ export default function Step8Section4ParallelHook({ onComplete }: StepProps) {
                 color: C.caption,
               }}
             >
-              Hsinchu Science Park · 2005
+              {COPY.left.imageCaption}
             </div>
             <div style={{ fontSize: 17, color: C.body, marginBottom: 24 }}>
-              TSMC&apos;s 12-inch fab opens.
+              {COPY.left.body}
             </div>
             <div
               style={{
@@ -103,10 +107,10 @@ export default function Step8Section4ParallelHook({ onComplete }: StepProps) {
                 marginBottom: 8,
               }}
             >
-              +120%
+              {COPY.left.stat}
             </div>
             <div style={{ fontSize: 13, color: C.caption }}>
-              Baoshan property prices, 3 years following
+              {COPY.left.statCaption}
             </div>
           </div>
 
@@ -135,7 +139,7 @@ export default function Step8Section4ParallelHook({ onComplete }: StepProps) {
                 borderRadius: 9999,
               }}
             >
-              Now
+              {COPY.right.badge}
             </div>
             <div
               style={{
@@ -150,10 +154,10 @@ export default function Step8Section4ParallelHook({ onComplete }: StepProps) {
                 color: C.caption,
               }}
             >
-              JASM Kumamoto · 2025
+              {COPY.right.imageCaption}
             </div>
             <div style={{ fontSize: 17, color: C.body, marginBottom: 24 }}>
-              JASM Fab 1 opens.
+              {COPY.right.body}
             </div>
             <div
               style={{
@@ -166,10 +170,10 @@ export default function Step8Section4ParallelHook({ onComplete }: StepProps) {
                 marginBottom: 8,
               }}
             >
-              +33%
+              {COPY.right.stat}
             </div>
             <div style={{ fontSize: 13, color: C.caption }}>
-              Ozu Town land prices, year-over-year · #1 in Japan
+              {COPY.right.statCaption}
             </div>
           </div>
         </div>
@@ -182,7 +186,7 @@ export default function Step8Section4ParallelHook({ onComplete }: StepProps) {
             marginBottom: 24,
           }}
         >
-          Same fab · Same pattern · 20 years apart
+          {COPY.divider}
         </div>
 
         <div
@@ -193,7 +197,7 @@ export default function Step8Section4ParallelHook({ onComplete }: StepProps) {
             textAlign: 'center',
           }}
         >
-          We&apos;ll come back to this.
+          {COPY.closingWhisper}
         </div>
       </div>
     </button>
