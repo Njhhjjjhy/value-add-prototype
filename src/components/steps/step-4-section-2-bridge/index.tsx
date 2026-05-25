@@ -11,7 +11,6 @@ interface StepProps {
   onBack?: () => void;
 }
 
-const AMBER = '#FBB931';
 const NEUTRAL_950 = '#25272C';
 const NEUTRAL_600 = '#5B616E';
 const BASE_BG = '#F9F9F9';
@@ -139,34 +138,6 @@ function Cap({
   );
 }
 
-function ALine({
-  progress = 1,
-  width = '100%',
-  z = 15,
-  style = {},
-}: {
-  progress?: number;
-  width?: string;
-  z?: number;
-  style?: React.CSSProperties;
-}) {
-  return (
-    <div style={{ transform: `translateZ(${z}px)`, ...style }}>
-      <svg width={width} height="3" viewBox="0 0 200 3" preserveAspectRatio="none" style={{ display: 'block' }}>
-        <defs>
-          <linearGradient id="step4-amber-line" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor={AMBER} stopOpacity="0" />
-            <stop offset="15%" stopColor={AMBER} stopOpacity="0.85" />
-            <stop offset="85%" stopColor={AMBER} stopOpacity="0.85" />
-            <stop offset="100%" stopColor={AMBER} stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <rect x="0" y="0.5" width={200 * progress} height="2" rx="1" fill="url(#step4-amber-line)" />
-      </svg>
-    </div>
-  );
-}
-
 function ZLayer({
   z = 0,
   children,
@@ -188,7 +159,6 @@ export default function Step4Section2Bridge({ isActive, onComplete }: StepProps)
   const [count10, setCount10] = useState(0);
   const [count47, setCount47] = useState(0);
   const [beat, setBeat] = useState(0);
-  const [lineP, setLineP] = useState(0);
   const [bridgeDone, setBridgeDone] = useState(false);
   const [exiting, setExiting] = useState(false);
   const raf = useRef<number | null>(null);
@@ -201,7 +171,6 @@ export default function Step4Section2Bridge({ isActive, onComplete }: StepProps)
       setCount10(0);
       setCount47(0);
       setBeat(0);
-      setLineP(0);
       setBridgeDone(false);
       setExiting(false);
       return;
@@ -233,7 +202,6 @@ export default function Step4Section2Bridge({ isActive, onComplete }: StepProps)
         setBeat(3);
       } else {
         setBeat(4);
-        setLineP(easeOutCubic(Math.min(1, (e - 3200) / 600)));
         if (e > 3900 && !finished) {
           finished = true;
           setBridgeDone(true);
@@ -349,7 +317,6 @@ export default function Step4Section2Bridge({ isActive, onComplete }: StepProps)
                 paddingLeft: 4,
               }}
             >
-              <ALine progress={lineP} width="60%" z={5} />
               <Cap vis={beat >= 4} delay={0.3} z={5} style={{ marginTop: 16 }}>
                 {COPY.closingBody}
               </Cap>

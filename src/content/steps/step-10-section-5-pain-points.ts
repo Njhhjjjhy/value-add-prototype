@@ -103,7 +103,7 @@ export const step10 = {
   prototype: {
     sectionLabel: 'Section 5 · Pain points',
     headline: 'What semiconductor families actually face in Kumamoto.',
-    groupLabels: { physical: 'Physical', mental: 'Mental' },
+    groupLabels: { physical: 'Physical strain', mental: 'Mental strain' },
     physical: physical.map(({ id, label, summary }) => ({
       id,
       label,

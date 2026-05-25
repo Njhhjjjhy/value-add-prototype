@@ -168,9 +168,6 @@ Transition steps (the screens between content beats) are marked `transition` and
 
 **Prototype copy:**
 
-- Section label: `SECTION 4`
-- Stat: `2005`
-- Stat: `2025`
 - Headline: `You've seen this movie before.`
 
 **PDF copy:** not applicable.
@@ -183,8 +180,6 @@ Transition steps (the screens between content beats) are marked `transition` and
 
 **Prototype copy:**
 
-- Section label: `Section 4 · The macro thesis`
-- Headline: `You've seen this movie before.`
 - Left image caption: `Hsinchu Science Park · 2005`
 - Left body: `TSMC's 12-inch fab opens.`
 - Left stat: `+120%`
@@ -194,10 +189,8 @@ Transition steps (the screens between content beats) are marked `transition` and
 - Right body: `JASM Fab 1 opens.`
 - Right stat: `+33%`
 - Right stat caption: `Ozu Town land prices, year-over-year · #1 in Japan`
-- Divider line: `Same fab · Same pattern · 20 years apart`
-- Closing whisper: `We'll come back to this.`
 
-**Note:** The closing whisper `We'll come back to this.` is set up here and paid off at Step 25 (`We said we'd come back to this.`). Do not break this callback.
+**QA round 1 trim:** the section label, headline (`You've seen this movie before.`), divider line (`Same fab · Same pattern · 20 years apart`) and closing whisper (`We'll come back to this.`) were removed. The headline now lives on Step 7 (the preceding transition). The closing whisper previously paid off at Step 25 (`We said we'd come back to this.`) — that callback is now broken pending product decision.
 
 **PDF copy:** tbd.
 
@@ -211,10 +204,10 @@ Transition steps (the screens between content beats) are marked `transition` and
 
 **Prototype copy:**
 
-- Section label: `SECTION 5`
 - Headline: `Pain points`
-- Body: `What semiconductor families actually face in Kumamoto.`
-- Caption: `Physical · Mental`
+- Subheading: `What semiconductor families actually face in Kumamoto.`
+
+**QA round 1 trim:** the section label (`SECTION 5`) and the bottom-left caption + dot pager (`Physical · Mental`) were removed. Only the heading and subheading remain on screen.
 
 **PDF copy:** not applicable.
 
@@ -228,8 +221,8 @@ Transition steps (the screens between content beats) are marked `transition` and
 
 - Section label: `Section 5 · Pain points`
 - Headline: `What semiconductor families actually face in Kumamoto.`
-- Group label: `Physical`
-- Group label: `Mental`
+- Group label: `Physical strain`
+- Group label: `Mental strain`
 
 **Physical pain points (on screen):**
 

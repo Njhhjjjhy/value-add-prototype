@@ -22,7 +22,7 @@ const FONT_HEADING = '"REM", system-ui, sans-serif';
 const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
 const ENTRY_HOLD_MS = 900;
-const SWEEP_DURATION_MS = 700;
+const SWEEP_DURATION_MS = 875;
 const TOTAL_DURATION_MS = ENTRY_HOLD_MS + SWEEP_DURATION_MS;
 
 function Logo({ id = 'step3', size = 96 }: { id?: string; size?: number }) {
