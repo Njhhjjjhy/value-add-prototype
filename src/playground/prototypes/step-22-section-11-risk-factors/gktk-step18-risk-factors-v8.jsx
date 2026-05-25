@@ -64,30 +64,50 @@ const TL = [
   },
 ];
 
-const FAQ = [
+const RISKS = [
   {
-    q: "What if TSMC slows down or pulls out?",
-    a: "44+ companies independently committed. Ecosystem is self-sustaining. 5 to 10 year master leases protect income.",
+    name: "Liquidity and exit (exit liquidity)",
+    risk: "If market liquidity declines, the speed or price of sale may be affected.",
+    hedges: [
+      "Choose products with dual demand for \"owner-occupier + investment\" to expand the buyer pool.",
+      "Keep the total price per unit within a market-acceptable range.",
+      "Maintain stable leases to increase investor willingness to take over (yield play).",
+    ],
   },
   {
-    q: "JPY volatility and rising rates?",
-    a: "All debt is local JPY, natural currency hedge. Rent escalation clauses offset rate increases.",
+    name: "Demand concentration",
+    risk: "If TSMC's expansion slows or the semiconductor cycle turns down, this may affect expat housing and supply chain accommodation demand.",
+    hedges: [
+      "Tenants are not limited to TSMC, but also include Japan's local supply chain and related industries (Sony, equipment manufacturers, etc.).",
+      "Choose areas with established living amenities to ensure properties can fall back on the general Japanese rental market.",
+      "Adopt convertible products (can shift from corporate dormitory to standard family rental).",
+    ],
   },
   {
-    q: "Construction over budget or delayed?",
-    a: "Fixed-price contracts with penalty clauses. Chateau Life, 20 years Kumamoto experience. Modular construction.",
+    name: "Infrastructure timing",
+    risk: "If construction progress on the Daiku Airport and surrounding infrastructure is delayed, this may affect regional appeal and rental growth.",
+    hedges: [
+      "Only deploy in mature areas that already have basic living amenities.",
+      "Build on \"existing demand\" rather than relying entirely on future expectations.",
+      "Control holding costs and investment cycles to reduce time-based risk exposure.",
+    ],
   },
   {
-    q: "How is GK-TK structure tax-efficient?",
-    a: "Profits pass through as fees, not dividends. Effective rate: 20.42% versus 30%+ standard corporate.",
+    name: "Tenant concentration",
+    risk: "If overly reliant on corporate tenants or a single leaseholder, vacancy or negotiation pressure may arise.",
+    hedges: [
+      "Diversify across multiple small units (multiple supply chain firms) rather than a single enterprise.",
+      "Maintain product versatility to serve both expat staff and general tenants simultaneously.",
+      "Furnished single-family homes are currently a highly scarce property type in the area.",
+    ],
   },
   {
-    q: "What stops major hotel chains?",
-    a: "Semiconductor-specific service layer. First-mover tenant relationships. Lower cost basis than hotel conversions.",
-  },
-  {
-    q: "What governance rights do TK investors have?",
-    a: "Veto rights on asset sales, refinancing, major capex, business plan changes. CapitaLand co-investment as firewall.",
+    name: "Renovation and cost control (execution risk)",
+    risk: "Cost overruns or schedule delays in renovation will affect IRR and turnover efficiency.",
+    hedges: [
+      "Control scope of work (avoid over-customisation).",
+      "Adopt a short-cycle strategy (1-2 months) to reduce variables.",
+    ],
   },
 ];
 
@@ -535,7 +555,7 @@ const B4 = ({ landscape }) => (
   </div>
 );
 
-/* ── B5: FAQ / risk-factors accordion ── */
+/* ── B5: 5-risk framework accordion ── */
 const B5 = ({ openFaq, setOpenFaq, landscape }) => {
   // Landscape: 2-column for breathing room. Portrait: single column.
   const columns = landscape ? 2 : 1;
@@ -572,78 +592,118 @@ const B5 = ({ openFaq, setOpenFaq, landscape }) => {
           alignContent: "start",
         }}
       >
-        {FAQ.map((f, i) => (
-          <Glass
-            key={i}
-            level={1}
-            onClick={(e) => {
-              e.stopPropagation();
-              setOpenFaq(openFaq === i ? -1 : i);
-            }}
-            role="button"
-            tabIndex={0}
-            ariaLabel={f.q}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
+        {RISKS.map((r, i) => {
+          const open = openFaq === i;
+          return (
+            <Glass
+              key={i}
+              level={1}
+              onClick={(e) => {
                 e.stopPropagation();
-                setOpenFaq(openFaq === i ? -1 : i);
-              }
-            }}
-            style={{ padding: landscape ? "22px 28px" : "20px 24px" }}
-          >
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
-              <div style={{ flex: 1 }}>
-                <div
-                  style={{
-                    fontFamily: F.b,
-                    fontWeight: 500,
-                    fontSize: 17,
-                    lineHeight: 1.4,
-                    color: C.n950,
-                  }}
-                >
-                  {f.q}
-                </div>
-                <div
-                  style={{
-                    maxHeight: openFaq === i ? 240 : 0,
-                    overflow: "hidden",
-                    transition:
-                      "max-height 320ms cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 320ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-                    opacity: openFaq === i ? 1 : 0,
-                  }}
-                >
+                setOpenFaq(open ? -1 : i);
+              }}
+              role="button"
+              tabIndex={0}
+              ariaLabel={r.name}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setOpenFaq(open ? -1 : i);
+                }
+              }}
+              style={{ padding: landscape ? "22px 28px" : "20px 24px" }}
+            >
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+                <div style={{ flex: 1 }}>
                   <div
                     style={{
                       fontFamily: F.b,
-                      fontSize: 15,
-                      lineHeight: 1.6,
-                      color: C.n800,
-                      marginTop: 12,
+                      fontWeight: 500,
+                      fontSize: 17,
+                      lineHeight: 1.4,
+                      color: C.n950,
                     }}
                   >
-                    {f.a}
+                    {r.name}
+                  </div>
+                  <div
+                    style={{
+                      maxHeight: open ? 360 : 0,
+                      overflow: "hidden",
+                      transition:
+                        "max-height 320ms cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 320ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                      opacity: open ? 1 : 0,
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontFamily: F.b,
+                        fontSize: 15,
+                        lineHeight: 1.6,
+                        color: C.n800,
+                        marginTop: 12,
+                      }}
+                    >
+                      {r.risk}
+                    </div>
+                    <ul
+                      style={{
+                        margin: "10px 0 0",
+                        padding: 0,
+                        listStyle: "none",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 6,
+                      }}
+                    >
+                      {r.hedges.map((h, hi) => (
+                        <li
+                          key={hi}
+                          style={{
+                            fontFamily: F.b,
+                            fontSize: 15,
+                            lineHeight: 1.55,
+                            color: C.n800,
+                            paddingLeft: 14,
+                            position: "relative",
+                          }}
+                        >
+                          <span
+                            aria-hidden
+                            style={{
+                              position: "absolute",
+                              left: 0,
+                              top: 8,
+                              width: 6,
+                              height: 2,
+                              background: C.amber,
+                              borderRadius: 1,
+                            }}
+                          />
+                          {h}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
+                <div
+                  style={{
+                    fontSize: 18,
+                    color: C.n600,
+                    flexShrink: 0,
+                    transform: open ? "rotate(180deg)" : "rotate(0)",
+                    transition:
+                      "transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  &#9662;
+                </div>
               </div>
-              <div
-                style={{
-                  fontSize: 18,
-                  color: C.n600,
-                  flexShrink: 0,
-                  transform:
-                    openFaq === i ? "rotate(180deg)" : "rotate(0)",
-                  transition:
-                    "transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-                  lineHeight: 1.2,
-                }}
-              >
-                &#9662;
-              </div>
-            </div>
-          </Glass>
-        ))}
+            </Glass>
+          );
+        })}
       </div>
     </div>
   );

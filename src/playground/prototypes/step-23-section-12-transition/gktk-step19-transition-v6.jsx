@@ -68,12 +68,11 @@ const Glass = ({ children, style = {}, panelRef, level = 1 }) => {
 };
 
 const FAQ_GHOST = [
-  "What if TSMC slows down or pulls out?",
-  "JPY volatility and rising rates?",
-  "Construction over budget or delayed?",
-  "How is GK-TK structure tax-efficient?",
-  "What stops major hotel chains?",
-  "What governance rights do TK investors have?",
+  "Liquidity and exit (exit liquidity)",
+  "Demand concentration",
+  "Infrastructure timing",
+  "Tenant concentration",
+  "Renovation and cost control (execution risk)",
 ];
 
 const GhostFaq = ({ containerRef, cardRefs }) => (
@@ -173,7 +172,7 @@ const ResolveContent = ({ resolveRef }) => (
             textTransform: "none",
           }}
         >
-          Section 10
+          Section 12
         </div>
         <div
           style={{
@@ -255,7 +254,7 @@ const VariantA = () => {
     }
     await wait(200);
 
-    for (let i = 5; i >= 0; i--) {
+    for (let i = 4; i >= 0; i--) {
       const card = cardRefs.current[i];
       if (!card) continue;
       an(
@@ -345,7 +344,7 @@ const VariantB = () => {
 
     // Settle target near the bottom of the inner content column
     const baseY = 520;
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 5; i++) {
       const card = cardRefs.current[i];
       if (!card) continue;
       const rect = card.getBoundingClientRect();

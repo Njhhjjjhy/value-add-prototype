@@ -36,14 +36,12 @@ const COPY = {
   eyebrow: "SECTION 4",
   headline: "You've seen this movie before.",
   left: {
-    label: "Hsinchu · 2005",
     imageCaption: "Hsinchu Science Park · 2005",
     body: "TSMC's 12-inch fab opens.",
     stat: "+120%",
     statCaption: "Baoshan property prices, 3 years following",
   },
   right: {
-    label: "Kumamoto · 2025",
     imageCaption: "JASM Kumamoto · 2025",
     body: "JASM Fab 1 opens.",
     stat: "+33%",
@@ -291,17 +289,6 @@ function ParallelCard({ side, data, bw, delay, compact = false }) {
 
       {/* Card body */}
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <div
-          style={{
-            fontFamily: FONT_BODY,
-            fontSize: 13,
-            letterSpacing: "0.12em",
-            color: C.caption,
-            textTransform: "none",
-          }}
-        >
-          {data.label}
-        </div>
         <div
           style={{
             fontFamily: FONT_BODY,

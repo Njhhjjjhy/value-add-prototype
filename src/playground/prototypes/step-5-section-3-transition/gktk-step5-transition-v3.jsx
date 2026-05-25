@@ -199,7 +199,7 @@ function GhostBridge() {
               margin: 0,
             }}
           >
-            new jobs projected by 2027
+            new jobs projected by 2030
           </p>
         </GlassPanel>
       </div>

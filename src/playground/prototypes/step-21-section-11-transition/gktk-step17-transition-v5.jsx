@@ -1,14 +1,22 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 
 /* ───────────────────────────────────────────────────────
-   step-17 section 9 transition — iPad Pro 13 M4
-   Hand-off from Section 8 (Financials) → Section 9 (Risk).
+   step-21 section-11 transition — iPad Pro 13 M4
+   Hand-off from Section 10 (Financials) → Section 11 (Risk).
+
+   The legacy "Financial projections" ghost block (post-tax IRR
+   18.4%, equity multiple 2.1x, cash-on-cash 8.7%, payback 5.2
+   yrs, exit cap 4.8%, NOI 48.2M JPY) used to fade out before the
+   resolve panel mounted. That block is retired per
+   src/content/steps/step-21-section-11-transition.ts. It is NOT
+   migrated and must not return.
+
+   The resolve panel now mounts directly with a settle-in animation.
+
    Two variants:
-   recede  — financial projections recede + fade away, then
-             a Resolve panel settles into the center.
-   shutter — amber-lined bands sweep in from top/bottom to
-             cover the financials, hold a beat, then open to
-             reveal the Resolve panel.
+     recede   — resolve panel rises in and settles.
+     shutter  — amber-lined bands sweep in from top/bottom, hold
+                a beat, then open to reveal the resolve panel.
    ─────────────────────────────────────────────────────── */
 
 const C = {
@@ -41,126 +49,7 @@ const an = (el, keyframes, options) => {
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /* ───────────────────────────────────────────────────────
-   Ghost financials — iPad-scaled outgoing panel
-   ─────────────────────────────────────────────────────── */
-const GhostFinancials = ({ containerRef }) => {
-  const rows = [
-    { label: "Post-tax IRR", value: "18.4%", highlight: true },
-    { label: "Equity multiple", value: "2.1x" },
-    { label: "Cash-on-cash (yr 3)", value: "8.7%" },
-    { label: "Payback period", value: "5.2 yrs" },
-    { label: "Exit cap rate", value: "4.8%" },
-    { label: "Net operating income", value: "48.2M JPY" },
-  ];
-
-  return (
-    <div
-      ref={containerRef}
-      style={{
-        position: "absolute",
-        top: "calc(96px + var(--safe-top))",
-        bottom: "calc(96px + var(--safe-bottom))",
-        left: "var(--content-margin)",
-        right: "var(--content-margin)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 3,
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 880,
-        }}
-      >
-        <div style={{ marginBottom: 32 }}>
-          <div
-            style={{
-              fontFamily: FONT_HEADING,
-              fontWeight: 600,
-              fontSize: 32,
-              lineHeight: 1.15,
-              letterSpacing: "-0.02em",
-              color: C.heading,
-              marginBottom: 8,
-            }}
-          >
-            Financial projections
-          </div>
-          <div
-            style={{
-              fontFamily: FONT_BODY,
-              fontSize: 15,
-              lineHeight: 1.6,
-              fontWeight: 500,
-              color: C.caption,
-            }}
-          >
-            Base scenario, 7-year hold
-          </div>
-        </div>
-
-        <div
-          style={{
-            position: "relative",
-            background: C.bg,
-            border: "1px solid rgba(0,0,0,0.06)",
-            borderRadius: 20,
-            boxShadow:
-              "0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)",
-            overflow: "hidden",
-          }}
-        >
-          {rows.map((row, i) => (
-            <div
-              key={row.label}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "20px 32px",
-                borderBottom:
-                  i < rows.length - 1
-                    ? `1px solid ${C.hairline}`
-                    : "none",
-                background: row.highlight ? C.amber50 : "transparent",
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: FONT_BODY,
-                  fontSize: 15,
-                  fontWeight: 500,
-                  letterSpacing: "0.01em",
-                  color: C.caption,
-                }}
-              >
-                {row.label}
-              </span>
-              <span
-                style={{
-                  fontFamily: FONT_HEADING,
-                  fontWeight: 600,
-                  fontSize: row.highlight ? 32 : 22,
-                  color: C.heading,
-                  fontVariantNumeric: "tabular-nums",
-                  letterSpacing: row.highlight ? "-0.02em" : "-0.01em",
-                }}
-              >
-                {row.value}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* ───────────────────────────────────────────────────────
-   Resolve panel — incoming section 9 anchor
+   Resolve panel — incoming section 11 anchor
    ─────────────────────────────────────────────────────── */
 const ResolvePanel = ({ panelRef, style }) => (
   <div
@@ -186,7 +75,7 @@ const ResolvePanel = ({ panelRef, style }) => (
         marginBottom: 20,
       }}
     >
-      SECTION 9
+      Section 11
     </div>
     <div
       style={{
@@ -260,103 +149,66 @@ const TapPrompt = ({ visible, label = "Tap to continue" }) => (
 
 /* ───────────────────────────────────────────────────────
    Variant: recede
+   Resolve panel settles directly into view.
    ─────────────────────────────────────────────────────── */
 const VariantRecede = () => {
-  const containerRef = useRef(null);
   const resolveRef = useRef(null);
   const [showTap, setShowTap] = useState(false);
-  const [resolveVisible, setResolveVisible] = useState(false);
   const running = useRef(false);
 
-  const run = useCallback(async () => {
+  useEffect(() => {
     if (running.current) return;
     running.current = true;
 
-    if (containerRef.current) {
-      await an(
-        containerRef.current,
-        [
-          { opacity: 1, transform: "scale(1) translateY(0)" },
-          {
-            opacity: 0.5,
-            transform: "scale(0.94) translateY(-12px)",
-            offset: 0.5,
-          },
-          {
-            opacity: 0.15,
-            transform: "scale(0.88) translateY(-22px)",
-            offset: 0.8,
-          },
-          { opacity: 0, transform: "scale(0.85) translateY(-28px)" },
-        ],
-        { duration: 1100, easing: EASING.gentle }
-      );
-    }
+    let cancelled = false;
+    (async () => {
+      await wait(150);
+      if (cancelled) return;
+      if (resolveRef.current) {
+        await an(
+          resolveRef.current,
+          [
+            { opacity: 0, transform: "scale(0.95) translateY(12px)" },
+            {
+              opacity: 0.6,
+              transform: "scale(0.98) translateY(4px)",
+              offset: 0.5,
+            },
+            { opacity: 1, transform: "scale(1) translateY(0)" },
+          ],
+          { duration: 700, easing: EASING.settle }
+        );
+      }
+      if (cancelled) return;
+      await wait(400);
+      if (!cancelled) setShowTap(true);
+    })();
 
-    await wait(500);
-
-    setResolveVisible(true);
-    await wait(30);
-    if (resolveRef.current) {
-      await an(
-        resolveRef.current,
-        [
-          { opacity: 0, transform: "scale(0.95) translateY(12px)" },
-          {
-            opacity: 0.6,
-            transform: "scale(0.98) translateY(4px)",
-            offset: 0.5,
-          },
-          { opacity: 1, transform: "scale(1) translateY(0)" },
-        ],
-        { duration: 700, easing: EASING.settle }
-      );
-    }
-
-    await wait(400);
-    setShowTap(true);
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
-    <div
-      style={{ position: "absolute", inset: 0 }}
-      onClick={!running.current ? run : undefined}
-      role="button"
-      tabIndex={0}
-      aria-label="Tap to see transition"
-      onKeyDown={(e) => {
-        if ((e.key === "Enter" || e.key === " ") && !running.current) {
-          e.preventDefault();
-          run();
-        }
-      }}
-    >
-      <GhostFinancials containerRef={containerRef} />
-
-      {resolveVisible && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "var(--content-margin)",
-            right: "var(--content-margin)",
-            transform: "translateY(-50%)",
-            display: "flex",
-            justifyContent: "center",
-            zIndex: 6,
-            pointerEvents: "none",
-          }}
-        >
-          <div style={{ width: "100%", maxWidth: 880 }}>
-            <ResolvePanel panelRef={resolveRef} style={{ opacity: 0 }} />
-          </div>
+    <div style={{ position: "absolute", inset: 0 }}>
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "var(--content-margin)",
+          right: "var(--content-margin)",
+          transform: "translateY(-50%)",
+          display: "flex",
+          justifyContent: "center",
+          zIndex: 6,
+          pointerEvents: "none",
+        }}
+      >
+        <div style={{ width: "100%", maxWidth: 880 }}>
+          <ResolvePanel panelRef={resolveRef} style={{ opacity: 0 }} />
         </div>
-      )}
+      </div>
 
-      <TapPrompt
-        visible={!running.current && !resolveVisible}
-        label="Tap to see transition"
-      />
       <TapPrompt visible={showTap} />
     </div>
   );
@@ -364,207 +216,190 @@ const VariantRecede = () => {
 
 /* ───────────────────────────────────────────────────────
    Variant: shutter
+   Amber-lined bands sweep in, hold a beat, then open to
+   reveal the resolve panel. (No outgoing financials to cover.)
    ─────────────────────────────────────────────────────── */
 const VariantShutter = () => {
-  const containerRef = useRef(null);
   const resolveRef = useRef(null);
   const topRef = useRef(null);
   const bottomRef = useRef(null);
   const [showTap, setShowTap] = useState(false);
-  const [resolveVisible, setResolveVisible] = useState(false);
-  const [showBands, setShowBands] = useState(false);
   const running = useRef(false);
 
-  const run = useCallback(async () => {
+  useEffect(() => {
     if (running.current) return;
     running.current = true;
 
-    setResolveVisible(true);
-    setShowBands(true);
-    await wait(30);
+    let cancelled = false;
+    (async () => {
+      await wait(30);
+      if (cancelled) return;
 
-    const t = topRef.current
-      ? an(
+      const t = topRef.current
+        ? an(
+            topRef.current,
+            [
+              { transform: "translateY(-100%)" },
+              { transform: "translateY(0)" },
+            ],
+            { duration: 750, easing: EASING.gentle }
+          )
+        : Promise.resolve();
+      const b = bottomRef.current
+        ? an(
+            bottomRef.current,
+            [
+              { transform: "translateY(100%)" },
+              { transform: "translateY(0)" },
+            ],
+            { duration: 750, easing: EASING.gentle }
+          )
+        : Promise.resolve();
+      await Promise.all([t, b]);
+      if (cancelled) return;
+
+      if (topRef.current) {
+        an(
           topRef.current,
           [
-            { transform: "translateY(-100%)" },
-            { transform: "translateY(0)" },
+            {
+              boxShadow:
+                "0 2px 0 rgba(251,185,49,0.6), 0 2px 24px rgba(251,185,49,0.2)",
+            },
+            {
+              boxShadow:
+                "0 2px 0 rgba(251,185,49,0.8), 0 2px 48px rgba(251,185,49,0.45)",
+            },
+            {
+              boxShadow:
+                "0 2px 0 rgba(251,185,49,0.6), 0 2px 24px rgba(251,185,49,0.2)",
+            },
           ],
-          { duration: 750, easing: EASING.gentle }
-        )
-      : Promise.resolve();
-    const b = bottomRef.current
-      ? an(
+          { duration: 500, easing: EASING.smooth }
+        );
+      }
+      if (bottomRef.current) {
+        an(
           bottomRef.current,
           [
-            { transform: "translateY(100%)" },
-            { transform: "translateY(0)" },
+            {
+              boxShadow:
+                "0 -2px 0 rgba(251,185,49,0.6), 0 -2px 24px rgba(251,185,49,0.2)",
+            },
+            {
+              boxShadow:
+                "0 -2px 0 rgba(251,185,49,0.8), 0 -2px 48px rgba(251,185,49,0.45)",
+            },
+            {
+              boxShadow:
+                "0 -2px 0 rgba(251,185,49,0.6), 0 -2px 24px rgba(251,185,49,0.2)",
+            },
           ],
-          { duration: 750, easing: EASING.gentle }
-        )
-      : Promise.resolve();
-    await Promise.all([t, b]);
+          { duration: 500, easing: EASING.smooth }
+        );
+      }
+      await wait(550);
+      if (cancelled) return;
 
-    if (containerRef.current) containerRef.current.style.opacity = "0";
+      const tOpen = topRef.current
+        ? an(
+            topRef.current,
+            [
+              { transform: "translateY(0)" },
+              { transform: "translateY(-102%)" },
+            ],
+            { duration: 650, easing: EASING.gentle }
+          )
+        : Promise.resolve();
+      const bOpen = bottomRef.current
+        ? an(
+            bottomRef.current,
+            [
+              { transform: "translateY(0)" },
+              { transform: "translateY(102%)" },
+            ],
+            { duration: 650, easing: EASING.gentle }
+          )
+        : Promise.resolve();
 
-    if (topRef.current) {
-      an(
-        topRef.current,
-        [
-          {
-            boxShadow:
-              "0 2px 0 rgba(251,185,49,0.6), 0 2px 24px rgba(251,185,49,0.2)",
-          },
-          {
-            boxShadow:
-              "0 2px 0 rgba(251,185,49,0.8), 0 2px 48px rgba(251,185,49,0.45)",
-          },
-          {
-            boxShadow:
-              "0 2px 0 rgba(251,185,49,0.6), 0 2px 24px rgba(251,185,49,0.2)",
-          },
-        ],
-        { duration: 500, easing: EASING.smooth }
-      );
-    }
-    if (bottomRef.current) {
-      an(
-        bottomRef.current,
-        [
-          {
-            boxShadow:
-              "0 -2px 0 rgba(251,185,49,0.6), 0 -2px 24px rgba(251,185,49,0.2)",
-          },
-          {
-            boxShadow:
-              "0 -2px 0 rgba(251,185,49,0.8), 0 -2px 48px rgba(251,185,49,0.45)",
-          },
-          {
-            boxShadow:
-              "0 -2px 0 rgba(251,185,49,0.6), 0 -2px 24px rgba(251,185,49,0.2)",
-          },
-        ],
-        { duration: 500, easing: EASING.smooth }
-      );
-    }
-    await wait(550);
-
-    const tOpen = topRef.current
-      ? an(
-          topRef.current,
+      await wait(120);
+      if (cancelled) return;
+      if (resolveRef.current) {
+        an(
+          resolveRef.current,
           [
-            { transform: "translateY(0)" },
-            { transform: "translateY(-102%)" },
+            { opacity: 0, transform: "scale(0.97)" },
+            { opacity: 1, transform: "scale(1)" },
           ],
-          { duration: 650, easing: EASING.gentle }
-        )
-      : Promise.resolve();
-    const bOpen = bottomRef.current
-      ? an(
-          bottomRef.current,
-          [
-            { transform: "translateY(0)" },
-            { transform: "translateY(102%)" },
-          ],
-          { duration: 650, easing: EASING.gentle }
-        )
-      : Promise.resolve();
+          { duration: 600, easing: EASING.settle }
+        );
+      }
+      await Promise.all([tOpen, bOpen]);
+      if (cancelled) return;
 
-    await wait(120);
-    if (resolveRef.current) {
-      an(
-        resolveRef.current,
-        [
-          { opacity: 0, transform: "scale(0.97)" },
-          { opacity: 1, transform: "scale(1)" },
-        ],
-        { duration: 600, easing: EASING.settle }
-      );
-    }
-    await Promise.all([tOpen, bOpen]);
+      await wait(400);
+      if (!cancelled) setShowTap(true);
+    })();
 
-    await wait(400);
-    setShowTap(true);
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
-    <div
-      style={{ position: "absolute", inset: 0 }}
-      onClick={!running.current ? run : undefined}
-      role="button"
-      tabIndex={0}
-      aria-label="Tap to see transition"
-      onKeyDown={(e) => {
-        if ((e.key === "Enter" || e.key === " ") && !running.current) {
-          e.preventDefault();
-          run();
-        }
-      }}
-    >
-      <GhostFinancials containerRef={containerRef} />
-
-      {resolveVisible && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "var(--content-margin)",
-            right: "var(--content-margin)",
-            transform: "translateY(-50%)",
-            display: "flex",
-            justifyContent: "center",
-            zIndex: 6,
-            pointerEvents: "none",
-          }}
-        >
-          <div style={{ width: "100%", maxWidth: 880 }}>
-            <ResolvePanel
-              panelRef={resolveRef}
-              style={{ opacity: 0, transform: "scale(0.97)" }}
-            />
-          </div>
+    <div style={{ position: "absolute", inset: 0 }}>
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "var(--content-margin)",
+          right: "var(--content-margin)",
+          transform: "translateY(-50%)",
+          display: "flex",
+          justifyContent: "center",
+          zIndex: 6,
+          pointerEvents: "none",
+        }}
+      >
+        <div style={{ width: "100%", maxWidth: 880 }}>
+          <ResolvePanel
+            panelRef={resolveRef}
+            style={{ opacity: 0, transform: "scale(0.97)" }}
+          />
         </div>
-      )}
+      </div>
 
-      {showBands && (
-        <>
-          <div
-            ref={topRef}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: "50%",
-              background: `linear-gradient(180deg, ${C.hairline} 0%, ${C.bg} 80%)`,
-              zIndex: 12,
-              transform: "translateY(-100%)",
-              boxShadow:
-                "0 2px 0 rgba(251,185,49,0.6), 0 2px 24px rgba(251,185,49,0.2)",
-            }}
-          />
-          <div
-            ref={bottomRef}
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: "50%",
-              background: `linear-gradient(0deg, ${C.hairline} 0%, ${C.bg} 80%)`,
-              zIndex: 12,
-              transform: "translateY(100%)",
-              boxShadow:
-                "0 -2px 0 rgba(251,185,49,0.6), 0 -2px 24px rgba(251,185,49,0.2)",
-            }}
-          />
-        </>
-      )}
-
-      <TapPrompt
-        visible={!running.current && !resolveVisible}
-        label="Tap to see transition"
+      <div
+        ref={topRef}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "50%",
+          background: `linear-gradient(180deg, ${C.hairline} 0%, ${C.bg} 80%)`,
+          zIndex: 12,
+          transform: "translateY(-100%)",
+          boxShadow:
+            "0 2px 0 rgba(251,185,49,0.6), 0 2px 24px rgba(251,185,49,0.2)",
+        }}
       />
+      <div
+        ref={bottomRef}
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "50%",
+          background: `linear-gradient(0deg, ${C.hairline} 0%, ${C.bg} 80%)`,
+          zIndex: 12,
+          transform: "translateY(100%)",
+          boxShadow:
+            "0 -2px 0 rgba(251,185,49,0.6), 0 -2px 24px rgba(251,185,49,0.2)",
+        }}
+      />
+
       <TapPrompt visible={showTap} />
     </div>
   );

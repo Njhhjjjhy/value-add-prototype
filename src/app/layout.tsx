@@ -36,7 +36,7 @@ export default function RootLayout({
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "";
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className="antialiased" suppressHydrationWarning>
         {mapboxToken && (
           <Script id="gktk-mapbox-token" strategy="beforeInteractive">
             {`window.__GKTK_MAPBOX_ACCESS_TOKEN = ${JSON.stringify(mapboxToken)};`}
