@@ -2,11 +2,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 
 /* ───────────────────────────────────────────────────────
    Step 3 — Section 2 transition (iPad Pro 13 M4)
-   Bridges the entry (step 2) to the bridge (step 4).
-   Starts on a simplified entry frame (headline + subheading),
-   runs one of four transition animations, lands on the
-   bridge's opening fact ("10 trillion yen").
-   Variants: sweep · scatter · dissolve · drop
+   Variant 1 "the sweep" — clip-path sweep exits entry,
+   pale band crosses screen, bridge fact lands. Duration
+   slowed 25% from the original 700ms to 875ms.
    ─────────────────────────────────────────────────────── */
 
 const C = {
@@ -23,7 +21,8 @@ const C = {
 const FONT_HEADING = '"REM", system-ui, sans-serif';
 const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
-/* ── logo ── */
+const SWEEP_DURATION = 875;
+
 function Logo({ id = "l3", size = 96 }) {
   const h = size * (24 / 56);
   return (
@@ -38,7 +37,6 @@ function Logo({ id = "l3", size = 96 }) {
   );
 }
 
-/* ── entry snapshot (simplified step-2 final state) ── */
 function EntrySnapshot() {
   return (
     <div style={{ position: "absolute", inset: 0 }}>
@@ -89,7 +87,6 @@ function EntrySnapshot() {
   );
 }
 
-/* ── bridge snapshot (simplified step-4 opening fact) ── */
 function BridgeSnapshot({ visible }) {
   return (
     <div
@@ -160,65 +157,18 @@ function BridgeSnapshot({ visible }) {
   );
 }
 
-/* ── scatter particles (iPad-scaled distances) ── */
-function ScatterDots() {
-  const dots = Array.from({ length: 18 }, (_, i) => ({
-    o: (0.3 + Math.random() * 0.4).toFixed(2),
-    l: `${(30 + Math.random() * 40).toFixed(1)}%`,
-    t: `${(30 + Math.random() * 40).toFixed(1)}%`,
-    a: `particle${i % 4} 0.8s ease-out forwards`,
-  }));
-  return (
-    <>
-      {dots.map((d, i) => (
-        <div
-          key={i}
-          style={{
-            position: "absolute",
-            width: 12,
-            height: 12,
-            borderRadius: "50%",
-            background: `rgba(251,185,49,${d.o})`,
-            left: d.l,
-            top: d.t,
-            animation: d.a,
-          }}
-        />
-      ))}
-    </>
-  );
-}
-
-/* ── transition specs ── */
-const TRANSITIONS = {
-  sweep: { key: "sweep", dur: 700, band: true },
-  scatter: { key: "scatter", dur: 800, band: false, particles: true },
-  dissolve: { key: "dissolve", dur: 900, band: false },
-  drop: { key: "drop", dur: 600, band: false },
-};
-
-const TRANS_BY_VARIANT = { 1: "sweep", 2: "scatter", 3: "dissolve", 4: "drop" };
-
-/* ── main ── */
-export default function Step3TransitionV1({
-  variant
-} = {}) {
-  const key = TRANS_BY_VARIANT[variant] ?? "sweep";
-  const spec = TRANSITIONS[key];
-
-  const [phase, setPhase] = useState("entry"); // entry | exiting | bridge
-  const [scatterNonce, setScatterNonce] = useState(0);
+export default function Step3TransitionV1() {
+  const [phase, setPhase] = useState("entry");
   const timer = useRef(null);
 
   const run = useCallback(() => {
     clearTimeout(timer.current);
     setPhase("entry");
     timer.current = setTimeout(() => {
-      if (spec.particles) setScatterNonce((n) => n + 1);
       setPhase("exiting");
-      timer.current = setTimeout(() => setPhase("bridge"), spec.dur);
+      timer.current = setTimeout(() => setPhase("bridge"), SWEEP_DURATION);
     }, 900);
-  }, [spec.dur, spec.particles]);
+  }, []);
 
   useEffect(() => {
     run();
@@ -250,21 +200,10 @@ export default function Step3TransitionV1({
             transition-delay: 0ms !important;
           }
         }
-      `}</style>
-      <style>{`
-        @keyframes sweepOut    { 0% { clip-path: inset(0 0 0 0); } 100% { clip-path: inset(0 0 0 100%); } }
-        @keyframes sweepBand   { 0% { clip-path: inset(0 100% 0 0); } 45% { clip-path: inset(0 0 0 0); } 55% { clip-path: inset(0 0 0 0); } 100% { clip-path: inset(0 0 0 100%); } }
-        @keyframes scatterOut  { 0% { transform: scale(1); opacity: 1; } 60% { transform: scale(0.94); opacity: 0.6; } 100% { transform: scale(0.85); opacity: 0; } }
-        @keyframes dissolveOut { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.98); } 100% { opacity: 0; transform: scale(0.96); } }
-        @keyframes dropOut     { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(120px); opacity: 0; } }
-
-        @keyframes particle0 { to { transform: translate(-220px,-300px) scale(0); opacity: 0; } }
-        @keyframes particle1 { to { transform: translate(280px,-240px) scale(0); opacity: 0; } }
-        @keyframes particle2 { to { transform: translate(-180px,280px) scale(0); opacity: 0; } }
-        @keyframes particle3 { to { transform: translate(240px,220px) scale(0); opacity: 0; } }
+        @keyframes sweepOut  { 0% { clip-path: inset(0 0 0 0); } 100% { clip-path: inset(0 0 0 100%); } }
+        @keyframes sweepBand { 0% { clip-path: inset(0 100% 0 0); } 45% { clip-path: inset(0 0 0 0); } 55% { clip-path: inset(0 0 0 0); } 100% { clip-path: inset(0 0 0 100%); } }
       `}</style>
 
-      {/* Tap surface fills the iPad screen */}
       <div
         onClick={onTap}
         role="button"
@@ -285,7 +224,6 @@ export default function Step3TransitionV1({
           touchAction: "manipulation",
         }}
       >
-        {/* entry layer — exits with the selected animation */}
         <div
           style={{
             position: "absolute",
@@ -293,7 +231,7 @@ export default function Step3TransitionV1({
             zIndex: 5,
             animation:
               phase === "exiting"
-                ? `${spec.key}Out ${spec.dur}ms ease-in-out forwards`
+                ? `sweepOut ${SWEEP_DURATION}ms ease-in-out forwards`
                 : "none",
             opacity: phase === "bridge" ? 0 : 1,
           }}
@@ -301,36 +239,18 @@ export default function Step3TransitionV1({
           <EntrySnapshot />
         </div>
 
-        {/* sweep band overlay */}
-        {phase === "exiting" && spec.band && (
+        {phase === "exiting" && (
           <div
             style={{
               position: "absolute",
               inset: 0,
               zIndex: 6,
               background: C.band,
-              animation: `sweepBand ${spec.dur}ms ease-in-out forwards`,
+              animation: `sweepBand ${SWEEP_DURATION}ms ease-in-out forwards`,
             }}
           />
         )}
 
-        {/* scatter particles */}
-        {phase === "exiting" && spec.particles && (
-          <div
-            key={scatterNonce}
-            style={{
-              position: "absolute",
-              inset: 0,
-              zIndex: 6,
-              pointerEvents: "none",
-              overflow: "hidden",
-            }}
-          >
-            <ScatterDots />
-          </div>
-        )}
-
-        {/* bridge snapshot */}
         <div style={{ position: "absolute", inset: 0, zIndex: 7 }}>
           <BridgeSnapshot visible={phase === "bridge"} />
         </div>

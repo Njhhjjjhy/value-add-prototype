@@ -1,5 +1,8 @@
 // Step 9 · Section 5 transition
 // Source: value-add-source-of-truth.md
+//
+// QA round 1: stripped to just heading + subheading. The previous section
+// label, body line, and Physical · Mental caption/dot pager were removed.
 
 import type { Step } from '../types';
 
@@ -9,10 +12,8 @@ export const step9 = {
   type: 'transition',
   section: 5,
   prototype: {
-    sectionLabel: 'SECTION 5',
     headline: 'Pain points',
-    body: 'What semiconductor families actually face in Kumamoto.',
-    caption: 'Physical · Mental',
+    subheading: 'What semiconductor families actually face in Kumamoto.',
   },
   pdf: 'not-applicable',
 } as const satisfies Step;

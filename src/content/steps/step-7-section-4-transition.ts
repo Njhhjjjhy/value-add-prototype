@@ -9,8 +9,6 @@ export const step7 = {
   type: 'transition',
   section: 4,
   prototype: {
-    sectionLabel: 'SECTION 4',
-    stats: ['2005', '2025'],
     headline: "You've seen this movie before.",
   },
   pdf: 'not-applicable',

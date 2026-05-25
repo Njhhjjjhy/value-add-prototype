@@ -168,8 +168,19 @@ export default function Step10Section5PainPoints({ isActive, onComplete }: StepP
           {HEADLINE}
         </h1>
 
-        <div className="grid grid-cols-2 gap-12">
+        <div
+          className="grid gap-12"
+          style={{ gridTemplateColumns: '1fr 1px 1fr' }}
+        >
           <PainGroup label={GROUP_LABELS.physical} items={PHYSICAL_PAIN_POINTS} group="physical" />
+          <div
+            aria-hidden
+            style={{
+              alignSelf: 'stretch',
+              background: 'rgba(0,0,0,0.06)',
+              width: 1,
+            }}
+          />
           <PainGroup label={GROUP_LABELS.mental} items={MENTAL_PAIN_POINTS} group="mental" />
         </div>
 

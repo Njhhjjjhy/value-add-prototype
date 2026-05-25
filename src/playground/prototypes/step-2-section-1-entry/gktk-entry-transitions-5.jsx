@@ -2,25 +2,17 @@ import { useState, useRef, useCallback, useEffect } from "react";
 
 /* ───────────────────────────────────────────────────────
    step-2 section-1 entry — iPad Pro 13 M4
-   Hold-to-confirm entry into the Kumamoto pitch.
-   Four variants, all of which transition via a sweep band
-   into a bridge paragraph. Resets on tap.
-
-   A "the warmth"  — chip cluster, logo top-left
-   B "the layers"  — stacked elevated bars, centered
-   C "the signal"  — chip cluster + faint logo backdrop
-   D "the stagger" — diamond/dot list, editorial column
+   Variant A "the warmth" — chip cluster, logo top-left.
+   Hold-to-confirm enters the bridge paragraph via sweep band.
+   Tap bridge to reset.
    ─────────────────────────────────────────────────────── */
 
-/* ── constants ── */
 const AMBER = "#FBB931";
 const N = {
   950: "#25272C",
   900: "#383A42",
   800: "#40444C",
   600: "#5B616E",
-  200: "#D8DBDF",
-  100: "#EDEEF1",
   dis: "#8E8F8F",
 };
 const FONT_HEADING = '"REM", system-ui, sans-serif';
@@ -31,8 +23,8 @@ const RING_SIZE = 72;
 const RING_R = 33;
 const RING_C = RING_SIZE / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RING_R;
+const SWEEP_DURATION = 700;
 
-/* ── Logo SVG ── */
 function Logo({ id, size }) {
   const h = size * (24 / 56);
   return (
@@ -51,7 +43,6 @@ function Logo({ id, size }) {
   );
 }
 
-/* ── Entry layout: A — the warmth ── */
 function EntryWarmth() {
   return (
     <>
@@ -78,162 +69,6 @@ function EntryWarmth() {
   );
 }
 
-/* ── Entry layout: B — the layers ── */
-function EntryLayers() {
-  const bars = [
-    { label: "Serviced apartments", width: "72%", elev: 1, delay: 0 },
-    { label: "TSMC / JASM hub", width: "84%", elev: 1, delay: 0.08 },
-    { label: "Taiwanese engineers", width: "62%", elev: 1, delay: 0.16 },
-    { label: "12-15% IRR", width: "46%", elev: 2, delay: 0.24 },
-  ];
-  return (
-    <>
-      <div className="entry-logo"><Logo id="layers" size={80} /></div>
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          flexDirection: "column",
-          padding: "0 var(--content-margin)",
-          justifyContent: "center",
-          maxWidth: 1040,
-          margin: "0 auto",
-        }}
-      >
-        <h1 className="entry-h1">Why Kumamoto,<br />Why Now?</h1>
-        <p className="entry-sub" style={{ marginBottom: 36 }}>{"Japan's fastest-rising property market"}</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {bars.map((b, i) => (
-            <div
-              key={i}
-              className={`glass-bar${b.elev === 2 ? " elev2" : ""}`}
-              style={{ width: b.width, animation: `barSlideIn 0.6s ease-out ${b.delay}s both` }}
-            >
-              {b.label}
-            </div>
-          ))}
-        </div>
-      </div>
-    </>
-  );
-}
-
-/* ── Entry layout: C — the signal ── */
-function EntrySignal() {
-  return (
-    <>
-      <div
-        style={{
-          position: "absolute",
-          top: "18%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          opacity: 0.14,
-          animation: "logoPulse 4s ease-in-out infinite",
-        }}
-      >
-        <Logo id="signal-bg" size={420} />
-      </div>
-      <div className="entry-logo"><Logo id="signal" size={80} /></div>
-      <div
-        style={{
-          position: "absolute",
-          bottom: "calc(180px + var(--safe-bottom))",
-          left: "var(--content-margin)",
-          right: "var(--content-margin)",
-          maxWidth: 1040,
-        }}
-      >
-        <h1 className="entry-h1">Why Kumamoto,<br />Why Now?</h1>
-        <p className="entry-sub" style={{ marginBottom: 28 }}>{"Japan's fastest-rising property market"}</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ display: "flex", gap: 12 }}>
-            <span className="fact-chip">Serviced apartments</span>
-            <span className="fact-chip">TSMC / JASM hub</span>
-          </div>
-          <div style={{ display: "flex", gap: 12 }}>
-            <span className="fact-chip">Taiwanese engineers</span>
-            <span className="fact-chip bold">12-15% IRR</span>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
-/* ── Entry layout: D — the stagger ── */
-function EntryStagger() {
-  const items = [
-    { icon: "◊", text: "Serviced apartments", bold: false },
-    { icon: "◊", text: "TSMC / JASM hub", bold: false },
-    { icon: "◊", text: "Taiwanese engineers", bold: false },
-    { icon: "●", text: "12-15% IRR", bold: true },
-  ];
-  return (
-    <>
-      <div className="entry-logo"><Logo id="stagger" size={80} /></div>
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          flexDirection: "column",
-          padding: "0 var(--content-margin)",
-          maxWidth: 1040,
-          margin: "0 auto",
-        }}
-      >
-        <div style={{ marginTop: "calc(220px + var(--safe-top))" }}>
-          <h1
-            className="entry-h1"
-            style={{ fontSize: 88, lineHeight: 1.0, letterSpacing: "-0.03em" }}
-          >
-            Why<br />Kumamoto,<br />Why Now?
-          </h1>
-          <div
-            style={{
-              width: 64,
-              height: 4,
-              borderRadius: 2,
-              background: `linear-gradient(90deg,${AMBER},#FF8660)`,
-              margin: "20px 0 24px 0",
-            }}
-          />
-          <p
-            className="entry-sub"
-            style={{ marginBottom: 48, maxWidth: 420 }}
-          >
-            {"Japan's fastest-rising property market"}
-          </p>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {items.map((it, i) => (
-            <div
-              key={i}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 16,
-                fontFamily: FONT_BODY,
-                fontSize: 18,
-                fontWeight: it.bold ? 600 : 400,
-                color: it.bold ? N[950] : N[800],
-                lineHeight: 1.5,
-                animation: `fadeSlideIn 0.5s ease-out ${i * 0.1}s both`,
-              }}
-            >
-              <span style={{ color: AMBER, fontSize: 12 }}>{it.icon}</span>
-              {it.text}
-            </div>
-          ))}
-        </div>
-      </div>
-    </>
-  );
-}
-
-/* ── Bridge (shown after transition) ── */
 function BridgeContent() {
   return (
     <div
@@ -289,55 +124,7 @@ function BridgeContent() {
   );
 }
 
-/* ── Data ── */
-const ENTRIES = [
-  { key: "warmth", label: "A: The warmth", Comp: EntryWarmth },
-  { key: "layers", label: "B: The layers", Comp: EntryLayers },
-  { key: "signal", label: "C: The signal", Comp: EntrySignal },
-  { key: "stagger", label: "D: The stagger", Comp: EntryStagger },
-];
-const TRANSITIONS = [
-  { key: "sweep", label: "1: The sweep", duration: 700 },
-  { key: "scatter", label: "2: The scatter", duration: 800 },
-  { key: "dissolve", label: "3: The dissolve", duration: 900 },
-  { key: "drop", label: "4: The drop", duration: 600 },
-];
-
-/* ── Scatter particles ── */
-function ScatterDots() {
-  const dots = Array.from({ length: 16 }, (_, i) => ({
-    opacity: (0.3 + Math.random() * 0.4).toFixed(2),
-    left: `${(25 + Math.random() * 50).toFixed(1)}%`,
-    top: `${(25 + Math.random() * 50).toFixed(1)}%`,
-    anim: `particle${i % 4} 0.8s ease-out forwards`,
-  }));
-  return (
-    <>
-      {dots.map((d, i) => (
-        <div
-          key={i}
-          style={{
-            position: "absolute",
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            background: `rgba(251,185,49,${d.opacity})`,
-            left: d.left,
-            top: d.top,
-            animation: d.anim,
-          }}
-        />
-      ))}
-    </>
-  );
-}
-
-/* ── Main component ── */
-const ENTRY_BY_VARIANT = { A: 0, B: 1, C: 2, D: 3 };
-
-export default function GKTKEntryTransitions({ variant = "A" } = {}) {
-  const entryIdx = ENTRY_BY_VARIANT[variant] ?? 0;
-  const transIdx = 0; // sweep — default transition
+export default function GKTKEntryTransitions() {
   const [phase, setPhase] = useState("entry");
   const [holdProgress, setHoldProgress] = useState(0);
   const [holding, setHolding] = useState(false);
@@ -345,7 +132,6 @@ export default function GKTKEntryTransitions({ variant = "A" } = {}) {
   const holdRaf = useRef(null);
   const holdConfirmed = useRef(false);
   const transTimer = useRef(null);
-  const [scatterKey, setScatterKey] = useState(0);
 
   const resetToEntry = useCallback(() => {
     if (transTimer.current) clearTimeout(transTimer.current);
@@ -357,11 +143,9 @@ export default function GKTKEntryTransitions({ variant = "A" } = {}) {
   }, []);
 
   const startTransition = useCallback(() => {
-    const t = TRANSITIONS[transIdx];
     setPhase("transitioning");
-    if (t.key === "scatter") setScatterKey((k) => k + 1);
-    transTimer.current = setTimeout(() => setPhase("bridge"), t.duration);
-  }, [transIdx]);
+    transTimer.current = setTimeout(() => setPhase("bridge"), SWEEP_DURATION);
+  }, []);
 
   const animateHold = useCallback(() => {
     if (!holdStart.current) return;
@@ -403,8 +187,6 @@ export default function GKTKEntryTransitions({ variant = "A" } = {}) {
     [],
   );
 
-  const t = TRANSITIONS[transIdx];
-  const Entry = ENTRIES[entryIdx].Comp;
   const dashOffset = CIRCUMFERENCE * (1 - holdProgress);
 
   return (
@@ -470,51 +252,16 @@ export default function GKTKEntryTransitions({ variant = "A" } = {}) {
           font-weight: 600;
           color: ${N[950]};
         }
-        [data-proto="step-2"] .glass-bar {
-          padding: 14px 22px;
-          border-radius: 12px;
-          background: #F9F9F9;
-          border: 1px solid rgba(0,0,0,0.06);
-          box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
-          font-family: ${FONT_BODY};
-          font-size: 17px;
-          font-weight: 400;
-          color: ${N[800]};
-          line-height: 1.4;
-        }
-        [data-proto="step-2"] .glass-bar.elev2 {
-          padding: 16px 24px;
-          background: #F9F9F9;
-          border: 1px solid rgba(0,0,0,0.08);
-          box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
-          font-weight: 600;
-          color: ${N[950]};
-        }
-
-        @keyframes logoPulse { 0%, 100% { opacity: 0.12; transform: translateX(-50%) scale(1); } 50% { opacity: 0.18; transform: translateX(-50%) scale(1.03); } }
-        @keyframes barSlideIn { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes fadeSlideIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
 
         @keyframes sweepOut { 0% { clip-path: inset(0 0 0 0); } 100% { clip-path: inset(0 0 0 100%); } }
         @keyframes sweepIn { from { clip-path: inset(0 100% 0 0); opacity: 0.8; } to { clip-path: inset(0 0 0 0); opacity: 1; } }
-        @keyframes scatterOut { 0% { transform: scale(1); opacity: 1; } 60% { transform: scale(0.94); opacity: 0.6; } 100% { transform: scale(0.85); opacity: 0; } }
-        @keyframes scatterIn { from { transform: scale(1.04); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes dissolveOut { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.98); } 100% { opacity: 0; transform: scale(0.96); } }
-        @keyframes dissolveIn { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: scale(1); } }
-        @keyframes dropOut { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(80px); opacity: 0; } }
-        @keyframes dropIn { from { transform: translateY(-60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes sweepBand { 0% { clip-path: inset(0 100% 0 0); } 45% { clip-path: inset(0 0 0 0); } 55% { clip-path: inset(0 0 0 0); } 100% { clip-path: inset(0 0 0 100%); } }
-        @keyframes particle0 { to { transform: translate(-160px, -200px) scale(0); opacity: 0; } }
-        @keyframes particle1 { to { transform: translate(180px, -160px) scale(0); opacity: 0; } }
-        @keyframes particle2 { to { transform: translate(-140px, 200px) scale(0); opacity: 0; } }
-        @keyframes particle3 { to { transform: translate(160px, 160px) scale(0); opacity: 0; } }
       `}</style>
 
-      {/* Phase content */}
       <div style={{ position: "absolute", inset: 0 }}>
         {phase === "entry" && (
           <div style={{ position: "absolute", inset: 0 }}>
-            <Entry />
+            <EntryWarmth />
           </div>
         )}
         {phase === "transitioning" && (
@@ -522,10 +269,10 @@ export default function GKTKEntryTransitions({ variant = "A" } = {}) {
             style={{
               position: "absolute",
               inset: 0,
-              animation: `${t.key}Out ${t.duration}ms ease-in-out forwards`,
+              animation: `sweepOut ${SWEEP_DURATION}ms ease-in-out forwards`,
             }}
           >
-            <Entry />
+            <EntryWarmth />
           </div>
         )}
         {phase === "bridge" && (
@@ -533,7 +280,7 @@ export default function GKTKEntryTransitions({ variant = "A" } = {}) {
             style={{
               position: "absolute",
               inset: 0,
-              animation: `${t.key}In 0.5s ease-out forwards`,
+              animation: `sweepIn 0.5s ease-out forwards`,
             }}
             onClick={resetToEntry}
             role="button"
@@ -551,7 +298,6 @@ export default function GKTKEntryTransitions({ variant = "A" } = {}) {
         )}
       </div>
 
-      {/* Hold-to-confirm button */}
       {phase === "entry" && (
         <div
           style={{
@@ -629,34 +375,17 @@ export default function GKTKEntryTransitions({ variant = "A" } = {}) {
         </div>
       )}
 
-      {/* Sweep band overlay */}
-      {phase === "transitioning" && t.key === "sweep" && (
+      {phase === "transitioning" && (
         <div
           style={{
             position: "absolute",
             inset: 0,
             zIndex: 5,
             background: "#EDEEF1",
-            animation: `sweepBand ${t.duration}ms ease-in-out forwards`,
+            animation: `sweepBand ${SWEEP_DURATION}ms ease-in-out forwards`,
             pointerEvents: "none",
           }}
         />
-      )}
-
-      {/* Scatter particles */}
-      {phase === "transitioning" && t.key === "scatter" && (
-        <div
-          key={scatterKey}
-          style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 5,
-            pointerEvents: "none",
-            overflow: "hidden",
-          }}
-        >
-          <ScatterDots />
-        </div>
       )}
     </div>
   );

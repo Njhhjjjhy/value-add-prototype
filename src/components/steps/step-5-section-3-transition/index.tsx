@@ -13,6 +13,7 @@ interface StepProps {
 
 const C = {
   bg: '#F9F9F9',
+  n100: '#EDEEF1',
   n600: '#5B616E',
   n800: '#40444C',
   n950: '#25272C',
@@ -22,10 +23,15 @@ const C = {
 const FONT_HEADING = '"REM", system-ui, sans-serif';
 const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
-const COLLAPSE_DURATION_MS = 3800;
-const GHOST_FADE_MS = 1200;
-const COMPLETE_DELAY_MS = 200;
-const PARTICLE_COUNT = 500;
+const GENTLE = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+const SETTLE = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+
+// Shutter timings, slowed 25% per QA round 1 (original × 1.25).
+const GHOST_FADE_MS = 750;
+const PRE_BANDS_WAIT_MS = 250;
+const BANDS_CLOSE_MS = 938;
+const SEAM_FLASH_MS = 625;
+const HANDOFF_DELAY_MS = 150;
 
 function GlassPanel({
   level = 1,
@@ -230,141 +236,75 @@ function ReadyPrompt() {
   );
 }
 
-interface Particle {
-  origX: number;
-  origY: number;
-  size: number;
-  speed: number;
-  brightness: number;
-  isAmber: boolean;
-}
+const animateEl = (
+  el: HTMLElement | null,
+  kf: Keyframe[] | PropertyIndexedKeyframes,
+  opts: KeyframeAnimationOptions,
+) => {
+  if (!el) return Promise.resolve();
+  return el.animate(kf, opts).finished;
+};
+const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 export default function Step5Section3Transition({ isActive, onComplete }: StepProps) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const animRef = useRef<number | null>(null);
-  const particlesRef = useRef<Particle[] | null>(null);
+  const ghostRef = useRef<HTMLDivElement | null>(null);
+  const topBandRef = useRef<HTMLDivElement | null>(null);
+  const botBandRef = useRef<HTMLDivElement | null>(null);
+  const seamRef = useRef<HTMLDivElement | null>(null);
   const completed = useRef(false);
-  const [phase, setPhase] = useState<'ready' | 'collapsing' | 'done'>('ready');
-
-  useEffect(() => {
-    const particles: Particle[] = [];
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 100 + Math.random() * 700;
-      particles.push({
-        origX: Math.cos(angle) * dist,
-        origY: Math.sin(angle) * dist,
-        size: 1.5 + Math.random() * 3.5,
-        speed: 0.3 + Math.random() * 0.7,
-        brightness: 0.2 + Math.random() * 0.5,
-        isAmber: Math.random() < 0.25,
-      });
-    }
-    particlesRef.current = particles;
-  }, []);
+  const [phase, setPhase] = useState<'ready' | 'closing'>('ready');
 
   useEffect(() => {
     completed.current = false;
     setPhase('ready');
   }, [isActive]);
 
-  useEffect(
-    () => () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-    },
-    []
-  );
-
-  const startCollapse = useCallback(() => {
+  const startShutter = useCallback(async () => {
     if (phase !== 'ready') return;
-    setPhase('collapsing');
+    setPhase('closing');
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    const W = canvas.width;
-    const H = canvas.height;
-    const cx = W / 2;
-    const cy = H * 0.45;
-    const particles = particlesRef.current ?? [];
-    const start = performance.now();
+    await animateEl(
+      ghostRef.current,
+      [
+        { opacity: 1, transform: 'scale(1)' },
+        { opacity: 0.6, transform: 'scale(0.99)' },
+        { opacity: 0.3, transform: 'scale(0.98)' },
+        { opacity: 0, transform: 'scale(0.96)' },
+      ],
+      { duration: GHOST_FADE_MS, easing: GENTLE, fill: 'forwards' },
+    );
 
-    const draw = (now: number) => {
-      const elapsed = now - start;
-      const t = Math.min(elapsed / COLLAPSE_DURATION_MS, 1);
-      ctx.clearRect(0, 0, W, H);
+    await wait(PRE_BANDS_WAIT_MS);
 
-      let collapse: number;
-      if (t < 0.15) {
-        collapse = (t / 0.15) * 0.05;
-      } else if (t < 0.55) {
-        collapse = 0.05 + ((t - 0.15) / 0.4) * 0.55;
-      } else if (t < 0.82) {
-        collapse = 0.6 + ((t - 0.55) / 0.27) * 0.35;
-      } else {
-        collapse = 0.95 + ((t - 0.82) / 0.18) * 0.05;
-      }
+    animateEl(
+      topBandRef.current,
+      [{ transform: 'translateY(-100%)' }, { transform: 'translateY(0%)' }],
+      { duration: BANDS_CLOSE_MS, easing: SETTLE, fill: 'forwards' },
+    );
+    await animateEl(
+      botBandRef.current,
+      [{ transform: 'translateY(100%)' }, { transform: 'translateY(0%)' }],
+      { duration: BANDS_CLOSE_MS, easing: SETTLE, fill: 'forwards' },
+    );
 
-      // Echo rings — only during the active collapse phase
-      if (t > 0.1 && t < 0.85) {
-        const distT = (t - 0.1) / 0.75;
-        for (let r = 0; r < 5; r++) {
-          const radius = (1 - distT * 0.7) * (160 + r * 120);
-          const alpha = Math.sin(distT * Math.PI) * 0.06 * (1 - r / 5);
-          ctx.beginPath();
-          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(237,238,241,${alpha})`;
-          ctx.lineWidth = 1.5;
-          ctx.stroke();
-        }
-      }
+    await animateEl(
+      seamRef.current,
+      [
+        { opacity: 0 },
+        { opacity: 0.6 },
+        { opacity: 0.8 },
+        { opacity: 0.6 },
+        { opacity: 0 },
+      ],
+      { duration: SEAM_FLASH_MS, easing: 'ease-in-out', fill: 'forwards' },
+    );
 
-      for (const p of particles) {
-        const pull = collapse * p.speed;
-        const px = p.origX * (1 - pull);
-        const py = p.origY * (1 - pull);
-        const sx = cx + px;
-        const sy = cy + py;
+    await wait(HANDOFF_DELAY_MS);
 
-        if (collapse > 0.2) {
-          const tx = cx + px * (1 + collapse * 0.08);
-          const ty = cy + py * (1 + collapse * 0.08);
-          ctx.beginPath();
-          ctx.moveTo(sx, sy);
-          ctx.lineTo(tx, ty);
-          ctx.strokeStyle = p.isAmber
-            ? `rgba(251,185,49,${p.brightness * 0.3 * Math.min(collapse, 0.8)})`
-            : `rgba(138,143,154,${p.brightness * 0.3 * Math.min(collapse, 0.8)})`;
-          ctx.lineWidth = p.size * 0.5;
-          ctx.stroke();
-        }
-
-        ctx.beginPath();
-        ctx.arc(sx, sy, p.size * (1 - collapse * 0.6), 0, Math.PI * 2);
-        ctx.fillStyle = p.isAmber
-          ? `rgba(251,185,49,${p.brightness * (1 - collapse * 0.5)})`
-          : `rgba(169,169,175,${p.brightness * (1 - collapse * 0.5)})`;
-        ctx.fill();
-      }
-
-      if (t > 0.82) {
-        const flashAlpha = ((t - 0.82) / 0.18) ** 2;
-        ctx.fillStyle = `rgba(249,249,249,${flashAlpha * 0.95})`;
-        ctx.fillRect(0, 0, W, H);
-      }
-
-      if (t < 1) {
-        animRef.current = requestAnimationFrame(draw);
-      } else {
-        setPhase('done');
-        if (!completed.current) {
-          completed.current = true;
-          setTimeout(() => onComplete(), COMPLETE_DELAY_MS);
-        }
-      }
-    };
-    animRef.current = requestAnimationFrame(draw);
+    if (!completed.current) {
+      completed.current = true;
+      onComplete();
+    }
   }, [phase, onComplete]);
 
   if (!isActive) return null;
@@ -372,7 +312,7 @@ export default function Step5Section3Transition({ isActive, onComplete }: StepPr
   return (
     <div
       data-step-5
-      onClick={phase === 'ready' ? startCollapse : undefined}
+      onClick={phase === 'ready' ? startShutter : undefined}
       role="button"
       tabIndex={0}
       style={{
@@ -397,29 +337,52 @@ export default function Step5Section3Transition({ isActive, onComplete }: StepPr
         }
       `}</style>
 
-      {(phase === 'ready' || phase === 'collapsing') && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            opacity: phase === 'collapsing' ? 0 : 1,
-            transition: `opacity ${GHOST_FADE_MS}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
-          }}
-        >
-          <GhostBridge />
-        </div>
-      )}
+      <div ref={ghostRef} style={{ position: 'absolute', inset: 0 }}>
+        <GhostBridge />
+      </div>
 
-      <canvas
-        ref={canvasRef}
-        width={1366}
-        height={1024}
+      <div
+        ref={topBandRef}
         style={{
           position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          pointerEvents: 'none',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '50%',
+          background: C.n100,
+          transform: 'translateY(-100%)',
+          zIndex: 20,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        }}
+      />
+
+      <div
+        ref={botBandRef}
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '50%',
+          background: C.n100,
+          transform: 'translateY(100%)',
+          zIndex: 20,
+          boxShadow: '0 -4px 20px rgba(0,0,0,0.08)',
+        }}
+      />
+
+      <div
+        ref={seamRef}
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: 0,
+          right: 0,
+          height: 3,
+          transform: 'translateY(-50%)',
+          background: C.amber,
+          opacity: 0,
+          zIndex: 25,
         }}
       />
 
