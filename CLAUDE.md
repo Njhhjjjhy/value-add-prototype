@@ -511,6 +511,8 @@ The two map embeds at `public/playground/prototypes/step-6-section-3-map/map-pro
 
 The hardware embed folder name still uses the old `step-12-section-6-product-hardware` segment (not the renumbered `step-16`) because the sync workflow's `TARGETS` array in `map-prototype/scripts/sync-to-slideshow.js` points at the old path. Cross-project rename is deferred until the in-flight map-package migration (see `for-riaan.md`) retires the copy workflow entirely. `PropertyMapHost` in this repo intentionally points at the old path for the same reason.
 
+**Cloudflare 25 MiB asset limit — TSMC ESG PDF resync risk.** Cloudflare Workers rejects any single asset larger than 25 MiB. The `2024-TSMC-esg-report.pdf` (used as a source-citation deep-link from the map's marker popup) is ~26 MiB at source. Both copies in this repo have been recompressed to 16 MiB locally using Ghostscript 10.07.0 with `-dPDFSETTINGS=/ebook`. **The source `map-prototype` repo still holds the uncompressed 26 MiB version**, so the next `pnpm sync` will overwrite both copies and re-break `pnpm run deploy`. When that happens, the fix is to apply the same Ghostscript pass to the source PDF in `map-prototype`, commit it there, then re-sync — *not* to recompress again in this repo, which just delays the next regression.
+
 Canonical workflow: `/Users/riaan/Documents/Design Files/Code Projects/map-prototype/docs/architecture-and-sync-workflow.md`.
 
 ---
