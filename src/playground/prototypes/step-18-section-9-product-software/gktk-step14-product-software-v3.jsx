@@ -1,15 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 
 /* ───────────────────────────────────────────────────────
-   step-14 section 7 product software — iPad Pro 13 M4
-   Two variants:
-   A "the lock screen" — Moha Intel notifications shown
-                         on a dark device-screen card
-                         (the metaphor for what the
-                         operator/resident sees on phone).
-   B "the thread"      — Property secretary chat thread
-                         rendered the same way, on a dark
-                         device-screen card.
+   step-18 section 9 product software — iPad Pro 13 M4
+   Two variants — BOTH render the same canonical content
+   (9 notifications across 3 years + 3 service tiers).
+   The only difference is layout treatment on the dark
+   device-screen card.
+
+   A "the lock screen" — feed of notification cards, each
+                         year prefaced by a year header.
+                         This is the production design.
+   B "the timeline"    — vertical timeline list. The same
+                         9 notifications + 3 tier markers
+                         are anchored to a left rail with
+                         dots and connecting line. An
+                         alternative visual treatment of
+                         the same canonical data.
 
    iPad adaptation:
    - iPhone 17 Pro bezel/Dynamic Island stripped.
@@ -42,7 +48,7 @@ const FONT_BODY = "'Noto Sans JP', system-ui, sans-serif";
 
 const variants = [
   { id: "A", label: "The lock screen" },
-  { id: "B", label: "The thread" },
+  { id: "B", label: "The timeline" },
 ];
 
 // ─── notification data ──────────────────────────────────────────────
@@ -83,19 +89,6 @@ const useNotifEntrance = (ref, visible) => {
       { opacity: 0.85, transform: "translateY(4px) scale(0.998)", offset: 0.7 },
       { opacity: 1, transform: "translateY(0) scale(1)" },
     ], { duration: 600, easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)", fill: "forwards" });
-  }, [visible]);
-};
-
-const useMsgEntrance = (ref, visible, fromRight = false) => {
-  useEffect(() => {
-    if (!ref.current || !visible) return;
-    const el = ref.current;
-    const x = fromRight ? -12 : 12;
-    el.animate([
-      { opacity: 0, transform: `translateY(16px) translateX(${x}px) scale(0.96)` },
-      { opacity: 0.5, transform: `translateY(6px) translateX(${x * 0.3}px) scale(0.985)`, offset: 0.4 },
-      { opacity: 1, transform: "translateY(0) translateX(0) scale(1)" },
-    ], { duration: 550, easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)", fill: "forwards" });
   }, [visible]);
 };
 
@@ -181,7 +174,7 @@ const IntroColumn = ({ onContinue, orientation = "landscape" }) => {
           letterSpacing: "0.18em",
         }}
       >
-        SECTION 7 — PRODUCT, SOFTWARE
+        Section 9 · Product, software
       </div>
       <h2
         style={{
@@ -416,98 +409,127 @@ const VariantA = ({ active }) => {
   );
 };
 
-// ─── CHAT BUBBLES (variant B) ───────────────────────────────────────
-const ChatBubbleSec = ({ text }) => {
+// ─── TIMELINE NODE (variant B) ──────────────────────────────────────
+// A single notification anchored to the left rail with a small dot.
+const TimelineNode = ({ from, msg, time }) => {
   const ref = useRef(null);
-  useMsgEntrance(ref, true, false);
+  useNotifEntrance(ref, true);
   return (
-    <div ref={ref} aria-live="polite" style={{ opacity: 0, maxWidth: "82%", marginRight: "auto" }}>
+    <div
+      ref={ref}
+      style={{
+        opacity: 0,
+        position: "relative",
+        paddingLeft: 36,
+        paddingBottom: 18,
+      }}
+    >
+      {/* dot on the rail */}
       <div
         style={{
-          padding: "12px 14px",
-          borderRadius: "14px 14px 14px 4px",
-          background: CARD_PANEL,
-          border: `1px solid ${CARD_BORDER}`,
+          position: "absolute",
+          left: 9,
+          top: 6,
+          width: 10,
+          height: 10,
+          borderRadius: 9999,
+          background: AMBER,
+          boxShadow: "0 0 0 3px rgba(251,185,49,0.18)",
         }}
-      >
-        <p style={{ fontFamily: FONT_BODY, fontSize: 15, color: CARD_TEXT_PRIMARY, margin: 0, lineHeight: 1.5 }}>{text}</p>
+      />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
+        <span style={{ fontFamily: FONT_BODY, fontWeight: 600, fontSize: 15, color: CARD_TEXT_PRIMARY }}>{from}</span>
+        <span style={{ fontFamily: FONT_BODY, fontSize: 13, color: CARD_TEXT_MUTED }}>{time}</span>
       </div>
+      <p style={{ fontFamily: FONT_BODY, fontSize: 13, color: CARD_TEXT_SECONDARY, margin: 0, lineHeight: 1.55 }}>{msg}</p>
     </div>
   );
 };
 
-const ChatBubbleTen = ({ text }) => {
+// ─── TIMELINE TIER MARKER (variant B) ───────────────────────────────
+// A year/tier marker anchored to the left rail with a larger ring.
+const TimelineTier = ({ label, sub, tag }) => {
   const ref = useRef(null);
-  useMsgEntrance(ref, true, true);
+  useNotifEntrance(ref, true);
   return (
-    <div ref={ref} aria-live="polite" style={{ opacity: 0, maxWidth: "78%", marginLeft: "auto" }}>
-      <div style={{ padding: "12px 14px", borderRadius: "14px 14px 4px 14px", background: AMBER }}>
-        <p style={{ fontFamily: FONT_BODY, fontSize: 15, color: N950, margin: 0, lineHeight: 1.5 }}>{text}</p>
-      </div>
-    </div>
-  );
-};
-
-const ChatDate = ({ text }) => {
-  const ref = useRef(null);
-  useEffect(() => {
-    if (!ref.current) return;
-    ref.current.animate([
-      { opacity: 0 },
-      { opacity: 1 },
-    ], { duration: 400, easing: "ease-out", fill: "forwards" });
-  }, []);
-  return (
-    <div ref={ref} style={{ opacity: 0, textAlign: "center", padding: "10px 0 4px" }}>
-      <span
+    <div
+      ref={ref}
+      style={{
+        opacity: 0,
+        position: "relative",
+        paddingLeft: 36,
+        paddingTop: 6,
+        paddingBottom: 14,
+      }}
+    >
+      {/* larger ring marker on the rail */}
+      <div
         style={{
-          fontFamily: FONT_BODY,
-          fontSize: 13,
-          color: CARD_TEXT_MUTED,
-          background: "rgba(255,255,255,0.06)",
-          borderRadius: 8,
-          padding: "4px 12px",
+          position: "absolute",
+          left: 3,
+          top: 2,
+          width: 22,
+          height: 22,
+          borderRadius: 9999,
+          background: CARD_BG,
+          border: `2px solid ${AMBER}`,
         }}
-      >
-        {text}
-      </span>
+      />
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <span style={{ fontFamily: FONT_HEADING, fontWeight: 600, fontSize: 17, color: CARD_TEXT_PRIMARY }}>{label}</span>
+        <span style={{ fontFamily: FONT_BODY, fontSize: 13, color: CARD_TEXT_MUTED }}>{sub}</span>
+        <span
+          style={{
+            marginLeft: "auto",
+            fontFamily: FONT_BODY,
+            fontSize: 13,
+            color: CARD_TEXT_PRIMARY,
+            background: "rgba(255,255,255,0.10)",
+            borderRadius: 8,
+            padding: "4px 10px",
+            fontWeight: 500,
+          }}
+        >
+          {tag}
+        </span>
+      </div>
     </div>
   );
 };
 
-// ─── VARIANT B: the thread ──────────────────────────────────────────
+// ─── VARIANT B: the timeline ────────────────────────────────────────
+// Same canonical content as variant A (9 notifications + 3 tier
+// markers) rendered as a vertical timeline anchored to a left rail.
 const VariantB = ({ active }) => {
-  const [messages, setMessages] = useState([]);
+  const [items, setItems] = useState([]);
   const timerRef = useRef(null);
 
-  const chatData = [
-    { type: "date", text: "Year 1 — landing" },
-    { type: "sec", text: "Hi, this is Lin Wei-Chen, your property secretary. Welcome to Kumamoto." },
-    { type: "sec", text: "I have confirmed your SoftBank appointment for Thursday at 2:00 PM. I will meet you at the entrance." },
-    { type: "ten", text: "Thank you. The AC in 4F is making a noise." },
-    { type: "sec", text: "Maintenance dispatched. Delta unit serviced, running normally now." },
-    { type: "date", text: "Year 2 — family" },
-    { type: "sec", text: "Dr. Tanaka can see your daughter Thursday. Chinese interpreter arranged." },
-    { type: "sec", text: "KIS school bus confirmed. Monday pickup at Building A, 7:45 AM." },
-    { type: "ten", text: "My wife is looking for community events." },
-    { type: "sec", text: "Lunar New Year dinner at the residents lounge, January 25. I will send the RSVP link." },
-    { type: "date", text: "Year 3+ — wellness" },
-    { type: "sec", text: "Your wellness check-in is Tuesday at 3:00 PM. Counselor Chen speaks Chinese." },
-    { type: "sec", text: "Golf reservation confirmed. Aso Grand Vrio, Saturday 7:30 AM. Shuttle arranged." },
-  ];
-
   useEffect(() => {
-    if (!active) { setMessages([]); return; }
+    if (!active) { setItems([]); return; }
+    const flat = ALL_YEARS.flatMap((y, yi) =>
+      y.notifications.map((n, ni) => ({ ...n, yearIdx: yi, yearLabel: y.label, yearSub: y.sub, tag: y.tag, key: `${yi}-${ni}` }))
+    );
     let idx = 0;
     const show = () => {
-      if (idx >= chatData.length) return;
-      setMessages(prev => [...prev, chatData[idx]]);
+      if (idx >= flat.length) return;
+      setItems(prev => [...prev, flat[idx]]);
       idx++;
-      timerRef.current = setTimeout(show, chatData[idx - 1]?.type === "date" ? 600 : 1200);
+      timerRef.current = setTimeout(show, 1100);
     };
     timerRef.current = setTimeout(show, 600);
     return () => clearTimeout(timerRef.current);
   }, [active]);
+
+  // Build a flat list with tier markers inserted before each new year.
+  const grouped = [];
+  let lastYi = -1;
+  items.forEach(n => {
+    if (n.yearIdx !== lastYi) {
+      grouped.push({ type: "tier", label: n.yearLabel, sub: n.yearSub, tag: n.tag, key: `t${n.yearIdx}` });
+      lastYi = n.yearIdx;
+    }
+    grouped.push({ type: "node", ...n });
+  });
 
   return (
     <div
@@ -519,54 +541,62 @@ const VariantB = ({ active }) => {
       }}
     >
       <DarkStatusBar />
-      <div
-        style={{
-          position: "absolute",
-          top: 56,
-          left: 0,
-          right: 0,
-          zIndex: 20,
-          padding: "12px 20px",
-          borderBottom: `1px solid ${CARD_BORDER}`,
-          background: CARD_BG,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <img
-            src="/logos-and-icons/favicon.svg"
-            alt="MoreHarvest"
-            style={{ display: "block", width: 40, height: 40, borderRadius: 20 }}
-          />
-          <div>
-            <div style={{ fontFamily: FONT_HEADING, fontWeight: 600, fontSize: 17, color: CARD_TEXT_PRIMARY, lineHeight: 1.2 }}>MoreHarvest</div>
-            <div style={{ fontFamily: FONT_BODY, fontSize: 13, color: CARD_TEXT_MUTED }}>Property secretary</div>
-          </div>
-        </div>
+      <div style={{ position: "absolute", top: 64, left: 28, right: 28 }}>
+        <h3
+          style={{
+            fontFamily: FONT_HEADING,
+            fontWeight: 600,
+            fontSize: 22,
+            color: CARD_TEXT_PRIMARY,
+            margin: 0,
+            letterSpacing: "-0.01em",
+          }}
+        >
+          Software-defined real estate
+        </h3>
+        <p
+          style={{
+            fontFamily: FONT_BODY,
+            fontSize: 13,
+            color: CARD_TEXT_SECONDARY,
+            margin: "6px 0 0",
+            lineHeight: 1.45,
+          }}
+        >
+          What your phone looks like as a MoreHarvest resident.
+        </p>
       </div>
       <div
         style={{
           position: "absolute",
-          top: 132,
-          left: 16,
-          right: 16,
-          bottom: 20,
+          top: 140,
+          left: 24,
+          right: 24,
+          bottom: 24,
           overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-          gap: 8,
         }}
       >
-        {messages.map((m, i) => (
-          <div key={i}>
-            {m.type === "date" ? (
-              <ChatDate text={m.text} />
-            ) : m.type === "sec" ? (
-              <ChatBubbleSec text={m.text} />
+        {/* the rail itself */}
+        <div
+          style={{
+            position: "absolute",
+            top: 12,
+            bottom: 12,
+            left: 13,
+            width: 2,
+            background: "rgba(255,255,255,0.08)",
+            borderRadius: 1,
+          }}
+        />
+        <div style={{ position: "relative" }}>
+          {grouped.map((item) => (
+            item.type === "tier" ? (
+              <TimelineTier key={item.key} label={item.label} sub={item.sub} tag={item.tag} />
             ) : (
-              <ChatBubbleTen text={m.text} />
-            )}
-          </div>
-        ))}
+              <TimelineNode key={item.key} from={item.from} msg={item.msg} time={item.time} />
+            )
+          ))}
+        </div>
       </div>
     </div>
   );

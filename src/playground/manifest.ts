@@ -126,18 +126,10 @@ const Step9Transition = dynamic(
   { ssr: false }
 );
 
-const Step10CurrentOptions = dynamic(
+const Step14CurrentOptionsV1 = dynamic(
   () =>
     import(
-      "./prototypes/step-14-section-7-current-options/gktk-step10-current-options-v6.jsx"
-    ),
-  { ssr: false }
-);
-
-const Step10CurrentOptionsV19 = dynamic(
-  () =>
-    import(
-      "./prototypes/step-14-section-7-current-options/gktk-step10-current-options-v19.jsx"
+      "./prototypes/step-14-section-7-current-options/step-14-section-7-current-options-v1.jsx"
     ),
   { ssr: false }
 );
@@ -182,10 +174,10 @@ const Step15TransitionV2 = dynamic(
   { ssr: false }
 );
 
-const Step16Financials = dynamic(
+const Step20FinancialsV1 = dynamic(
   () =>
     import(
-      "./prototypes/step-20-section-10-financials/gktk-step16-financials.jsx"
+      "./prototypes/step-20-section-10-financials/step-20-section-10-financials-v1.jsx"
     ),
   { ssr: false }
 );
@@ -206,10 +198,10 @@ const Step19Transition = dynamic(
   { ssr: false }
 );
 
-const Step20ExitStrategy = dynamic(
+const Step24ExitStrategyV1 = dynamic(
   () =>
     import(
-      "./prototypes/step-24-section-12-exit-strategy/gktk-step20-exit-strategy-v9.jsx"
+      "./prototypes/step-24-section-12-exit-strategy/step-24-section-12-exit-strategy-v1.jsx"
     ),
   { ssr: false }
 );
@@ -663,24 +655,9 @@ export const STEPS: StepDrawer[] = [
     status: "locked",
     prototypes: [
       {
-        filename: "gktk-step10-current-options-v19.jsx",
+        filename: "step-14-section-7-current-options-v1.jsx",
         kind: "jsx",
-        component: Step10CurrentOptionsV19,
-        variants: [
-          { id: "A", label: "A: the flip" },
-          { id: "B", label: "B: the cascade" },
-          { id: "C", label: "C: the card" },
-          { id: "D", label: "D: the sweep" },
-        ],
-      },
-      {
-        filename: "gktk-step10-current-options-v6.jsx",
-        kind: "jsx",
-        component: Step10CurrentOptions,
-        variants: [
-          { id: "B", label: "B: the stack" },
-          { id: "D", label: "D: the divide" },
-        ],
+        component: Step14CurrentOptionsV1,
       },
     ],
   },
@@ -774,13 +751,9 @@ export const STEPS: StepDrawer[] = [
     status: "locked",
     prototypes: [
       {
-        filename: "gktk-step16-financials.jsx",
+        filename: "step-20-section-10-financials-v1.jsx",
         kind: "jsx",
-        component: Step16Financials,
-        variants: [
-          { id: "A", label: "A: the beacon" },
-          { id: "C", label: "C: the ledger" },
-        ],
+        component: Step20FinancialsV1,
       },
     ],
   },
@@ -842,13 +815,9 @@ export const STEPS: StepDrawer[] = [
     status: "locked",
     prototypes: [
       {
-        filename: "gktk-step20-exit-strategy-v9.jsx",
+        filename: "step-24-section-12-exit-strategy-v1.jsx",
         kind: "jsx",
-        component: Step20ExitStrategy,
-        variants: [
-          { id: "A", label: "A: the reveal" },
-          { id: "C", label: "C: the depth" },
-        ],
+        component: Step24ExitStrategyV1,
       },
     ],
   },

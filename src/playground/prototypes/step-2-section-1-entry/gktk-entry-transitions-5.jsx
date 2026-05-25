@@ -82,7 +82,7 @@ function EntryWarmth() {
 function EntryLayers() {
   const bars = [
     { label: "Serviced apartments", width: "72%", elev: 1, delay: 0 },
-    { label: "TSMC / JASM semiconductor hub", width: "84%", elev: 1, delay: 0.08 },
+    { label: "TSMC / JASM hub", width: "84%", elev: 1, delay: 0.08 },
     { label: "Taiwanese engineers", width: "62%", elev: 1, delay: 0.16 },
     { label: "12-15% IRR", width: "46%", elev: 2, delay: 0.24 },
   ];
@@ -166,7 +166,7 @@ function EntrySignal() {
 function EntryStagger() {
   const items = [
     { icon: "◊", text: "Serviced apartments", bold: false },
-    { icon: "◊", text: "TSMC / JASM semiconductor hub", bold: false },
+    { icon: "◊", text: "TSMC / JASM hub", bold: false },
     { icon: "◊", text: "Taiwanese engineers", bold: false },
     { icon: "●", text: "12-15% IRR", bold: true },
   ];

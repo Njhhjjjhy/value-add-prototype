@@ -2,10 +2,15 @@ import { useState, useEffect, useRef, useCallback } from "react";
 
 /* ───────────────────────────────────────────────────────
    step-4 section-2 bridge — iPad Pro 13 M4
-   Three variants:
+   Three variants — all use the canonical 2-counter form:
    A "counters"   — 10 trillion → 47,000 → amber line conclusion
    F "typewriter" — counters + typewriter caption + bar conclusion
-   G "carousel"   — four-slide pager (context → invest → workforce → thesis)
+   G "ledger"     — same 2 counters, indexed ledger treatment
+                    (01/02 markers, vertical guide, amber arrival pulse)
+   The original variant G "four-slide carousel" with bespoke copy
+   (context/investment/workforce/thesis) is retired. The canonical
+   copy lives in src/content/steps/step-4-section-2-bridge.ts and is
+   the only allowed copy for this step.
    Trigger layer: tap chevron after bridge completes. Fires amber screen.
    ─────────────────────────────────────────────────────── */
 
@@ -376,18 +381,18 @@ function BridgeF({ playing, onDone }) {
     }}>
       <div style={{ width: "100%", maxWidth: 880, margin: "0 auto", display: "flex", flexDirection: "column", gap: 32 }}>
         <Glass level={2} z={45} rx={1} ry={-0.3} style={{ padding: 32, opacity: beat >= 1 ? 1 : 0 }}>
-          <div role="group" aria-live="polite" aria-label="10 trillion yen committed to semiconductor sovereignty.">
+          <div role="group" aria-live="polite" aria-label="10 trillion yen. Japan is rebuilding its chip industry.">
             <DNum arrived={beat >= 2} z={60}><TN value="10" rolling={beat >= 1} /></DNum>
             <Cap vis={beat >= 2} delay={0.1} z={15} style={{ marginTop: 12 }}>
-              <TW text="trillion yen committed to semiconductor sovereignty." active={beat >= 2} delay={200} />
+              <TW text="trillion yen. Japan is rebuilding its chip industry." active={beat >= 2} delay={200} />
             </Cap>
           </div>
         </Glass>
         <Glass level={2} z={30} rx={0.6} ry={0.5} style={{ padding: 32, opacity: beat >= 3 ? 1 : 0 }}>
-          <div role="group" aria-live="polite" aria-label="47,000 new jobs. The largest workforce migration in decades.">
+          <div role="group" aria-live="polite" aria-label="47,000 jobs being created. Kumamoto is set to attract waves of high-income engineers.">
             <DNum arrived={beat >= 4} z={50}><TN value="47,000" rolling={beat >= 3} /></DNum>
             <Cap vis={beat >= 4} delay={0.1} z={10} style={{ marginTop: 12 }}>
-              <TW text="new jobs. The largest workforce migration in decades." active={beat >= 4} delay={200} />
+              <TW text="jobs being created. Kumamoto is set to attract waves of high-income engineers." active={beat >= 4} delay={200} />
             </Cap>
           </div>
         </Glass>
@@ -407,7 +412,7 @@ function BridgeF({ playing, onDone }) {
               }} />
             </div>
             <Cap vis={beat >= 5} delay={0.3} z={5} style={{ marginTop: 16 }}>
-              Kumamoto is set to attract waves of high-income engineers.
+              High-income engineers are arriving. Housing demand will follow.
             </Cap>
           </div>
         </ZLayer>
@@ -416,29 +421,114 @@ function BridgeF({ playing, onDone }) {
   );
 }
 
+/* ── variant G: ledger — same canonical 2 counters, indexed ledger layout
+   Visual treatment differs from A: numbered markers (01/02), a vertical
+   amber guide rail on the left, and a wider data-hero number weight.
+   The copy is canonical — identical to variant A, sourced from
+   src/content/steps/step-4-section-2-bridge.ts. ── */
 function BridgeG({ playing, onDone }) {
-  const [as, setAs] = useState(-1);
+  const [count10, setCount10] = useState(0);
+  const [count47, setCount47] = useState(0);
+  const [beat, setBeat] = useState(0);
+  const [railP, setRailP] = useState(0);
+  const raf = useRef(null);
   const fired = useRef(false);
-  const slides = [
-    { number: null, text: "The COVID-era chip shortage exposed a hard truth.", label: "context" },
-    { number: "10", suffix: " trillion", text: "Japan is rebuilding its chip industry.", label: "investment" },
-    { number: "47,000", suffix: "", text: "Jobs being created in Kumamoto alone.", label: "workforce" },
-    { number: null, text: "High-income engineers need housing. That is the opportunity.", label: "thesis" },
-  ];
 
   useEffect(() => {
-    if (!playing) { setAs(-1); fired.current = false; return; }
-    const ts = [
-      setTimeout(() => setAs(0), 200),
-      setTimeout(() => setAs(1), 1800),
-      setTimeout(() => setAs(2), 3400),
-      setTimeout(() => {
-        setAs(3);
-        if (!fired.current) { fired.current = true; setTimeout(() => onDone(), 800); }
-      }, 5000),
-    ];
-    return () => ts.forEach(clearTimeout);
+    if (!playing) {
+      setCount10(0); setCount47(0); setBeat(0); setRailP(0); fired.current = false;
+      return;
+    }
+    let s = null;
+    const a = ts => {
+      if (!s) s = ts;
+      const e = ts - s;
+      // Rail draws first as a guide
+      setRailP(easeOutCubic(Math.min(1, e / 600)));
+      if (e < 1200) {
+        setCount10(Math.round(easeOutCubic(Math.min(1, e / 1000)) * 10));
+        if (e > 200) setBeat(1);
+      } else if (e < 1600) {
+        setCount10(10); setBeat(1);
+      } else if (e < 2800) {
+        setBeat(2);
+        setCount47(Math.round(easeOutCubic(Math.min(1, (e - 1600) / 1000)) * 47000));
+      } else if (e < 3200) {
+        setCount47(47000); setBeat(3);
+      } else {
+        setBeat(4);
+        if (e > 3900 && !fired.current) { fired.current = true; onDone(); }
+        if (e > 4200) return;
+      }
+      raf.current = requestAnimationFrame(a);
+    };
+    raf.current = requestAnimationFrame(a);
+    return () => cancelAnimationFrame(raf.current);
   }, [playing, onDone]);
+
+  const LedgerRow = ({ index, indexLit, numeric, suffix, arrived, ariaLabel }) => (
+    <div
+      role="group"
+      aria-live="polite"
+      aria-label={ariaLabel}
+      style={{
+        position: "relative",
+        display: "grid",
+        gridTemplateColumns: "56px 1fr",
+        gap: 24,
+        alignItems: "flex-start",
+      }}
+    >
+      <div
+        style={{
+          fontFamily: FONT_HEADING,
+          fontWeight: 600,
+          fontSize: 18,
+          lineHeight: 1,
+          color: indexLit ? AMBER : NEUTRAL_200,
+          letterSpacing: "0.1em",
+          paddingTop: 14,
+          transition: "color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        }}
+      >
+        {index}
+      </div>
+      <div>
+        <div
+          style={{
+            fontFamily: FONT_HEADING,
+            fontWeight: 600,
+            fontSize: 56,
+            lineHeight: 1.0,
+            letterSpacing: "-0.02em",
+            color: NEUTRAL_950,
+            opacity: arrived ? 1 : 0,
+            transform: arrived ? "translateY(0)" : "translateY(8px)",
+            transition: "all 0.5s cubic-bezier(0.34,1.56,0.64,1)",
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
+          {numeric}
+        </div>
+        <div
+          style={{
+            fontFamily: FONT_BODY,
+            fontWeight: 400,
+            fontSize: 17,
+            lineHeight: 1.6,
+            color: NEUTRAL_600,
+            letterSpacing: "0.015em",
+            marginTop: 10,
+            opacity: arrived ? 1 : 0,
+            transform: arrived ? "translateY(0)" : "translateY(4px)",
+            transition: "all 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s",
+          }}
+        >
+          {suffix}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div style={{
@@ -446,77 +536,91 @@ function BridgeG({ playing, onDone }) {
       padding: "calc(96px + var(--safe-top)) var(--content-margin) calc(160px + var(--safe-bottom))",
       display: "flex", flexDirection: "column",
       justifyContent: "center",
-      perspective: "1200px",
-      perspectiveOrigin: "50% 45%",
-      transformStyle: "preserve-3d",
     }}>
-      <div style={{ width: "100%", maxWidth: 880, margin: "0 auto" }}>
-        <ZLayer z={20} style={{ marginBottom: 28, paddingLeft: 4 }}>
-          <div style={{ display: "flex", gap: 10 }}>
-            {slides.map((_, i) => (
-              <div key={i} style={{
-                width: as === i ? 32 : 8,
-                height: 8,
-                borderRadius: 4,
-                background: as >= i ? AMBER : NEUTRAL_200,
-                transition: "all 0.4s cubic-bezier(0.34,1.56,0.64,1)",
-              }} />
-            ))}
+      <div style={{ width: "100%", maxWidth: 880, margin: "0 auto", position: "relative" }}>
+        {/* Vertical amber guide rail */}
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: 24,
+            width: 2,
+            background: NEUTRAL_200,
+            borderRadius: 1,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: `${railP * 100}%`,
+              background: `linear-gradient(180deg, ${AMBER}, transparent)`,
+              transition: "height 0.2s linear",
+            }}
+          />
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 48 }}>
+          <LedgerRow
+            index="01"
+            indexLit={beat >= 1}
+            numeric={count10 > 0 ? `${count10}` : "0"}
+            suffix="trillion yen. Japan is rebuilding its chip industry."
+            arrived={beat >= 1}
+            ariaLabel={`${count10} trillion yen. Japan is rebuilding its chip industry.`}
+          />
+          <LedgerRow
+            index="02"
+            indexLit={beat >= 2}
+            numeric={count47.toLocaleString()}
+            suffix="jobs being created. Kumamoto is set to attract waves of high-income engineers."
+            arrived={beat >= 3}
+            ariaLabel={`${count47.toLocaleString()} jobs being created. Kumamoto is set to attract waves of high-income engineers.`}
+          />
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "56px 1fr",
+              gap: 24,
+              alignItems: "flex-start",
+              opacity: beat >= 4 ? 1 : 0,
+              transform: beat >= 4 ? "translateY(0)" : "translateY(14px)",
+              transition: "all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            }}
+          >
+            <div />
+            <div>
+              <div
+                style={{
+                  width: 72,
+                  height: 3,
+                  background: AMBER,
+                  borderRadius: 2,
+                  marginBottom: 16,
+                  boxShadow: "0 0 12px rgba(251,185,49,0.4)",
+                }}
+              />
+              <p
+                style={{
+                  fontFamily: FONT_BODY,
+                  fontWeight: 400,
+                  fontSize: 17,
+                  lineHeight: 1.6,
+                  color: NEUTRAL_600,
+                  letterSpacing: "0.015em",
+                  margin: 0,
+                }}
+              >
+                High-income engineers are arriving. Housing demand will follow.
+              </p>
+            </div>
           </div>
-        </ZLayer>
-        <div style={{ position: "relative", minHeight: 280, transformStyle: "preserve-3d" }}>
-          {slides.map((sl, i) => {
-            const act = as === i;
-            const past = as > i;
-            return (
-              <div key={i} style={{
-                position: "absolute", inset: 0,
-                transform: `translateZ(${act ? 45 : past ? -10 : 20}px) rotateX(${act ? 0.8 : past ? -2 : 2}deg) scale(${act ? 1 : 0.88})`,
-                opacity: act ? 1 : 0,
-                transition: "all 0.65s cubic-bezier(0.34,1.56,0.64,1)",
-                pointerEvents: act ? "auto" : "none",
-                transformStyle: "preserve-3d",
-              }}>
-                <Glass level={2} z={0} rx={0} style={{ padding: 36 }}>
-                  <ZLayer z={20}>
-                    <div style={{
-                      display: "inline-block",
-                      padding: "6px 14px",
-                      borderRadius: 10,
-                      background: "#EDEEF1",
-                      border: "1px solid rgba(0,0,0,0.06)",
-                      marginBottom: 20,
-                    }}>
-                      <span style={{
-                        fontFamily: FONT_BODY,
-                        fontSize: 13,
-                        fontWeight: 500,
-                        color: NEUTRAL_600,
-                        letterSpacing: "0.02em",
-                      }}>{sl.label}</span>
-                    </div>
-                  </ZLayer>
-                  <div role="group" aria-live="polite" aria-label={sl.number ? `${sl.number}${sl.suffix || ""}. ${sl.text}` : sl.text}>
-                    {sl.number && (
-                      <DNum arrived={act} z={40}>
-                        {sl.number}
-                        {sl.suffix && (
-                          <span style={{
-                            fontFamily: FONT_HEADING,
-                            fontWeight: 600,
-                            fontSize: 32,
-                            color: NEUTRAL_800,
-                            marginLeft: 8,
-                          }}>{sl.suffix}</span>
-                        )}
-                      </DNum>
-                    )}
-                    <Cap vis={act} delay={0.2} z={8} style={{ marginTop: 12 }}>{sl.text}</Cap>
-                  </div>
-                </Glass>
-              </div>
-            );
-          })}
         </div>
       </div>
     </div>

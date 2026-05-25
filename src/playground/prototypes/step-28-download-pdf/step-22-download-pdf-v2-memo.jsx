@@ -84,7 +84,7 @@ export default function Step22DownloadPdfMemo() {
               margin: "12px 0 0",
             }}
           >
-            Take the memo.
+            The full picture.
           </h2>
 
           {/* Subtitle */}
@@ -98,8 +98,8 @@ export default function Step22DownloadPdfMemo() {
               maxWidth: 420,
             }}
           >
-            Ten sections, one document. Designed for offline review on the
-            flight home.
+            The memo behind everything you just saw. Per-unit underwriting,
+            comparables, exit analysis, and the parallel timeline in detail.
           </p>
 
           {/* Hairline divider */}

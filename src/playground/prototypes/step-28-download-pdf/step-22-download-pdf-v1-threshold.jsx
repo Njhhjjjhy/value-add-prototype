@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
 /* ───────────────────────────────────────────────────────
-   step-22 download pdf — v1 "Threshold"
-   Restrained, declarative. A small eyebrow above a single
-   amber pill CTA, with a tight caption below. Quiet
-   confidence. Matches the "Threshold" transition.
+   step-28 download pdf — v1 "Threshold"
+   Restrained, declarative. Canonical headline + body sit
+   above a single amber pill CTA. Quiet confidence.
+   Matches the "Threshold" transition.
    ─────────────────────────────────────────────────────── */
 
 const C = {
@@ -17,7 +17,9 @@ const C = {
   bg: "#F9F9F9",
 };
 
+const FONT_HEADING = '"REM", system-ui, sans-serif';
 const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
+const EASE_ARRIVE = "cubic-bezier(0,0,0.2,1)";
 
 export default function Step22DownloadPdfThreshold() {
   const [mounted, setMounted] = useState(false);
@@ -32,24 +34,56 @@ export default function Step22DownloadPdfThreshold() {
         style={{
           position: "absolute",
           inset: 0,
-          padding: "var(--safe-top) var(--content-margin) var(--safe-bottom)",
+          padding:
+            "calc(110px + var(--safe-top)) var(--content-margin) calc(64px + var(--safe-bottom))",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
           background: C.bg,
         }}
       >
+        {/* Headline + body */}
         <div
           style={{
+            maxWidth: 720,
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            gap: 28,
+            gap: 24,
+            opacity: mounted ? 1 : 0,
+            transform: mounted ? "translateY(0)" : "translateY(12px)",
+            transition: `opacity 600ms ${EASE_ARRIVE}, transform 600ms ${EASE_ARRIVE}`,
           }}
         >
-          {/* Primary button */}
-          <button
+          <h1
+            style={{
+              fontFamily: FONT_HEADING,
+              fontWeight: 600,
+              fontSize: 48,
+              color: C.heading,
+              margin: 0,
+              letterSpacing: "-0.025em",
+              lineHeight: 1.1,
+            }}
+          >
+            The full picture.
+          </h1>
+          <p
+            style={{
+              fontFamily: FONT_BODY,
+              fontWeight: 500,
+              fontSize: 18,
+              color: C.body,
+              margin: 0,
+              lineHeight: 1.6,
+            }}
+          >
+            The memo behind everything you just saw. Per-unit underwriting, comparables, exit analysis, and the parallel timeline in detail.
+          </p>
+        </div>
+
+        {/* Primary button */}
+        <button
             type="button"
             onPointerDown={() => setPressing(true)}
             onPointerUp={() => setPressing(false)}
@@ -88,7 +122,6 @@ export default function Step22DownloadPdfThreshold() {
           >
             Download PDF
           </button>
-        </div>
       </div>
   );
 }

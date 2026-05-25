@@ -75,7 +75,7 @@ export default function Step22DownloadPdfReveal() {
                 "opacity 700ms cubic-bezier(0,0,0.2,1) 200ms, transform 700ms cubic-bezier(0,0,0.2,1) 200ms",
             }}
           >
-            Thank you.
+            The full picture.
           </h1>
 
           {/* Subtitle */}
@@ -94,8 +94,8 @@ export default function Step22DownloadPdfReveal() {
                 "opacity 700ms cubic-bezier(0,0,0.2,1) 380ms, transform 700ms cubic-bezier(0,0,0.2,1) 380ms",
             }}
           >
-            Take the memo with you. Ten sections, one document, for the flight
-            home.
+            The memo behind everything you just saw. Per-unit underwriting,
+            comparables, exit analysis, and the parallel timeline in detail.
           </p>
 
           {/* CTA */}

@@ -63,19 +63,19 @@ const PHASE_1 = {
       years: "2013 – 2018",
       label: "Market maturity · rental premium locks in",
       body:
-        "Premium apartments sustain 2–3× rental premium; Zhubei established as Taiwan's benchmark tech cluster",
+        "Premium apartments sustain 2-3x rental premium; Zhubei established as Taiwan's benchmark tech cluster",
     },
   ],
   stats: [
     {
       value: "+180%",
       label: "Zhubei premium rent growth",
-      caption: "2006–2015 cumulative",
+      caption: "2006-2015 cumulative",
     },
     {
       value: "+60%",
       label: "Zhubei land price appreciation",
-      caption: "2007–2010 · 3-year window",
+      caption: "2007-2010 · 3-year window",
     },
   ],
 };
@@ -91,7 +91,7 @@ const PHASE_2 = {
       years: "2024 – 2025",
       label: "JASM Fab 1 opens · Taiwanese engineers arrive",
       body:
-        "3,000–5,000 TSMC-dispatched engineers relocating; Kikuyo-cho land prices already up 40–80%",
+        "3,000-5,000 TSMC-dispatched engineers relocating; Kikuyo-cho land prices already up 40-80%",
       now: "Now: residential supply gap, no premium developer has entered",
     },
     {
@@ -115,9 +115,9 @@ const PHASE_2 = {
   ],
   stats: [
     {
-      value: "+40–80%",
+      value: "+40-80%",
       label: "Kikuyo-cho land appreciation",
-      caption: "2022–2024",
+      caption: "2022-2024",
     },
     {
       value: "0",
@@ -244,7 +244,7 @@ function PhaseHeader({ phase }) {
             color: C.caption,
           }}
         >
-          SECTION 13 · PARALLEL TIMELINE
+          Section 13 · Parallel timeline
         </span>
       </div>
       <div

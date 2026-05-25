@@ -1,12 +1,20 @@
 import { useEffect, useState } from "react";
 
 /* ───────────────────────────────────────────────────────
-   Step 11 — Section 6 transition (persona transition IN)
-   Bridges step 10 (pain points content) into step 12 (persona content).
-   Mood shift: from "8 problems for the group" to "now meet one person".
+   Step 11 — Section 6 transition (resolve panel)
+   Bridges step 10 (pain points) into step 12 (persona).
 
-   Variants — same content, different motion:
-     A "descent"   — wide → narrow scale-down, like a camera dropping toward a face
+   Canonical copy lives in src/content/steps/step-11-section-6-transition.ts:
+     headline: "3 to 5 million yen"
+     body:     "Estimated replacement cost per engineer who repatriates
+                early due to family maladjustment."
+     prompt:   "Tap to continue"
+
+   The earlier "47,000 / engineers need a home / Now meet one." concept
+   is retired and must not return — that copy contradicts canonical.
+
+   Variants — same canonical content, different motion:
+     A "descent"   — headline scales down from huge to settled
      B "focuspull" — background blurs out, headline sharpens
      C "cut"       — clean cross-fade, no tricks
    ─────────────────────────────────────────────────────── */
@@ -25,10 +33,11 @@ const C = {
 const FONT_HEADING = '"REM", system-ui, sans-serif';
 const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
-const EYEBROW = "SECTION 6";
-const STAT = "47,000";
-const STAT_LABEL = "engineers need a home";
-const SUBHEAD = "Now meet one.";
+// Canonical copy — must match src/content/steps/step-11-section-6-transition.ts
+const HEADLINE = "3 to 5 million yen";
+const BODY =
+  "Estimated replacement cost per engineer who repatriates early due to family maladjustment.";
+const TAP_PROMPT = "Tap to continue";
 
 export default function Step11SectionSixTransition({ variant = "A" } = {}) {
   const [key, setKey] = useState(0);
@@ -56,18 +65,10 @@ export default function Step11SectionSixTransition({ variant = "A" } = {}) {
           0%   { opacity: 0; transform: translateY(20px); }
           100% { opacity: 1; transform: translateY(0); }
         }
-        @keyframes step11-rule-grow {
-          0%   { transform: scaleX(0); }
-          100% { transform: scaleX(1); }
-        }
         @keyframes step11-descent {
-          0%   { opacity: 0; transform: scale(2.4); letter-spacing: 0.1em; }
-          60%  { opacity: 1; transform: scale(1.1); letter-spacing: -0.02em; }
-          100% { opacity: 1; transform: scale(1); letter-spacing: -0.025em; }
-        }
-        @keyframes step11-descent-bg {
-          0%   { opacity: 0; transform: scale(1.2); }
-          100% { opacity: 1; transform: scale(1); }
+          0%   { opacity: 0; transform: scale(1.45); letter-spacing: 0.02em; }
+          60%  { opacity: 1; transform: scale(1.05); letter-spacing: -0.02em; }
+          100% { opacity: 1; transform: scale(1); letter-spacing: -0.03em; }
         }
         @keyframes step11-focus-bg-out {
           0%   { filter: blur(0px); opacity: 1; }
@@ -81,16 +82,14 @@ export default function Step11SectionSixTransition({ variant = "A" } = {}) {
           0%   { opacity: 0; }
           100% { opacity: 1; }
         }
-        @keyframes step11-dot-pop {
-          0%   { opacity: 0; transform: scale(0.4); }
-          70%  { opacity: 1; transform: scale(1.15); }
-          100% { opacity: 1; transform: scale(1); }
-        }
       `}</style>
 
       {variant === "A" && <DescentVariant />}
       {variant === "B" && <FocusPullVariant />}
       {variant === "C" && <CutVariant />}
+
+      {/* Tap to continue prompt — bottom center */}
+      <TapPrompt delay={variant === "C" ? 1100 : 2300} />
 
       {/* Variant label */}
       <div
@@ -110,45 +109,90 @@ export default function Step11SectionSixTransition({ variant = "A" } = {}) {
   );
 }
 
-/* ── shared eyebrow ── */
+/* ── shared resolve panel ── */
 
-function Eyebrow({ delay = 200 }) {
+function ResolvePanelInner({ headingStyle = {}, bodyStyle = {} }) {
   return (
     <div
       style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 16,
-        opacity: 0,
-        animation: "step11-fade-up 500ms cubic-bezier(0.22, 1, 0.36, 1) both",
-        animationDelay: `${delay}ms`,
+        background: C.bg,
+        border: "1px solid rgba(0,0,0,0.08)",
+        borderRadius: 28,
+        boxShadow:
+          "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
+        padding: "56px 64px",
+        width: "100%",
+        maxWidth: 1080,
+        margin: "0 auto",
       }}
     >
       <div
         style={{
-          width: 48,
-          height: 1,
-          background: C.amber,
-          transformOrigin: "left center",
-          animation: "step11-rule-grow 600ms cubic-bezier(0.22, 1, 0.36, 1) both",
-          animationDelay: `${delay + 60}ms`,
-        }}
-      />
-      <span
-        style={{
-          fontSize: 13,
-          fontWeight: 500,
-          letterSpacing: "0.18em",
-          color: C.caption,
+          fontFamily: FONT_HEADING,
+          fontWeight: 600,
+          fontSize: 72,
+          lineHeight: 1.05,
+          letterSpacing: "-0.03em",
+          color: C.heading,
+          marginBottom: 28,
+          ...headingStyle,
         }}
       >
-        {EYEBROW}
+        {HEADLINE}
+      </div>
+      <div
+        style={{
+          fontFamily: FONT_BODY,
+          fontWeight: 400,
+          fontSize: 22,
+          lineHeight: 1.5,
+          color: C.body,
+          maxWidth: "60ch",
+          ...bodyStyle,
+        }}
+      >
+        {BODY}
+      </div>
+    </div>
+  );
+}
+
+/* ── tap-to-continue prompt — fades in once content has settled ── */
+
+function TapPrompt({ delay = 2200 }) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        bottom: "calc(96px + var(--safe-bottom))",
+        left: 0,
+        right: 0,
+        display: "flex",
+        justifyContent: "center",
+        zIndex: 20,
+        opacity: 0,
+        animation:
+          "step11-fade-up 600ms cubic-bezier(0.22, 1, 0.36, 1) both",
+        animationDelay: `${delay}ms`,
+        pointerEvents: "none",
+      }}
+    >
+      <span
+        style={{
+          fontFamily: FONT_BODY,
+          fontSize: 17,
+          color: C.caption,
+          letterSpacing: "0.02em",
+          opacity: 0.72,
+        }}
+      >
+        {TAP_PROMPT}
       </span>
     </div>
   );
 }
 
-/* ── variant A: descent — number scales down from huge to settled ── */
+/* ── variant A: descent — headline scales down from large to settled ── */
 
 function DescentVariant() {
   return (
@@ -158,69 +202,33 @@ function DescentVariant() {
         inset: 0,
         display: "flex",
         flexDirection: "column",
-        alignItems: "flex-start",
         justifyContent: "center",
         paddingLeft: "var(--content-margin)",
         paddingRight: "var(--content-margin)",
-        gap: 32,
       }}
     >
-      <Eyebrow delay={150} />
-      {/* Huge number that descends */}
-      <div
-        style={{
-          fontFamily: FONT_HEADING,
-          fontWeight: 600,
-          fontSize: 168,
-          lineHeight: 1,
-          color: C.heading,
-          margin: 0,
-          opacity: 0,
-          animation: "step11-descent 1000ms cubic-bezier(0.22, 1, 0.36, 1) both",
-          animationDelay: "400ms",
-          transformOrigin: "left center",
-        }}
-      >
-        {STAT}
-      </div>
-      <div
-        style={{
-          fontFamily: FONT_BODY,
-          fontSize: 22,
-          lineHeight: 1.4,
-          color: C.body,
-          opacity: 0,
-          animation: "step11-fade-up 600ms cubic-bezier(0.22, 1, 0.36, 1) both",
-          animationDelay: "1350ms",
-        }}
-      >
-        {STAT_LABEL}
-      </div>
-      {/* Subhead — appears after the descent settles */}
-      <div
-        style={{
-          fontFamily: FONT_BODY,
-          fontStyle: "italic",
-          fontSize: 22,
-          color: C.caption,
-          marginTop: 16,
+      <ResolvePanelInner
+        headingStyle={{
           opacity: 0,
           animation:
-            "step11-fade-up 700ms cubic-bezier(0.22, 1, 0.36, 1) both",
-          animationDelay: "1700ms",
+            "step11-descent 1000ms cubic-bezier(0.22, 1, 0.36, 1) both",
+          animationDelay: "300ms",
+          transformOrigin: "left center",
         }}
-      >
-        {SUBHEAD}
-      </div>
+        bodyStyle={{
+          opacity: 0,
+          animation:
+            "step11-fade-up 600ms cubic-bezier(0.22, 1, 0.36, 1) both",
+          animationDelay: "1400ms",
+        }}
+      />
     </div>
   );
 }
 
-/* ── variant B: focuspull — backdrop blurs out, headline sharpens ── */
+/* ── variant B: focuspull — backdrop blurs out, panel sharpens ── */
 
 function FocusPullVariant() {
-  // The "backdrop" is a soft amber halo + scattered tiny dots representing
-  // the crowd (47,000). Focuspull blurs the crowd, sharpens the headline.
   return (
     <div
       style={{
@@ -228,14 +236,12 @@ function FocusPullVariant() {
         inset: 0,
         display: "flex",
         flexDirection: "column",
-        alignItems: "flex-start",
         justifyContent: "center",
         paddingLeft: "var(--content-margin)",
         paddingRight: "var(--content-margin)",
-        gap: 28,
       }}
     >
-      {/* Backdrop crowd of small dots */}
+      {/* Backdrop crowd of small dots, blurs away as panel comes into focus */}
       <div
         style={{
           position: "absolute",
@@ -243,51 +249,23 @@ function FocusPullVariant() {
           pointerEvents: "none",
           animation:
             "step11-focus-bg-out 1200ms cubic-bezier(0.22, 1, 0.36, 1) both",
-          animationDelay: "600ms",
+          animationDelay: "500ms",
         }}
       >
         <CrowdDots />
       </div>
 
-      {/* Foreground content — pulls into focus */}
+      {/* Foreground panel — pulls into focus */}
       <div
         style={{
           position: "relative",
           opacity: 0,
           animation:
             "step11-focus-fg-in 900ms cubic-bezier(0.22, 1, 0.36, 1) both",
-          animationDelay: "800ms",
-          display: "flex",
-          flexDirection: "column",
-          gap: 28,
+          animationDelay: "700ms",
         }}
       >
-        <Eyebrow delay={0} />
-        <div>
-          <div
-            style={{
-              fontFamily: FONT_HEADING,
-              fontWeight: 600,
-              fontSize: 88,
-              lineHeight: 1.05,
-              letterSpacing: "-0.025em",
-              color: C.heading,
-            }}
-          >
-            {STAT}{" "}
-            <span style={{ color: C.sub, fontSize: 56 }}>{STAT_LABEL}.</span>
-          </div>
-        </div>
-        <div
-          style={{
-            fontFamily: FONT_BODY,
-            fontStyle: "italic",
-            fontSize: 22,
-            color: C.caption,
-          }}
-        >
-          {SUBHEAD}
-        </div>
+        <ResolvePanelInner />
       </div>
     </div>
   );
@@ -341,53 +319,23 @@ function CutVariant() {
         inset: 0,
         display: "flex",
         flexDirection: "column",
-        alignItems: "flex-start",
         justifyContent: "center",
         paddingLeft: "var(--content-margin)",
         paddingRight: "var(--content-margin)",
-        gap: 28,
       }}
     >
-      <div
-        style={{
+      <ResolvePanelInner
+        headingStyle={{
           opacity: 0,
-          animation: "step11-cut-in 400ms cubic-bezier(0.22, 1, 0.36, 1) both",
+          animation: "step11-cut-in 500ms cubic-bezier(0.22, 1, 0.36, 1) both",
           animationDelay: "300ms",
         }}
-      >
-        <Eyebrow delay={0} />
-      </div>
-      <h1
-        style={{
-          fontFamily: FONT_HEADING,
-          fontWeight: 600,
-          fontSize: 88,
-          lineHeight: 1.05,
-          letterSpacing: "-0.025em",
-          color: C.heading,
-          margin: "16px 0 0 0",
-          maxWidth: 1080,
+        bodyStyle={{
           opacity: 0,
           animation: "step11-cut-in 500ms cubic-bezier(0.22, 1, 0.36, 1) both",
-          animationDelay: "450ms",
+          animationDelay: "600ms",
         }}
-      >
-        {STAT} {STAT_LABEL}.
-      </h1>
-      <div
-        style={{
-          fontFamily: FONT_BODY,
-          fontStyle: "italic",
-          fontSize: 22,
-          color: C.caption,
-          marginTop: 16,
-          opacity: 0,
-          animation: "step11-cut-in 500ms cubic-bezier(0.22, 1, 0.36, 1) both",
-          animationDelay: "700ms",
-        }}
-      >
-        {SUBHEAD}
-      </div>
+      />
     </div>
   );
 }

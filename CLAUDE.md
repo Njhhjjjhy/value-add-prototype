@@ -350,6 +350,12 @@ The working rule: hardcoded top offsets on iPad sit in the **88–110px range** 
 
 The deck runs in Safari (the CEO's default) and Chrome (used for screen sharing during virtual pitches). In Chrome landscape, the visible chrome (URL bar + tab bar) eats ~56pt, leaving roughly 968pt of usable height — content cannot rely on the full 1024pt being visible. Always use `100dvh` / `100svh` (dynamic / small viewport) instead of `100vh` for full-height containers, so the visible area shrinks correctly when the browser chrome appears.
 
+### Auth gate and local dev
+
+The deployed site is gated by HTTP Basic Auth in `src/middleware.ts` (password `moreharvest2026`, checked into the repo on purpose — it only keeps casual visitors off Vercel and Cloudflare, it is not a real secret). The middleware **bypasses any request with a `localhost` or `127.0.0.1` host header**, so local dev never prompts for a password. Keep that bypass in place — VSCode's built-in Simple Browser (which the user runs the dev server inside) cannot render the native Basic Auth popup at all; it just paints the 401 response body as text. Removing the bypass locks the user out of their own machine. If you ever change the middleware, preserve the localhost short-circuit.
+
+`http://localhost:3000/playground` redirects to `/playground/prototypes` (the playground viewer). The bare `/playground` path used to 404 because only `/playground/3d` and `/playground/prototypes` were real routes; the redirect at `src/app/playground/page.tsx` removes that paper-cut.
+
 ---
 
 ## Capitalization rules

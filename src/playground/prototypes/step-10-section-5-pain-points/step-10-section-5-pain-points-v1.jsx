@@ -373,7 +373,7 @@ function Header({ variant }) {
             margin: 0,
           }}
         >
-          What semiconductor families face in Kumamoto
+          What semiconductor families actually face in Kumamoto.
         </h1>
         <span
           style={{

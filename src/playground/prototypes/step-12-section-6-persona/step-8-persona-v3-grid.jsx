@@ -23,7 +23,7 @@ const FONT_HEADING = '"REM", system-ui, sans-serif';
 const FONT_BODY = '"Noto Sans JP", system-ui, sans-serif';
 
 const SECTION_4 = {
-  eyebrow: "Section 04 · Demand",
+  eyebrow: "Section 6 · Demand",
   headline: "Who lives here.",
   persona: {
     title: "The semiconductor engineer",
