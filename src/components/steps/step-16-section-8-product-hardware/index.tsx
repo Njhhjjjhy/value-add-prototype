@@ -32,10 +32,15 @@ export default function Step12Section6ProductHardware({
     if (!isActive || !propertyMapHost) return;
     if (propertyMapHost.isReady) {
       propertyMapHost.setChromeless(false);
+      // Reveal the Ozu-1 pin, context lines, and "Tour the property"
+      // CTA. Entering the map's properties step only draws the zone
+      // shading; this command surfaces the property layer on top of it.
+      propertyMapHost.focusOzu1();
     }
     const unsub = propertyMapHost.subscribe((event) => {
       if (event.type === 'ready') {
         propertyMapHost.setChromeless(false);
+        propertyMapHost.focusOzu1();
       } else if (event.type === 'complete') {
         onComplete();
       } else if (event.type === 'back-to-content') {

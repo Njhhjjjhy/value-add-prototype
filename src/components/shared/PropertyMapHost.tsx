@@ -30,6 +30,7 @@ type MapEvent =
 type PropertyMapHostApi = {
   isReady: boolean;
   setChromeless: (value: boolean) => void;
+  focusOzu1: () => void;
   subscribe: (listener: (event: MapEvent) => void) => () => void;
   getWrapper: () => HTMLDivElement | null;
 };
@@ -111,6 +112,38 @@ export function PropertyMapHostProvider({
     }
   }, []);
 
+  // Reveal the Ozu-1 property the moment the property step opens.
+  //
+  // Entering the map's "properties" step only draws the investment-zone
+  // shading; the Ozu-1 pin, its context lines, and the "Tour the
+  // property" CTA are revealed by the map's `App.selectProperty('ozu-1')`
+  // command. The map-prototype refactor that extracted step handlers
+  // dropped the call that fired this automatically, so the marker layer
+  // never appeared on step 16. The iframe is same-origin, so we invoke
+  // it directly here once the bundle is ready. Retries cover the gap
+  // between `gktk-map-ready` and `App` being assigned on window.
+  const focusOzu1 = useCallback(() => {
+    let attempts = 0;
+    const tick = () => {
+      attempts += 1;
+      try {
+        const win = iframeRef.current?.contentWindow as
+          | (Window & { App?: { selectProperty?: (id: string) => void } })
+          | null
+          | undefined;
+        const app = win?.App;
+        if (app && typeof app.selectProperty === 'function') {
+          app.selectProperty('ozu-1');
+          return;
+        }
+      } catch {
+        /* cross-frame access can throw before the bundle initializes */
+      }
+      if (attempts < 40) setTimeout(tick, 150);
+    };
+    tick();
+  }, []);
+
   const subscribe = useCallback(
     (listener: (event: MapEvent) => void) => {
       listenersRef.current.add(listener);
@@ -126,6 +159,7 @@ export function PropertyMapHostProvider({
   const api: PropertyMapHostApi = {
     isReady,
     setChromeless,
+    focusOzu1,
     subscribe,
     getWrapper,
   };
